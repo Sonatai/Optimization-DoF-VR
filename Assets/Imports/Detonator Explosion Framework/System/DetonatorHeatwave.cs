@@ -61,9 +61,6 @@ public class DetonatorHeatwave : DetonatorComponent {
 	
 	override public void Explode()
 	{
-        //try to early out if we can't draw this (not sure if this also gets us out of Unity Indie)
-        if (SystemInfo.supportsImageEffects)
-        {
             if ((detailThreshold > detail) || !on) return;
 
             if (!_delayedExplosionStarted)
@@ -94,7 +91,6 @@ public class DetonatorHeatwave : DetonatorComponent {
             {
                 _delayedExplosionStarted = true;
             }
-        }
 	}
 	
 	public void Reset()
