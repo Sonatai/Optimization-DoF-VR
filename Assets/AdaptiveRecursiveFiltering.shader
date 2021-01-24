@@ -330,7 +330,7 @@
                     colorsTotalLength--;
                     
                     [unroll(width)]
-                    for(int f = colorsTotalLength-1; f >= 0; f--) ,
+                    for(int f = colorsTotalLength-1; f >= 0; f--)
                     {
                         uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.y, 0); 
                         red = colors[f][0] + tex2D(_WeightTex, uvCoordinates) * red;
