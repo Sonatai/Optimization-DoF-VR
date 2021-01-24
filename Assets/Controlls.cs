@@ -44,7 +44,7 @@ public class Controlls : MonoBehaviour
     private void Focus()
     {
         Vector3 focalVec = hitPoint - headTransform.position; 
-        float unnormaliszedFocalLength = min((float) Math.Sqrt(Math.Pow(focalVec.x, 2) + Math.Pow(focalVec.y, 2) + Math.Pow(focalVec.z, 2)),100); 
+        float unnormaliszedFocalLength = Math.Min((float) Math.Sqrt(Math.Pow(focalVec.x, 2) + Math.Pow(focalVec.y, 2) + Math.Pow(focalVec.z, 2)),100); 
         focalLength = unnormaliszedFocalLength / 100; //Depth values are between 0 and 1
     }
 

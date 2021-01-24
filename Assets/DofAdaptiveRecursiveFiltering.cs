@@ -8,13 +8,14 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
 {
     //A is a scaling paramter for blurring degree controll
     //D is the corresponding depth map from the rendered color image
-    //Df ist the focal length -> with eyetracking the distance to the focus point
+    //Df ist the focal length -> Distance between the eye and the object
     //D(p) ist the value from pixel p from the depth map
     //Alpha ist the weight
     
     public float scalingFactor;
+    [Range(0,1)]
     public float focalLength = 0.2f;
-    public float cocMinTreshold;
+    public float cocMinTreshold; //CoCMin cant be bigger than scalingFactor
 
     [SerializeField] private Controlls controllScript;
 
@@ -38,9 +39,10 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
         
         focalLength = controllScript.FocalLength;
         
-        //Minimum/maximum focal length calculation
-        minimumFocalLength = (scalingFactor * focalLength) / (scalingFactor + cocMinTreshold);
-        maximumFocalLength = (scalingFactor * focalLength) / (scalingFactor - cocMinTreshold);
+        //Minimum/maximum focal length calculation 
+        //Note: Unity depth map is between 0 and 1
+        minimumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor + cocMinTreshold),1);
+        maximumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor - cocMinTreshold),1);
         
         //Texture Maps
         RenderTexture coc = RenderTexture.GetTemporary(
@@ -57,15 +59,9 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             source.width, source.height, 0,
             RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
         );
-        
-        
 
-
-
-
-        //Variabel für Shader übergeben
+        //Variabel for shader
         dofMaterial.SetFloat("_FocalLength", focalLength);
-        dofMaterial.SetVector("_FocusPoint", new Vector4(controllScript.HitPoint.x,controllScript.HitPoint.y,controllScript.HitPoint.z,0));
         dofMaterial.SetFloat("_MinimumFocalLength", minimumFocalLength);
         dofMaterial.SetFloat("_MaximumFocalLength", maximumFocalLength);
         

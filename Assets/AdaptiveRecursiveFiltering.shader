@@ -10,7 +10,6 @@
         sampler _MainTex,  _CameraDepthTexture, _CoCTex, _RegionTex, _WeightTex;
         float4 _MainTex_TexelSize;
         float _FocalLength, _ScalingFactor, _MinimumFocalLength, _MaximumFocalLength;
-        float4 _FocusPoint;
         
         
         struct VertexData {
@@ -45,8 +44,7 @@
 				#pragma fragment FragmentProgram
 
                 half FragmentProgram (Interpolators i) : SV_Target {
-					half depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
-					depth = LinearEyeDepth(depth);
+					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv));
 					float coc = _ScalingFactor * abs(1-(_FocalLength/depth));
 					return coc;
 				}
@@ -64,7 +62,6 @@
                 // depth <= d1 => foreground (FOR)
                 // depth >= d2 => background (BOR)
                 half FragmentProgram (Interpolators i) : SV_Target { //AUs der Depth berechen, nicht COC
-					float coc = tex2D(_CoCTex, i.uv).r;
 					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv));
 					
 					if(depth > _MinimumFocalLength && depth < _MaximumFocalLength) {
@@ -99,6 +96,7 @@
                     
                     float cocP = (coc0 + coc1 + coc2 + coc3) * 0.25;
                     
+                    //TODO: Überprüfen!
                     coc0 = tex2D(_CoCTex, i.uv + texel.xy - fixed2(_MainTex_TexelSize.x, 0)).r;
                     coc1 = tex2D(_CoCTex, i.uv + texel.zy - fixed2(_MainTex_TexelSize.x, 0)).r;
                     coc2 = tex2D(_CoCTex, i.uv + texel.xw - fixed2(_MainTex_TexelSize.x, 0)).r;
@@ -207,25 +205,25 @@
 
                 fixed4  FragmentProgram (Interpolators i) : SV_Target {
                     const static int width = 10;
-                    fixed4 color = tex2D(_MainTex, i.uv);
+                    fixed4 currentColor = tex2D(_MainTex, i.uv);
                     fixed4 colors[width];
                     float2  uvCoordinates = i.uv;
                     int colorsTotalLength = 0;
                     
                     //Start from the back of the recursion
-                    fixed red = color.r;
-                    fixed blue = color.b;
-                    fixed green = color.g;
+                    fixed red = currentColor.r;
+                    fixed blue = currentColor.b;
+                    fixed green = currentColor.g;
+                    
+                    //TODO: Reevulate this part!
                    
                    //Filter right to left ..................
                     [unroll(width)] //optimization of the for loop
-                    for(int a = 0; a < width; a++) {
-                        //Break if we reach borders
-                        if(uvCoordinates[0] < 0 || uvCoordinates[1] < 0
-                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1) {
-                            break;
-                        }
-                        
+                    for(int a = 0; 
+                        a < width || (uvCoordinates[0] < 0 || uvCoordinates[1] < 0
+                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1); 
+                        a++) 
+                    {                       
                         //Get the new colors
                         red = GetRed(uvCoordinates, tex2D(_MainTex, uvCoordinates).r);
                         blue = GetBlue(uvCoordinates, tex2D(_MainTex, uvCoordinates).b);
@@ -239,8 +237,9 @@
                     colorsTotalLength--; //minus 1 because we add one to many
                     
                     [unroll(width)] //optimization of the for loop
-                    for(int b = colorsTotalLength-1; b >= 0; b--) {
-                        // calulate the color values for the pixel => in the first round red has the last value of the recursion
+                    for(int b = colorsTotalLength-1; b >= 0; b--) 
+                    {
+                        // calulate the colors values for the pixel => in the first round red has the last value of the recursion
                         // than we start to calculate the recursion backwards
                         uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.x, 0); 
                         red = colors[b][0] + tex2D(_WeightTex, uvCoordinates) * red;
@@ -248,32 +247,34 @@
                         green = colors[b][2] + tex2D(_WeightTex, uvCoordinates) * green;  
                     }
                     
-                    color.r = red;
-                    color.b = blue;
-                    color.g = green;
+                    currentColor.r = red;
+                    currentColor.b = blue;
+                    currentColor.g = green;
                     
                     //Filter left to right ..................
                     uvCoordinates = i.uv; //reset uv coordinate
-                    colorsTotalLength = 0; //reset the color total length to 0
+                    colorsTotalLength = 0; //reset the currentColor total length to 0
                     
                     //if we did not reach the borders, calculate the next red/blue/green
+                    //Out of the loop, because we just need to check once here
                     if(uvCoordinates[0] > 0 || uvCoordinates[1] > 0
-                            || uvCoordinates[0] < 1 || uvCoordinates[1] < 1) {  
-                        red = GetRed(uvCoordinates, color.r);    
-                        blue = GetBlue(uvCoordinates, color.b);
-                        green = GetGreen(uvCoordinates, color.g);
-                        colors[0] = fixed4(red,blue,green,color.a);
+                        || uvCoordinates[0] < 1 || uvCoordinates[1] < 1) 
+                    {  
+                        red = GetRed(uvCoordinates, currentColor.r);    
+                        blue = GetBlue(uvCoordinates, currentColor.b);
+                        green = GetGreen(uvCoordinates, currentColor.g);
+                        colors[0] = fixed4(red,blue,green,currentColor.a);
                         uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.x, 0);
                         colorsTotalLength++;
                     }
                     
                         
                     [unroll(width)]
-                    for(int c = 1; c < width; c++) {
-                        if(uvCoordinates[0] < 0 || uvCoordinates[1] < 0
-                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1) {
-                            break;
-                        }
+                    for(int c = 1; 
+                        c < width || (uvCoordinates[0] < 0 || uvCoordinates[1] < 0 
+                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1); 
+                        c++) 
+                    {
                         red = GetRed(uvCoordinates, tex2D(_MainTex, uvCoordinates).r);
                         blue = GetBlue(uvCoordinates, tex2D(_MainTex, uvCoordinates).b);
                         green = GetGreen(uvCoordinates, tex2D(_MainTex, uvCoordinates).g);
@@ -285,37 +286,39 @@
                     colorsTotalLength--;
                     
                     [unroll(width)]
-                    for(int d = colorsTotalLength-1; d >= 0; d--) {
+                    for(int d = colorsTotalLength-1; d >= 0; d--) 
+                    {
                         uvCoordinates = uvCoordinates - fixed2(_MainTex_TexelSize.x, 0); 
                         red = colors[d][0] + tex2D(_WeightTex, uvCoordinates) * red;
                         blue = colors[d][1] + tex2D(_WeightTex, uvCoordinates) * blue;
                         green = colors[d][2] + tex2D(_WeightTex, uvCoordinates) * green;  
                     }
                     
-                    color.r = red;
-                    color.b = blue;
-                    color.g = green;
+                    currentColor.r = red;
+                    currentColor.b = blue;
+                    currentColor.g = green;
                     
                     //Filter top to bottom ..................
                     uvCoordinates = i.uv;
                     colorsTotalLength = 0;
                     
                     if(uvCoordinates[0] > 0 || uvCoordinates[1] > 0
-                            || uvCoordinates[0] < 1 || uvCoordinates[1] < 1) {
-                    red = GetRed(uvCoordinates, color.r);
-                    blue = GetBlue(uvCoordinates, color.b);
-                    green = GetGreen(uvCoordinates, color.g);
-                    colors[0] = fixed4(red,blue,green,color.a);
-                    uvCoordinates = uvCoordinates - fixed2(_MainTex_TexelSize.y, 0);
-                    colorsTotalLength++;
+                        || uvCoordinates[0] < 1 || uvCoordinates[1] < 1) 
+                    {
+                        red = GetRed(uvCoordinates, currentColor.r);
+                        blue = GetBlue(uvCoordinates, currentColor.b);
+                        green = GetGreen(uvCoordinates, currentColor.g);
+                        colors[0] = fixed4(red,blue,green,currentColor.a);
+                        uvCoordinates = uvCoordinates - fixed2(_MainTex_TexelSize.y, 0);
+                        colorsTotalLength++;
                     }
                     
                     [unroll(width)]
-                    for(int e = 1; e < width; e++) {
-                        if(uvCoordinates[0] < 0 || uvCoordinates[1] < 0
-                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1) {
-                            break;
-                        }
+                    for(int e = 1; 
+                        e < width || (uvCoordinates[0] < 0 || uvCoordinates[1] < 0
+                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1); 
+                        e++) 
+                    {
                         red = GetRed(uvCoordinates, tex2D(_MainTex, uvCoordinates).r);
                         blue = GetBlue(uvCoordinates, tex2D(_MainTex, uvCoordinates).b);
                         green = GetGreen(uvCoordinates, tex2D(_MainTex, uvCoordinates).g);
@@ -327,37 +330,39 @@
                     colorsTotalLength--;
                     
                     [unroll(width)]
-                    for(int f = colorsTotalLength-1; f >= 0; f--) {
+                    for(int f = colorsTotalLength-1; f >= 0; f--) ,
+                    {
                         uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.y, 0); 
                         red = colors[f][0] + tex2D(_WeightTex, uvCoordinates) * red;
                         blue = colors[f][1] + tex2D(_WeightTex, uvCoordinates) * blue;
                         green = colors[f][2] + tex2D(_WeightTex, uvCoordinates) * green;  
                     }
                     
-                    color.r = red;
-                    color.b = blue;
-                    color.g = green;
+                    currentColor.r = red;
+                    currentColor.b = blue;
+                    currentColor.g = green;
                     
                     //Filter bottom to top ..................
                     uvCoordinates = i.uv;
                     colorsTotalLength = 0;
                     
                     if(uvCoordinates[0] > 0 || uvCoordinates[1] > 0
-                            || uvCoordinates[0] < 1 || uvCoordinates[1] < 1) {
-                    red = GetRed(uvCoordinates, color.r);
-                    blue = GetBlue(uvCoordinates, color.b);
-                    green = GetGreen(uvCoordinates, color.g);
-                    colors[0] = fixed4(red,blue,green,color.a);
-                    uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.y, 0);
-                    colorsTotalLength++;
+                            || uvCoordinates[0] < 1 || uvCoordinates[1] < 1) 
+                    {
+                        red = GetRed(uvCoordinates, currentColor.r);
+                        blue = GetBlue(uvCoordinates, currentColor.b);
+                        green = GetGreen(uvCoordinates, currentColor.g);
+                        colors[0] = fixed4(red,blue,green,currentColor.a);
+                        uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.y, 0);
+                        colorsTotalLength++;
                     }
                     
                     [unroll(width)]
-                    for(int g = 1; g < width; g++) {
-                        if(uvCoordinates[0] < 0 || uvCoordinates[1] < 0
-                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1) {
-                            break;
-                        }
+                    for(int g = 1; 
+                        g < width || (uvCoordinates[0] < 0 || uvCoordinates[1] < 0
+                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1); 
+                        g++) 
+                    {
                         red = GetRed(uvCoordinates, tex2D(_MainTex, uvCoordinates).r);
                         blue = GetBlue(uvCoordinates, tex2D(_MainTex, uvCoordinates).b);
                         green = GetGreen(uvCoordinates, tex2D(_MainTex, uvCoordinates).g);
@@ -369,18 +374,19 @@
                     colorsTotalLength--;
                     
                     [unroll(width)]
-                    for(int h = colorsTotalLength-1; h>= 0; h--) {
+                    for(int h = colorsTotalLength-1; h>= 0; h--) 
+                    {
                         uvCoordinates = uvCoordinates - fixed2(_MainTex_TexelSize.y, 0); 
                         red = colors[h][0] + tex2D(_WeightTex, uvCoordinates) * red;
                         blue = colors[h][1] + tex2D(_WeightTex, uvCoordinates) * blue;
                         green = colors[h][2] + tex2D(_WeightTex, uvCoordinates) * green;  
                     }
                     
-                    color.r = red;
-                    color.b = blue;
-                    color.g = green;
+                    currentColor.r = red;
+                    currentColor.b = blue;
+                    currentColor.g = green;
                     
-					return color;
+					return currentColor;
 				}
             ENDCG
         }
