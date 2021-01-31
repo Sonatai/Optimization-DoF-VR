@@ -25,12 +25,6 @@ public class Controlls : MonoBehaviour
         get =>  focalLength;
     }
     
-    public  Vector3 HitPoint
-    {
-        get =>  hitPoint;
-    }
-    
-
     private void ShowLaser(RaycastHit hit)
     {
         laser.SetActive(true);
@@ -44,8 +38,7 @@ public class Controlls : MonoBehaviour
     private void Focus()
     {
         Vector3 focalVec = hitPoint - headTransform.position; 
-        float unnormaliszedFocalLength = Math.Min((float) Math.Sqrt(Math.Pow(focalVec.x, 2) + Math.Pow(focalVec.y, 2) + Math.Pow(focalVec.z, 2)),100); 
-        focalLength = unnormaliszedFocalLength / 100; //Depth values are between 0 and 1
+       focalLength = (float) Math.Sqrt(Math.Pow(focalVec.x, 2) + Math.Pow(focalVec.y, 2) + Math.Pow(focalVec.z, 2)); 
     }
 
 

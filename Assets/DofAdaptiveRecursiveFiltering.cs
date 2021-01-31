@@ -13,9 +13,11 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     //Alpha ist the weight
     
     public float scalingFactor;
-    [Range(0,1)]
-    public float focalLength = 0.2f;
-    public float cocMinTreshold; //CoCMin cant be bigger than scalingFactor
+    [Range(0,100)]
+    public float focalLength = 10f;
+    public float cocMinTreshold;
+
+    public Camera camera;
 
     [SerializeField] private Controlls controllScript;
 
@@ -30,20 +32,24 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     private const int weightPass = 2;
     private const int filterPass = 3;
 
-
-    void OnRenderImage (RenderTexture source, RenderTexture destination) {
+    void OnRenderImage (RenderTexture source, RenderTexture destination)
+    {
+        
         if (dofMaterial == null) {
             dofMaterial = new Material(dofShader);
             dofMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
-        
-        focalLength = controllScript.FocalLength;
-        
-        //Minimum/maximum focal length calculation 
-        //Note: Unity depth map is between 0 and 1
-        minimumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor + cocMinTreshold),1);
-        maximumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor - cocMinTreshold),1);
-        
+
+        if (controllScript != null)
+        {
+            focalLength = controllScript.FocalLength;
+        }
+
+        //Far Plain Distance as max value for both
+        minimumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor + cocMinTreshold),
+            camera.farClipPlane);
+        maximumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor - cocMinTreshold),camera.farClipPlane);
+
         //Texture Maps
         RenderTexture coc = RenderTexture.GetTemporary(
             source.width, source.height, 0,
@@ -71,7 +77,7 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
         dofMaterial.SetTexture("_RegionTex", region);
         dofMaterial.SetTexture("_WeightTex", weight);
         
-        //rendering
+        //Rendering
         Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
         Graphics.Blit(source,region, dofMaterial, regionPass);
         Graphics.Blit(source,weight, dofMaterial, weightPass);

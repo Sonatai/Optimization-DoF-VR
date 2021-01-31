@@ -43,7 +43,7 @@
                 #pragma vertex VertexProgram
 				#pragma fragment FragmentProgram
 
-                half FragmentProgram (Interpolators i) : SV_Target {
+                half4 FragmentProgram (Interpolators i) : SV_Target {
 					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv));
 					float coc = _ScalingFactor * abs(1-(_FocalLength/depth));
 					return coc;
@@ -65,17 +65,18 @@
 					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv));
 					
 					if(depth > _MinimumFocalLength && depth < _MaximumFocalLength) {
-					    return 1;
+					
+					    return 50;
 					}
 					if(depth <= _MinimumFocalLength) {
-					    return 0;
+					    return 10;
 					}
 					if(depth >= _MaximumFocalLength) {
-					    return 2;
+					    return 100;
 					}
 					
 					//Should not happen
-					return 99;
+					return 0;
 				}
             ENDCG
         }
@@ -96,7 +97,6 @@
                     
                     float cocP = (coc0 + coc1 + coc2 + coc3) * 0.25;
                     
-                    //TODO: Überprüfen!
                     coc0 = tex2D(_CoCTex, i.uv + texel.xy - fixed2(_MainTex_TexelSize.x, 0)).r;
                     coc1 = tex2D(_CoCTex, i.uv + texel.zy - fixed2(_MainTex_TexelSize.x, 0)).r;
                     coc2 = tex2D(_CoCTex, i.uv + texel.xw - fixed2(_MainTex_TexelSize.x, 0)).r;
@@ -116,13 +116,13 @@
 					int regionP = tex2D(_RegionTex, i.uv).r;
 					int regionQ = tex2D(_RegionTex, i.uv - fixed2(_MainTex_TexelSize.x, 0)).r;
 					
-					int IR = 1;
-					int BOR = 2;
-					int FOR = 0;
-					int ERROR = 99;
+					int IR = 50;
+					int BOR = 100;
+					int FOR = 10;
+					int ERROR = 0;
 					
 					if(regionP == ERROR || regionQ == ERROR){
-					    return 0;
+					    return 125;
 					}
 					
 					//1: p,q are equal segment
@@ -180,7 +180,7 @@
 					}
 					
 					//Should not happen
-					return 0;
+					return 125;
 				}
             ENDCG
         }
@@ -202,6 +202,14 @@
 				fixed GetGreen(float2 i, fixed color) {
 				     return (1-tex2D(_WeightTex, i).r) * color;
 				}
+				
+				fixed4 CreateNewColor(fixed4 currentColor, fixed red, fixed blue, fixed green){
+				    currentColor.r = red;
+				    currentColor.g = green;
+				    currentColor.b = blue;
+				    
+				    return currentColor;
+				}
 
                 fixed4  FragmentProgram (Interpolators i) : SV_Target {
                     const static int width = 10;
@@ -214,8 +222,6 @@
                     fixed red = currentColor.r;
                     fixed blue = currentColor.b;
                     fixed green = currentColor.g;
-                    
-                    //TODO: Reevulate this part!
                    
                    //Filter right to left ..................
                     [unroll(width)] //optimization of the for loop
@@ -247,9 +253,7 @@
                         green = colors[b][2] + tex2D(_WeightTex, uvCoordinates) * green;  
                     }
                     
-                    currentColor.r = red;
-                    currentColor.b = blue;
-                    currentColor.g = green;
+                    currentColor = CreateNewColor(currentColor,red,blue,green);
                     
                     //Filter left to right ..................
                     uvCoordinates = i.uv; //reset uv coordinate
@@ -294,9 +298,7 @@
                         green = colors[d][2] + tex2D(_WeightTex, uvCoordinates) * green;  
                     }
                     
-                    currentColor.r = red;
-                    currentColor.b = blue;
-                    currentColor.g = green;
+                    currentColor = CreateNewColor(currentColor,red,blue,green);
                     
                     //Filter top to bottom ..................
                     uvCoordinates = i.uv;
@@ -313,7 +315,7 @@
                         colorsTotalLength++;
                     }
                     
-                    [unroll(width)]
+                    [unroll(width)] // While do? Oder just while?
                     for(int e = 1; 
                         e < width || (uvCoordinates[0] < 0 || uvCoordinates[1] < 0
                             || uvCoordinates[0] > 1 || uvCoordinates[1] > 1); 
@@ -338,9 +340,7 @@
                         green = colors[f][2] + tex2D(_WeightTex, uvCoordinates) * green;  
                     }
                     
-                    currentColor.r = red;
-                    currentColor.b = blue;
-                    currentColor.g = green;
+                    currentColor = CreateNewColor(currentColor,red,blue,green);
                     
                     //Filter bottom to top ..................
                     uvCoordinates = i.uv;
@@ -382,9 +382,27 @@
                         green = colors[h][2] + tex2D(_WeightTex, uvCoordinates) * green;  
                     }
                     
-                    currentColor.r = red;
-                    currentColor.b = blue;
-                    currentColor.g = green;
+                    // Debug
+                    //int regionP = tex2D(_RegionTex, i.uv).r;
+                    /* if(regionP == 50){
+                        currentColor.r = 1;
+                        currentColor.b = 0; 
+                        currentColor.g = 0;
+                    } 
+                   if(regionP == 10){
+                    currentColor.r = 0;
+                        currentColor.b = 1; 
+                        currentColor.g = 0;
+                    }
+                    
+                    if(regionP == 100){
+                    currentColor.r = 0;
+                        currentColor.b = 0; 
+                        currentColor.g = 1;
+                    }*/
+                    // End Debug
+                    
+                     currentColor = CreateNewColor(currentColor,red,blue,green);
                     
 					return currentColor;
 				}
