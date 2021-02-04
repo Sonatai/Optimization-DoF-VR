@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Imports/Dungeon of The Sleepy Stone/Levels/Level1.unity
+    guid: de8f63a0742e9894fb28045a8cc80653
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 8b376598d55d8784584e57697bfaa0fc,
       type: 2}
