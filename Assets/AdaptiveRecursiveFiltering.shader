@@ -9,7 +9,7 @@
         
         sampler _MainTex,  _LastCameraDepthTexture   , _CoCTex, _RegionTex, _WeightLeftRightTex, _WeightTopBotTex;
         float4 _MainTex_TexelSize;
-        float _FocalLength, _ScalingFactor, _MinimumFocalLength, _MaximumFocalLength, _CocTreshhold;
+        float _FocalLength, _ScalingFactor, _MinimumFocalLength, _MaximumFocalLength, _CocTreshhold, _Delta = pow(10,-5);
         
         
         struct VertexData {
@@ -29,8 +29,105 @@
 			return i;
 		}
 		
+		float2 GetCocs(Interpolators i, fixed2 whatever) {
+            //Bilineare Interpolation
+            float4 texel = _MainTex_TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
+            float coc0 = tex2D(_CoCTex, i.uv + texel.xy).r;
+            float coc1 = tex2D(_CoCTex, i.uv + texel.zy).r;
+            float coc2 = tex2D(_CoCTex, i.uv + texel.xw).r;
+            float coc3 = tex2D(_CoCTex, i.uv + texel.zw).r;
+            
+            float cocP = (coc0 + coc1 + coc2 + coc3) * 0.25;
+            
+            coc0 = tex2D(_CoCTex, i.uv + texel.xy + whatever).r;
+            coc1 = tex2D(_CoCTex, i.uv + texel.zy + whatever).r;
+            coc2 = tex2D(_CoCTex, i.uv + texel.xw + whatever).r;
+            coc3 = tex2D(_CoCTex, i.uv + texel.zw + whatever).r;
+            
+            float cocQ = (coc0 + coc1 + coc2 + coc3) * 0.25;
+            
+            return float2(cocP, cocQ);
+	    }
 		
-		
+		half getWeight(Interpolators i, fixed2 whatever) {
+		    int regionP = tex2D(_RegionTex, i.uv).r;
+			int regionQ = tex2D(_RegionTex, i.uv + whatever).r;
+			
+		    int FOR = 10;
+            int IR = 50;
+            int BOR = 100;
+            int ERROR = 0;
+            
+            if(regionP == ERROR || regionQ == ERROR)
+            {
+                return 999999;
+            }
+            
+            //1: p,q are equal segment
+            if(regionP == FOR && regionQ == FOR
+                || regionP == IR && regionQ == IR
+                || regionP == BOR && regionQ == BOR) 
+            {
+                
+                float cocP = tex2D(_CoCTex, i.uv).r;
+                float cocQ = tex2D(_CoCTex, i.uv + whatever).r;
+                
+                if((0.5 * (cocP + cocQ)) > _Delta) 
+                {
+                    return exp(-(1/(0.5 * (cocP + cocQ))));
+                }
+                
+                return 0;
+            }
+            
+            //2: p element IR, q element FOR or p element FOR, q element IR
+            if(regionP == IR && regionQ == FOR 
+                || regionP == FOR && regionQ == IR) 
+            {
+                
+                float2 cocs = GetCocs(i, whatever);
+                if(max(cocs[0],cocs[1]) > _Delta) 
+                {
+                    return exp(-(1/max(cocs[0],cocs[1])));
+                }
+                
+                return 0;
+            }
+            
+            //3: p element IR, q element BOR or p element BOR, q element IR
+            if(regionP == IR && regionQ == BOR
+                || regionP == BOR && regionQ == IR) 
+            {
+                
+                float cocP = tex2D(_CoCTex, i.uv).r;
+                float cocQ = tex2D(_CoCTex, i.uv + whatever).r;
+                
+                if(min(cocP,cocQ) > _Delta) 
+                {
+                    return exp(-(1/min(cocP,cocQ)));
+                }
+                
+                return 0;
+            }
+            
+            //4: p element FOR, q element BOR or p element BOR, q element FOR
+            if(regionP == FOR && regionQ == BOR
+                || regionP == BOR && regionQ == FOR) 
+            {
+                
+                float2 cocs = GetCocs(i, whatever);
+                
+                if(max(cocs[0],cocs[1]) > _Delta) 
+                {
+                    return exp(-(1/max(cocs[0],cocs[1])));
+                }
+                
+                return 0;
+            }
+            
+            //ERROR
+            return 999999;
+		}	
     ENDCG
     
     SubShader
@@ -91,100 +188,8 @@
                 #pragma vertex VertexProgram
 				#pragma fragment FragmentProgram
 				
-				float2 GetCocs(Interpolators i) {
-				   //Bilineare Interpolation
-				    float4 texel = _MainTex_TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
-                    float coc0 = tex2D(_CoCTex, i.uv + texel.xy).r;
-                    float coc1 = tex2D(_CoCTex, i.uv + texel.zy).r;
-                    float coc2 = tex2D(_CoCTex, i.uv + texel.xw).r;
-                    float coc3 = tex2D(_CoCTex, i.uv + texel.zw).r;
-                    
-                    float cocP = (coc0 + coc1 + coc2 + coc3) * 0.25;
-                    
-                    coc0 = tex2D(_CoCTex, i.uv + texel.xy - fixed2(_MainTex_TexelSize.x, 0)).r;
-                    coc1 = tex2D(_CoCTex, i.uv + texel.zy - fixed2(_MainTex_TexelSize.x, 0)).r;
-                    coc2 = tex2D(_CoCTex, i.uv + texel.xw - fixed2(_MainTex_TexelSize.x, 0)).r;
-                    coc3 = tex2D(_CoCTex, i.uv + texel.zw - fixed2(_MainTex_TexelSize.x, 0)).r;
-                    
-                    float cocQ = (coc0 + coc1 + coc2 + coc3) * 0.25;
-                    
-                    return float2(cocP, cocQ);
-				}
-				
-				//IR = in focus = 1
-				//BOR = background = 2
-				//FOR = forground = 3
-                half FragmentProgram (Interpolators i) : SV_Target {
-                    float delta = pow(10,-5); 
-                    
-					int regionP = tex2D(_RegionTex, i.uv).r;
-					int regionQ = tex2D(_RegionTex, i.uv - fixed2(_MainTex_TexelSize.x, 0)).r;
-					
-					int FOR = 10;
-					int IR = 50;
-					int BOR = 100;
-					int ERROR = 0;
-					
-					if(regionP == ERROR || regionQ == ERROR){
-					    return 125;
-					}
-					
-					//1: p,q are equal segment
-					if(regionP == FOR && regionQ == FOR
-					    || regionP == IR && regionQ == IR
-					    || regionP == BOR && regionQ == BOR) {
-					    
-					    float cocP = tex2D(_CoCTex, i.uv).r;
-					    float cocQ = tex2D(_CoCTex, i.uv - fixed2(_MainTex_TexelSize.x, 0)).r;
-					    
-					    if((0.5 * (cocP + cocQ)) > delta) {
-					        return exp(-(1/(0.5 * (cocP + cocQ))));
-					    }
-					    
-					    return 0;
-					}
-					
-					//2: p element IR, q element FOR or p element FOR, q element IR
-					if(regionP == IR && regionQ == FOR 
-					    || regionP == FOR && regionQ == IR) {
-					    
-					    float2 cocs = GetCocs(i);
-                        if(max(cocs[0],cocs[1]) > delta) {
-                            return exp(-(1/max(cocs[0],cocs[1])));
-                        }
-                        
-					    return 0;
-					}
-					
-					//3: p element IR, q element BOR or p element BOR, q element IR
-					if(regionP == IR && regionQ == BOR
-					    || regionP == BOR && regionQ == IR) {
-					    
-					    float cocP = tex2D(_CoCTex, i.uv).r;
-					    float cocQ = tex2D(_CoCTex, i.uv - fixed2(_MainTex_TexelSize.x, 0)).r;
-					    
-					    if(min(cocP,cocQ) > delta) {
-					        return exp(-(1/min(cocP,cocQ)));
-					    }
-					    
-					    return 0;
-					}
-					
-					//4: p element FOR, q element BOR or p element BOR, q element FOR
-					if(regionP == FOR && regionQ == BOR
-					    || regionP == BOR && regionQ == FOR) {
-					    
-					    float2 cocs = GetCocs(i);
-					    
-                        if(max(cocs[0],cocs[1]) > delta) {
-                            return exp(-(1/max(cocs[0],cocs[1])));
-                        }
-                        
-					    return 0;
-					}
-					
-					//Should not happen
-					return 125;
+                half FragmentProgram (Interpolators i) : SV_Target {                    
+					return getWeight(i, fixed2(_MainTex_TexelSize.x, 0));
 				}
             ENDCG
         }
@@ -195,97 +200,9 @@
                 #pragma vertex VertexProgram
 				#pragma fragment FragmentProgram
 				
-				float2 GetCocs(Interpolators i) {
-				   //Bilineare Interpolation
-				    float4 texel = _MainTex_TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
-                    float coc0 = tex2D(_CoCTex, i.uv + texel.xy).r;
-                    float coc1 = tex2D(_CoCTex, i.uv + texel.zy).r;
-                    float coc2 = tex2D(_CoCTex, i.uv + texel.xw).r;
-                    float coc3 = tex2D(_CoCTex, i.uv + texel.zw).r;
-                    
-                    float cocP = (coc0 + coc1 + coc2 + coc3) * 0.25;
-                    
-                    coc0 = tex2D(_CoCTex, i.uv + texel.xy - fixed2(0, _MainTex_TexelSize.y)).r;
-                    coc1 = tex2D(_CoCTex, i.uv + texel.zy - fixed2(0, _MainTex_TexelSize.y)).r;
-                    coc2 = tex2D(_CoCTex, i.uv + texel.xw - fixed2(0, _MainTex_TexelSize.y)).r;
-                    coc3 = tex2D(_CoCTex, i.uv + texel.zw - fixed2(0, _MainTex_TexelSize.y)).r;
-                    
-                    float cocQ = (coc0 + coc1 + coc2 + coc3) * 0.25;
-                    
-                    return float2(cocP, cocQ);
-				}
 				
                 half FragmentProgram (Interpolators i) : SV_Target {
-                    float delta = pow(10,-5); 
-                    
-					int regionP = tex2D(_RegionTex, i.uv).r;
-					int regionQ = tex2D(_RegionTex, i.uv - fixed2(0, _MainTex_TexelSize.y)).r;
-					
-					int IR = 50;
-					int BOR = 100;
-					int FOR = 10;
-					int ERROR = 0;
-					
-					if(regionP == ERROR || regionQ == ERROR){
-					    return 125;
-					}
-					
-					//1: p,q are equal segment
-					if(regionP == FOR && regionQ == FOR
-					    || regionP == IR && regionQ == IR
-					    || regionP == BOR && regionQ == BOR) {
-					    
-					    float cocP = tex2D(_CoCTex, i.uv).r;
-					    float cocQ = tex2D(_CoCTex, i.uv - fixed2( 0, _MainTex_TexelSize.y)).r;
-					    
-					    if((0.5 * (cocP + cocQ)) > delta) {
-					        return exp(-(1/(0.5 * (cocP + cocQ))));
-					    }
-					    
-					    return 0;
-					}
-					
-					//2: p element IR, q element FOR or p element FOR, q element IR
-					if(regionP == IR && regionQ == FOR 
-					    || regionP == FOR && regionQ == IR) {
-					    
-					    float2 cocs = GetCocs(i);
-                        
-                        if(max(cocs[0],cocs[1]) > delta) {
-                            return exp(-(1/max(cocs[0],cocs[1])));
-                        }
-                        
-					    return 0;
-					}
-					
-					//3: p element IR, q element BOR or p element BOR, q element IR
-					if(regionP == IR && regionQ == BOR
-					    || regionP == BOR && regionQ == IR) {
-					    
-					    float cocP = tex2D(_CoCTex, i.uv).r;
-					    float cocQ = tex2D(_CoCTex, i.uv - fixed2( 0, _MainTex_TexelSize.y)).r;
-					    if(min(cocP,cocQ) > delta) {
-					        return exp(-(1/min(cocP,cocQ)));
-					    }
-					    
-					    return 0;
-					}
-					
-					//4: p element FOR, q element BOR or p element BOR, q element FOR
-					if(regionP == FOR && regionQ == BOR
-					    || regionP == BOR && regionQ == FOR) {
-					    
-					    float2 cocs = GetCocs(i);
-                        
-                        if(max(cocs[0],cocs[1]) > delta) {
-                            return exp(-(1/max(cocs[0],cocs[1])));
-                        }
-                        
-					    return 0;
-					}
-					
-					//Should not happen
-					return 125;
+					return getWeight(i, fixed2(0, _MainTex_TexelSize.y));
 				}
             ENDCG
         }
@@ -318,9 +235,13 @@
 
                 fixed4  FragmentProgram (Interpolators i) : SV_Target {
                     const static int width = 20;
+                    
                     fixed4 currentColor = tex2D(_MainTex, i.uv);
+                    
                     fixed4 colors[width];
+                    
                     float2  uvCoordinates = i.uv;
+                    
                     int colorsTotalLength = 0;
                     
                     //Start from the back of the recursion
