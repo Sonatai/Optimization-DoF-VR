@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,6 +39,11 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     private const int debugCocPass = 6;
     private const int debugPureCocValuesPass = 7;
     private const int debugColoredCocValuesPass = 8;
+    private const int debugDepthPass = 9;
+    
+    void Start () {
+        camera.depthTextureMode = DepthTextureMode.Depth;
+    }
 
     void OnRenderImage (RenderTexture source, RenderTexture destination)
     {
@@ -80,11 +86,17 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
         );
         
+        RenderTexture depth = RenderTexture.GetTemporary(
+            source.width, source.height, 0,
+            RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
+        );
+        
         //Variabel for shader
         dofMaterial.SetFloat("_FocalLength", focalLength);
         dofMaterial.SetFloat("_MinimumFocalLength", minimumFocalLength);
         dofMaterial.SetFloat("_MaximumFocalLength", maximumFocalLength);
         dofMaterial.SetFloat("_ScalingFactor",scalingFactor);
+        dofMaterial.SetFloat("_CocTreshhold",cocMinTreshold);
 
         dofMaterial.SetTexture("_CoCTex", coc);
         dofMaterial.SetTexture("_RegionTex", region);
@@ -96,7 +108,9 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             //Rendering
             Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
             Graphics.Blit(source,region, dofMaterial, regionPass);
-            Graphics.Blit(source,weightLeftRight, dofMaterial, weightLeftRightPass);
+            Graphics.Blit(source, weightLeftRight, dofMaterial, weightLeftRightPass);
+            //Graphics.Blit(source,weightTopBot, dofMaterial, weightLeftRightPass);
+            //Graphics.Blit(source,weightLeftRight, dofMaterial, weightBotTopPass);
             Graphics.Blit(source,weightTopBot, dofMaterial, weightBotTopPass);
             Graphics.Blit(source,destination, dofMaterial, filterPass);  
         }
@@ -123,10 +137,22 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             Graphics.Blit(coc, destination, dofMaterial,debugColoredCocValuesPass);
         }
 
+        if (debugMode == DebugType.Weight)
+        {
+            Graphics.Blit(source,destination, dofMaterial, weightLeftRightPass);
+        }
+        
+        if (debugMode == DebugType.Depth)
+        {
+            Graphics.Blit(source,depth, dofMaterial, debugDepthPass);
+            Graphics.Blit(depth,destination, dofMaterial);
+        }
+
         RenderTexture.ReleaseTemporary(coc);
         RenderTexture.ReleaseTemporary(region);
         RenderTexture.ReleaseTemporary(weightLeftRight);
         RenderTexture.ReleaseTemporary(weightTopBot);
+        RenderTexture.ReleaseTemporary(depth);
     }
 }
 
@@ -135,6 +161,8 @@ enum DebugType
     None,
     Region,
     Coc,
+    Weight,
+    Depth,
     PurCocValues,
     ColoredCocValues
 }

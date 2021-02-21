@@ -7,9 +7,9 @@
     CGINCLUDE
         #include "UnityCG.cginc"
         
-        sampler _MainTex,  _CameraDepthTexture, _CoCTex, _RegionTex, _WeightLeftRightTex, _WeightTopBotTex;
+        sampler _MainTex,  _LastCameraDepthTexture   , _CoCTex, _RegionTex, _WeightLeftRightTex, _WeightTopBotTex;
         float4 _MainTex_TexelSize;
-        float _FocalLength, _ScalingFactor, _MinimumFocalLength, _MaximumFocalLength;
+        float _FocalLength, _ScalingFactor, _MinimumFocalLength, _MaximumFocalLength, _CocTreshhold;
         
         
         struct VertexData {
@@ -35,8 +35,11 @@
     
     SubShader
     {
-        Cull Off ZWrite Off ZTest Always
-        
+         ZWrite Off
+         ZTest Always
+         Blend Off
+         Cull Off
+         
         Pass //0 Create Circle of Confusion (CoC)
         { 
             CGPROGRAM
@@ -44,9 +47,10 @@
 				#pragma fragment FragmentProgram
 
                 half4 FragmentProgram (Interpolators i) : SV_Target {
-					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv));
-					float coc = _ScalingFactor * abs(1-(_FocalLength/depth));
-					return coc;
+					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_LastCameraDepthTexture, i.uv));
+					float coc = _ScalingFactor * abs(1 - (_FocalLength / depth));
+					
+					return  coc;
 				}
             ENDCG
         }
@@ -57,25 +61,25 @@
                 #pragma vertex VertexProgram
 				#pragma fragment FragmentProgram
 
-                // Formula: d1 < df < d2 => in focus 
-                // 1) depth > d1 && depth < d2 => in focus (IR)
-                // depth <= d1 => foreground (FOR)
-                // depth >= d2 => background (BOR)
-                half FragmentProgram (Interpolators i) : SV_Target { //AUs der Depth berechen, nicht COC
-					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv));
+                half FragmentProgram (Interpolators i) : SV_Target {
+					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_LastCameraDepthTexture   , i.uv));
 					
+					//In focus
 					if(depth > _MinimumFocalLength && depth < _MaximumFocalLength) {
-					
 					    return 50;
 					}
+					
+					//FOR
 					if(depth <= _MinimumFocalLength) {
 					    return 10;
 					}
+					
+					//BOR
 					if(depth >= _MaximumFocalLength) {
 					    return 100;
 					}
 					
-					//Should not happen
+					//ERROR
 					return 0;
 				}
             ENDCG
@@ -158,6 +162,7 @@
 					    
 					    float cocP = tex2D(_CoCTex, i.uv).r;
 					    float cocQ = tex2D(_CoCTex, i.uv - fixed2(_MainTex_TexelSize.x, 0)).r;
+					    
 					    if(min(cocP,cocQ) > delta) {
 					        return exp(-(1/min(cocP,cocQ)));
 					    }
@@ -200,10 +205,10 @@
                     
                     float cocP = (coc0 + coc1 + coc2 + coc3) * 0.25;
                     
-                    coc0 = tex2D(_CoCTex, i.uv + texel.xy - fixed2(_MainTex_TexelSize.y, 0)).r;
-                    coc1 = tex2D(_CoCTex, i.uv + texel.zy - fixed2(_MainTex_TexelSize.y, 0)).r;
-                    coc2 = tex2D(_CoCTex, i.uv + texel.xw - fixed2(_MainTex_TexelSize.y, 0)).r;
-                    coc3 = tex2D(_CoCTex, i.uv + texel.zw - fixed2(_MainTex_TexelSize.y, 0)).r;
+                    coc0 = tex2D(_CoCTex, i.uv + texel.xy - fixed2(0, _MainTex_TexelSize.y)).r;
+                    coc1 = tex2D(_CoCTex, i.uv + texel.zy - fixed2(0, _MainTex_TexelSize.y)).r;
+                    coc2 = tex2D(_CoCTex, i.uv + texel.xw - fixed2(0, _MainTex_TexelSize.y)).r;
+                    coc3 = tex2D(_CoCTex, i.uv + texel.zw - fixed2(0, _MainTex_TexelSize.y)).r;
                     
                     float cocQ = (coc0 + coc1 + coc2 + coc3) * 0.25;
                     
@@ -214,7 +219,7 @@
                     float delta = pow(10,-5); 
                     
 					int regionP = tex2D(_RegionTex, i.uv).r;
-					int regionQ = tex2D(_RegionTex, i.uv - fixed2(_MainTex_TexelSize.y, 0)).r;
+					int regionQ = tex2D(_RegionTex, i.uv - fixed2(0, _MainTex_TexelSize.y)).r;
 					
 					int IR = 50;
 					int BOR = 100;
@@ -231,7 +236,7 @@
 					    || regionP == BOR && regionQ == BOR) {
 					    
 					    float cocP = tex2D(_CoCTex, i.uv).r;
-					    float cocQ = tex2D(_CoCTex, i.uv - fixed2(_MainTex_TexelSize.y, 0)).r;
+					    float cocQ = tex2D(_CoCTex, i.uv - fixed2( 0, _MainTex_TexelSize.y)).r;
 					    
 					    if((0.5 * (cocP + cocQ)) > delta) {
 					        return exp(-(1/(0.5 * (cocP + cocQ))));
@@ -258,7 +263,7 @@
 					    || regionP == BOR && regionQ == IR) {
 					    
 					    float cocP = tex2D(_CoCTex, i.uv).r;
-					    float cocQ = tex2D(_CoCTex, i.uv - fixed2(_MainTex_TexelSize.y, 0)).r;
+					    float cocQ = tex2D(_CoCTex, i.uv - fixed2( 0, _MainTex_TexelSize.y)).r;
 					    if(min(cocP,cocQ) > delta) {
 					        return exp(-(1/min(cocP,cocQ)));
 					    }
@@ -400,6 +405,7 @@
                     
                     currentColor = CreateNewColor(currentColor,red,blue,green);
                     
+                    
                     //Filter top to bottom ..................
                     uvCoordinates = i.uv;
                     colorsTotalLength = 0;
@@ -411,7 +417,7 @@
                         blue = GetBlue(uvCoordinates, currentColor.b,_WeightTopBotTex);
                         green = GetGreen(uvCoordinates, currentColor.g,_WeightTopBotTex);
                         colors[0] = fixed4(red,blue,green,currentColor.a);
-                        uvCoordinates = uvCoordinates - fixed2(_MainTex_TexelSize.y, 0);
+                        uvCoordinates = uvCoordinates - fixed2( 0, _MainTex_TexelSize.y);
                         colorsTotalLength++;
                     }
                     
@@ -425,16 +431,16 @@
                         blue = GetBlue(uvCoordinates, tex2D(_MainTex, uvCoordinates).b,_WeightTopBotTex);
                         green = GetGreen(uvCoordinates, tex2D(_MainTex, uvCoordinates).g,_WeightTopBotTex);
                         colors[e] = fixed4(red,blue,green,tex2D(_MainTex, uvCoordinates).a);
-                        uvCoordinates = uvCoordinates - fixed2(_MainTex_TexelSize.y, 0);
+                        uvCoordinates = uvCoordinates - fixed2( 0, _MainTex_TexelSize.y);
                         colorsTotalLength++;
                     }
-                    uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.y, 0);
+                    uvCoordinates = uvCoordinates + fixed2( 0,_MainTex_TexelSize.y);
                     colorsTotalLength--;
                     
                     [unroll(width)]
                     for(int f = colorsTotalLength-1; f >= 0; f--)
                     {
-                        uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.y, 0); 
+                        uvCoordinates = uvCoordinates + fixed2( 0, _MainTex_TexelSize.y); 
                         red = colors[f][0] + tex2D(_WeightTopBotTex, uvCoordinates) * red;
                         blue = colors[f][1] + tex2D(_WeightTopBotTex, uvCoordinates) * blue;
                         green = colors[f][2] + tex2D(_WeightTopBotTex, uvCoordinates) * green;  
@@ -453,7 +459,7 @@
                         blue = GetBlue(uvCoordinates, currentColor.b,_WeightTopBotTex);
                         green = GetGreen(uvCoordinates, currentColor.g,_WeightTopBotTex);
                         colors[0] = fixed4(red,blue,green,currentColor.a);
-                        uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.y, 0);
+                        uvCoordinates = uvCoordinates + fixed2( 0, _MainTex_TexelSize.y);
                         colorsTotalLength++;
                     }
                     
@@ -467,16 +473,16 @@
                         blue = GetBlue(uvCoordinates, tex2D(_MainTex, uvCoordinates).b,_WeightTopBotTex);
                         green = GetGreen(uvCoordinates, tex2D(_MainTex, uvCoordinates).g,_WeightTopBotTex);
                         colors[g] = fixed4(red,blue,green,tex2D(_MainTex, uvCoordinates).a);
-                        uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.y, 0);
+                        uvCoordinates = uvCoordinates + fixed2( 0,_MainTex_TexelSize.y);
                         colorsTotalLength++;
                     }
-                    uvCoordinates = uvCoordinates - fixed2(_MainTex_TexelSize.y, 0);
+                    uvCoordinates = uvCoordinates - fixed2(0, _MainTex_TexelSize.y);
                     colorsTotalLength--;
                     
                     [unroll(width)]
                     for(int h = colorsTotalLength-1; h>= 0; h--) 
                     {
-                        uvCoordinates = uvCoordinates - fixed2(_MainTex_TexelSize.y, 0); 
+                        uvCoordinates = uvCoordinates - fixed2(0, _MainTex_TexelSize.y); 
                         red = colors[h][0] + tex2D(_WeightTopBotTex, uvCoordinates) * red;
                         blue = colors[h][1] + tex2D(_WeightTopBotTex, uvCoordinates) * blue;
                         green = colors[h][2] + tex2D(_WeightTopBotTex, uvCoordinates) * green;  
@@ -570,20 +576,21 @@
                 
                     fixed4 currentColor = tex2D(_MainTex, i.uv);
 					float cocP = tex2D(_CoCTex, i.uv).r;
+					float schwellwert = 1;
 					
-					if(cocP < 0.04){
+					if(cocP == schwellwert){
 					    currentColor.r = 0;
 					    currentColor.b = 1;
 					    currentColor.g = 0;
 					}
 					
-					else if(cocP == 0.04){
+					else if(cocP < schwellwert){
 					    currentColor.r = 1;
 					    currentColor.b = 0;
 					    currentColor.g = 0;
 					}
 					
-					else if(cocP > 0.04){
+					else if(cocP > schwellwert){
 					currentColor.r = 0;
 					    currentColor.b = 0;
 					    currentColor.g = 1;
@@ -593,6 +600,19 @@
 					    currentColor.g = 1;
 					}
                     return currentColor;
+				}
+            ENDCG
+        }
+        
+        Pass //9 Debug depth
+        { 
+            CGPROGRAM
+                #pragma vertex VertexProgram
+				#pragma fragment FragmentProgram
+
+                half4 FragmentProgram (Interpolators i) : SV_Target {
+					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_LastCameraDepthTexture   , i.uv));
+					return  depth;
 				}
             ENDCG
         }
