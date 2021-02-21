@@ -29,7 +29,7 @@
 			return i;
 		}
 		
-		float2 GetCocs(Interpolators i, fixed2 whatever) {
+		float2 GetCocs(Interpolators i, fixed2 texelShift) {
             //Bilineare Interpolation
             float4 texel = _MainTex_TexelSize.xyxy * float2(-0.5, 0.5).xxyy;
             float coc0 = tex2D(_CoCTex, i.uv + texel.xy).r;
@@ -38,20 +38,21 @@
             float coc3 = tex2D(_CoCTex, i.uv + texel.zw).r;
             
             float cocP = (coc0 + coc1 + coc2 + coc3) * 0.25;
+            fixed2 uvOfNeightbour= (i.uv + texelShift);
             
-            coc0 = tex2D(_CoCTex, i.uv + texel.xy + whatever).r;
-            coc1 = tex2D(_CoCTex, i.uv + texel.zy + whatever).r;
-            coc2 = tex2D(_CoCTex, i.uv + texel.xw + whatever).r;
-            coc3 = tex2D(_CoCTex, i.uv + texel.zw + whatever).r;
+            coc0 = tex2D(_CoCTex, uvOfNeightbour + texel.xy).r;
+            coc1 = tex2D(_CoCTex, uvOfNeightbour + texel.zy).r;
+            coc2 = tex2D(_CoCTex, uvOfNeightbour + texel.xw).r;
+            coc3 = tex2D(_CoCTex, uvOfNeightbour + texel.zw).r;
             
             float cocQ = (coc0 + coc1 + coc2 + coc3) * 0.25;
             
             return float2(cocP, cocQ);
 	    }
 		
-		half getWeight(Interpolators i, fixed2 whatever) {
+		half GetWeight(Interpolators i, fixed2 texelShift) {
 		    int regionP = tex2D(_RegionTex, i.uv).r;
-			int regionQ = tex2D(_RegionTex, i.uv + whatever).r;
+			int regionQ = tex2D(_RegionTex, i.uv + texelShift).r;
 			
 		    int FOR = 10;
             int IR = 50;
@@ -70,7 +71,7 @@
             {
                 
                 float cocP = tex2D(_CoCTex, i.uv).r;
-                float cocQ = tex2D(_CoCTex, i.uv + whatever).r;
+                float cocQ = tex2D(_CoCTex, i.uv + texelShift).r;
                 
                 if((0.5 * (cocP + cocQ)) > _Delta) 
                 {
@@ -85,7 +86,7 @@
                 || regionP == FOR && regionQ == IR) 
             {
                 
-                float2 cocs = GetCocs(i, whatever);
+                float2 cocs = GetCocs(i, texelShift);
                 if(max(cocs[0],cocs[1]) > _Delta) 
                 {
                     return exp(-(1/max(cocs[0],cocs[1])));
@@ -100,7 +101,7 @@
             {
                 
                 float cocP = tex2D(_CoCTex, i.uv).r;
-                float cocQ = tex2D(_CoCTex, i.uv + whatever).r;
+                float cocQ = tex2D(_CoCTex, i.uv + texelShift).r;
                 
                 if(min(cocP,cocQ) > _Delta) 
                 {
@@ -115,7 +116,7 @@
                 || regionP == BOR && regionQ == FOR) 
             {
                 
-                float2 cocs = GetCocs(i, whatever);
+                float2 cocs = GetCocs(i, texelShift);
                 
                 if(max(cocs[0],cocs[1]) > _Delta) 
                 {
@@ -189,7 +190,7 @@
 				#pragma fragment FragmentProgram
 				
                 half FragmentProgram (Interpolators i) : SV_Target {                    
-					return getWeight(i, fixed2(_MainTex_TexelSize.x, 0));
+					return GetWeight(i, fixed2(_MainTex_TexelSize.x, 0));
 				}
             ENDCG
         }
@@ -202,7 +203,7 @@
 				
 				
                 half FragmentProgram (Interpolators i) : SV_Target {
-					return getWeight(i, fixed2(0, _MainTex_TexelSize.y));
+					return GetWeight(i, fixed2(0, _MainTex_TexelSize.y));
 				}
             ENDCG
         }
@@ -254,8 +255,7 @@
                    //Filter right to left ..................
                     [unroll(width)] //optimization of the for loop
                     for(index; 
-                        index < width || (uvCoordinates[0] < 0 || uvCoordinates[1] < 0
-                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1); 
+                        index < width || (0 <= uvCoordinates[0] && 0 <= uvCoordinates[1] && uvCoordinates[0] <= 1 && uvCoordinates[1] <= 1); 
                         index++) 
                     {                       
                         //Get the new colors
@@ -289,8 +289,7 @@
                     
                     //if we did not reach the borders, calculate the next red/blue/green
                     //Out of the loop, because we just need to check once here
-                    if(uvCoordinates[0] > 0 || uvCoordinates[1] > 0
-                        || uvCoordinates[0] < 1 || uvCoordinates[1] < 1) 
+                    if(0 <= uvCoordinates[0] && 0 <= uvCoordinates[1] && uvCoordinates[0] <= 1 && uvCoordinates[1] <= 1)
                     {  
                         red = GetRed(uvCoordinates, currentColor.r,_WeightLeftRightTex);    
                         blue = GetBlue(uvCoordinates, currentColor.b,_WeightLeftRightTex);
@@ -303,8 +302,7 @@
                         
                     [unroll(width)]
                     for(index = 1; 
-                        index < width || (uvCoordinates[0] < 0 || uvCoordinates[1] < 0 
-                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1); 
+                        index < width || (0 <= uvCoordinates[0] && 0 <= uvCoordinates[1] && uvCoordinates[0] <= 1 && uvCoordinates[1] <= 1); 
                         index++) 
                     {
                         red = GetRed(uvCoordinates, tex2D(_MainTex, uvCoordinates).r,_WeightLeftRightTex);
@@ -333,8 +331,7 @@
                     uvCoordinates = i.uv;
                     colorsTotalLength = 0;
                     
-                    if(uvCoordinates[0] > 0 || uvCoordinates[1] > 0
-                        || uvCoordinates[0] < 1 || uvCoordinates[1] < 1) 
+                    if(0 <= uvCoordinates[0] && 0 <= uvCoordinates[1] && uvCoordinates[0] <= 1 && uvCoordinates[1] <= 1)
                     {
                         red = GetRed(uvCoordinates, currentColor.r,_WeightTopBotTex);
                         blue = GetBlue(uvCoordinates, currentColor.b,_WeightTopBotTex);
@@ -346,8 +343,7 @@
                     
                     [unroll(width)] // While do? Oder just while?
                     for(index = 1; 
-                        index < width || (uvCoordinates[0] < 0 || uvCoordinates[1] < 0
-                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1); 
+                        index < width || (0 <= uvCoordinates[0] && 0 <= uvCoordinates[1] && uvCoordinates[0] <= 1 && uvCoordinates[1] <= 1); 
                         index++) 
                     {
                         red = GetRed(uvCoordinates, tex2D(_MainTex, uvCoordinates).r, _WeightTopBotTex);
@@ -375,8 +371,7 @@
                     uvCoordinates = i.uv;
                     colorsTotalLength = 0;
                     
-                    if(uvCoordinates[0] > 0 || uvCoordinates[1] > 0
-                            || uvCoordinates[0] < 1 || uvCoordinates[1] < 1) 
+                    if(0 <= uvCoordinates[0] && 0 <= uvCoordinates[1] && uvCoordinates[0] <= 1 && uvCoordinates[1] <= 1)
                     {
                         red = GetRed(uvCoordinates, currentColor.r,_WeightTopBotTex);
                         blue = GetBlue(uvCoordinates, currentColor.b,_WeightTopBotTex);
@@ -388,8 +383,7 @@
                     
                     [unroll(width)]
                     for(index = 1; 
-                        index < width || (uvCoordinates[0] < 0 || uvCoordinates[1] < 0
-                            || uvCoordinates[0] > 1 || uvCoordinates[1] > 1); 
+                        index < width || (0 <= uvCoordinates[0] && 0 <= uvCoordinates[1] && uvCoordinates[0] <= 1 && uvCoordinates[1] <= 1); 
                         index++) 
                     {
                         red = GetRed(uvCoordinates, tex2D(_MainTex, uvCoordinates).r,_WeightTopBotTex);
