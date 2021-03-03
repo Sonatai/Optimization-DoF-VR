@@ -227,7 +227,7 @@
 				}
 				
                 fixed4  FragmentProgram (Interpolators i) : SV_Target {
-                    const static int width = 20;
+                    const static int width = 10;
                     
                     fixed4 currentColor = tex2D(_MainTex, i.uv);
                     fixed4 colors[width];
