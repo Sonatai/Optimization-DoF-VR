@@ -75,7 +75,6 @@ namespace Agent.Enemy
             currHP = maxHP;
             navMeshAgent.speed = movementSpeed / 10f;
             //anim.speed = MS / 10f;
-            Player = GameObject.Find("PlayerBody");
             alzheimerTimer = patience;
             //walkingTimer = patience;
             hasAlzheimer = false;
