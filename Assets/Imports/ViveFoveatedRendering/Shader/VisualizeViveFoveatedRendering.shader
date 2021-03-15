@@ -24,6 +24,7 @@ Shader "Hidden/VisualizeViveFoveatedRendering"
 
 			#include "UnityCG.cginc"
 
+//TODO: Ich muss wahrscheinlich diesen Teil bei mir auch anpassen!
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -75,6 +76,7 @@ Shader "Hidden/VisualizeViveFoveatedRendering"
 				float2 pixelPos = i.uv;
 				float2 center = _GazeData.xy;
 
+//TODO: Brauch ich den Teil? :O
 #if UNITY_SINGLE_PASS_STEREO
 				pixelPos = UnityStereoScreenSpaceUVAdjust(i.uv, _MainTex_ST);
 				center = UnityStereoScreenSpaceUVAdjust(_GazeData.xy, _MainTex_ST);
@@ -84,6 +86,7 @@ Shader "Hidden/VisualizeViveFoveatedRendering"
 				center.x += lerp(0.025, -0.025, unity_StereoEyeIndex);
 #endif 
 
+//TODO: Diesen Teil könnte ich gebrauchen =) 
 				bool isGaze = InsideEllipse(pixelPos, center, _GazePointRadii.xy);
 				bool isInner = InsideEllipse(pixelPos, center, _InnerRadii.xy);
 				bool isMiddle = InsideEllipse(pixelPos, center, _MiddleRadii.xy);

@@ -45,6 +45,8 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
         camera.depthTextureMode = DepthTextureMode.Depth;
     }
 
+    //TODO: Clean Code
+    //TODO: Optimierungsmode aktivieren => Weil Sexy
     void OnRenderImage (RenderTexture source, RenderTexture destination)
     {
         
