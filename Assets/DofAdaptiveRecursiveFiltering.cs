@@ -21,10 +21,11 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
 
     public Camera camera;
 
-    [SerializeField] private Controlls controllScript;
-
+    //TODO: Second Shader => Optimized 
+    //TODO: Enable Controll which Shader is used
     [HideInInspector] public Shader dofShader;
     [NonSerialized] private Material dofMaterial;
+    
     private float minimumFocalLength;
     private float maximumFocalLength;
 
@@ -55,19 +56,11 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             dofMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
 
-        if (controllScript != null)
-        {
-            focalLength = controllScript.FocalLength;
-        }
-
         //Far Plain Distance as max value for both
         minimumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor + cocMinTreshold),
             camera.farClipPlane);
         maximumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor - cocMinTreshold),camera.farClipPlane);
-        //Debug.Log(minimumFocalLength);
-        //Debug.Log(scalingFactor*Math.Abs(1-focalLength/minimumFocalLength));
-       
-        //Texture Maps
+        
         RenderTexture coc = RenderTexture.GetTemporary(
             source.width, source.height, 0,
             RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
@@ -93,7 +86,6 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
         );
         
-        //Variabel for shader
         dofMaterial.SetFloat("_FocalLength", focalLength);
         dofMaterial.SetFloat("_MinimumFocalLength", minimumFocalLength);
         dofMaterial.SetFloat("_MaximumFocalLength", maximumFocalLength);
@@ -105,49 +97,36 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
         dofMaterial.SetTexture("_WeightLeftRightTex", weightLeftRight);
         dofMaterial.SetTexture("_WeightTopBotTex", weightTopBot);
 
-        if (debugMode == DebugType.None)
+        switch (debugMode)
         {
-            //Rendering
-            Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
-            Graphics.Blit(source,region, dofMaterial, regionPass);
-            Graphics.Blit(source, weightLeftRight, dofMaterial, weightLeftRightPass);
-            //Graphics.Blit(source,weightTopBot, dofMaterial, weightLeftRightPass);
-            //Graphics.Blit(source,weightLeftRight, dofMaterial, weightBotTopPass);
-            Graphics.Blit(source,weightTopBot, dofMaterial, weightBotTopPass);
-            Graphics.Blit(source,destination, dofMaterial, filterPass);  
-        }
-
-        if (debugMode == DebugType.Region)
-        {
-            Graphics.Blit(source,region, dofMaterial, regionPass);
-            Graphics.Blit(region,destination, dofMaterial, debugRegionPass);
-        }
-
-        if (debugMode == DebugType.Coc)
-        {
-            Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
-            Graphics.Blit(coc, destination, dofMaterial,debugCocPass);
-        }
-        
-        if (debugMode == DebugType.PurCocValues)
-        {
-            Graphics.Blit(coc, destination, dofMaterial,debugPureCocValuesPass);
-        }
-
-        if (debugMode == DebugType.ColoredCocValues)
-        {
-            Graphics.Blit(coc, destination, dofMaterial,debugColoredCocValuesPass);
-        }
-
-        if (debugMode == DebugType.Weight)
-        {
-            Graphics.Blit(source,destination, dofMaterial, weightLeftRightPass);
-        }
-        
-        if (debugMode == DebugType.Depth)
-        {
-            Graphics.Blit(source,depth, dofMaterial, debugDepthPass);
-            Graphics.Blit(depth,destination, dofMaterial);
+            case DebugType.None:
+                Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
+                Graphics.Blit(source,region, dofMaterial, regionPass);
+                Graphics.Blit(source, weightLeftRight, dofMaterial, weightLeftRightPass);
+                Graphics.Blit(source,weightTopBot, dofMaterial, weightBotTopPass);
+                Graphics.Blit(source,destination, dofMaterial, filterPass);
+                break;
+            case DebugType.Region:
+                Graphics.Blit(source,region, dofMaterial, regionPass);
+                Graphics.Blit(region,destination, dofMaterial, debugRegionPass);
+                break;
+            case DebugType.Coc:
+                Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
+                Graphics.Blit(coc, destination, dofMaterial,debugCocPass);
+                break;
+            case DebugType.PurCocValues:
+                Graphics.Blit(coc, destination, dofMaterial,debugPureCocValuesPass);
+                break;
+            case DebugType.ColoredCocValues:
+                Graphics.Blit(coc, destination, dofMaterial,debugColoredCocValuesPass);
+                break;
+            case DebugType.Weight:
+                Graphics.Blit(source,destination, dofMaterial, weightLeftRightPass);
+                break;
+            case DebugType.Depth:
+                Graphics.Blit(source,depth, dofMaterial, debugDepthPass);
+                Graphics.Blit(depth,destination, dofMaterial);
+                break;
         }
 
         RenderTexture.ReleaseTemporary(coc);
