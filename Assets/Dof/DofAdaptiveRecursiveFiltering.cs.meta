@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: c942575bcf533854fa0a87b065610963
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - camera: {instanceID: 0}
+  - dofShader: {fileID: 4800000, guid: 96e7a805f1599674c83368517b4e7787, type: 3}
+  - optimizedDofShader: {fileID: 4800000, guid: b3cd0910b3b5c4f46b0f21279797981e,
+      type: 3}
+  - viveFoveatedRendering: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
