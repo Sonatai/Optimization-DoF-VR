@@ -31,17 +31,17 @@ public class TestModeManager : MonoBehaviour
                 testAblaufManager.enabled = false;
                 break;
             case TestMode.Fall1:
-                //TODO: Dof Script => make it config to enabeld/disbaled optimize shader :)
+                dofScript.IsOptimized = false;
                 fovScript.enabled = false;
                 testAblaufManager.enabled = true;
                 break;
             case TestMode.Fall2:
-                //TODO: Fov Script +  DofScript
+                dofScript.IsOptimized = false;
                 fovScript.enabled = true;
                 testAblaufManager.enabled = true;
                 break;
             case TestMode.Optimierung:
-                //TODO: Fov Script + optimized Dof Script
+                dofScript.IsOptimized = true;
                 fovScript.enabled = true;
                 testAblaufManager.enabled = true;
                 break;

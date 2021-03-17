@@ -11,17 +11,24 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     //D(p) ist the value from pixel p from the depth map
     //Alpha ist the weight
     
-    public float scalingFactor;
-    [Range(0,100)]
-    public float focalLength = 10f;
-    public float cocMinTreshold;
+    [SerializeField] private  float scalingFactor = 2f;
+    [Range(0,65)]
+    [SerializeField] private  float focalLength = 10f;
+    public float FocalLength
+    {
+        set => focalLength = value;
+    }
+
+    [SerializeField] private  float cocMinTreshold = 0.03f;
     
-    public Camera camera;
+    [SerializeField] private  Camera camera;
 
-    [SerializeField] private bool isOptimized = false;
+    [SerializeField] private bool isOptimized;
+    public bool IsOptimized
+    {
+        set => isOptimized = value;
+    }
 
-    //TODO: Second Shader => Optimized 
-    //TODO: Enable Controll which Shader is used
     [HideInInspector] public Shader dofShader;
     [HideInInspector] public Shader optimizedDofShader;
     [NonSerialized] private Material dofMaterial;
@@ -66,7 +73,7 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     }
 
     //TODO: Clean Code
-    //TODO: Optimierungsmode aktivieren => Weil Sexy
+    //TODO: Interpolation an der Grenze?
     void OnRenderImage (RenderTexture source, RenderTexture destination)
     {
         
@@ -165,7 +172,7 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             optimizedDofMaterial.SetVector("_GazePointRadii", gazePointRadii);
             optimizedDofMaterial.SetVector("_InnerRadii", new Vector4(innerRadii.x, innerRadii.y, 0, 0));
             optimizedDofMaterial.SetVector("_MiddleRadii", new Vector4(middleRadii.x, middleRadii.y, 0, 0));
-            //=========================================================================================
+            //===============================================================
             
             switch (debugMode)
             {

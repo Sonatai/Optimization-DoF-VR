@@ -10,7 +10,6 @@ public class TestAblaufManager : MonoBehaviour
     [SerializeField] private Phases testPhase;
     private TestPosition _currentTestPosition;
     private Positions _oldPosition;
-    private Phases _oldTestPhase;
     
     [Header("General")] 
     [SerializeField] private GameObject vrUser;
@@ -45,55 +44,28 @@ public class TestAblaufManager : MonoBehaviour
             _oldPosition = userPosition;
             vrUser.transform.position = _currentTestPosition.UserPosition.position;
         }
-
-        if (testPhase != _oldTestPhase)
+        
+        switch (testPhase)
         {
-            switch (testPhase)
-            {
-                case Phases.phase1:
-                    Focus(_currentTestPosition.FocusPoint1);
-                    break;
-                case Phases.phase2:
-                    Focus(_currentTestPosition.FocusPoint2);
-                    break;
-                default:
-                    Debug.Log("Something is terrible wrong 🤢🤢🤢🤢");
-                    break;
-            }
-
-            _oldTestPhase = testPhase;
+            case Phases.phase1:
+                Focus(_currentTestPosition.FocusPoint1);
+                break;
+            case Phases.phase2:
+                Focus(_currentTestPosition.FocusPoint2);
+                break;
+            default:
+                Debug.Log("Something is terrible wrong 🤢🤢🤢🤢");
+                break;
         }
+
     }
     
     private void Focus(Transform currentFocusPoint)
     {
         Vector3 focalVec = currentFocusPoint.position - vrUserHeadPosition.position;
         var focalLength = (float) Math.Sqrt(Math.Pow(focalVec.x, 2) + Math.Pow(focalVec.y, 2) + Math.Pow(focalVec.z, 2));
-        dofScript.focalLength = focalLength;
+        dofScript.FocalLength = focalLength;
     }
-}
-
-public class TestPosition: MonoBehaviour
-{
-    [SerializeField] private  Transform userPosition;
-    [SerializeField] private  Transform focusPoint1;
-    [SerializeField] private  Transform focusPoint2;
-
-    public Transform UserPosition
-    {
-        get => userPosition;
-    }
-
-    public Transform FocusPoint1
-    {
-        get => focusPoint1;
-    }
-
-    public Transform FocusPoint2
-    {
-        get => focusPoint2;
-    }
-
 }
 
 enum Phases
