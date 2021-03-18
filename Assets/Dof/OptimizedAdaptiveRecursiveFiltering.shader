@@ -11,7 +11,7 @@
     CGINCLUDE
         #include "UnityCG.cginc"
         
-        sampler _LastCameraDepthTexture, _CoCTex, _RegionTex, _WeightLeftRightTex, _WeightTopBotTex;
+        sampler _LastCameraDepthTexture, _CoCTex, _RegionTex, _WeightLeftRightTex, _WeightTopBotTex, _FilteredTexture;
         float4 _MainTex_TexelSize;
         float _FocalLength, _ScalingFactor, _MinimumFocalLength, _MaximumFocalLength, _CocTreshhold, _Delta = pow(10,-5);
         
@@ -30,6 +30,7 @@
         struct Interpolators {
 			float4 pos : SV_POSITION;
 			float2 uv : TEXCOORD0;
+			fixed4 color : COLOR;
 			
 			UNITY_VERTEX_OUTPUT_STEREO
 		};
@@ -43,6 +44,7 @@
 				
 			i.pos = UnityObjectToClipPos(v.vertex);
 			i.uv = v.uv;
+			i.color.w = 1.0;
 			return i;
 		}
 		
@@ -308,7 +310,6 @@
                     int index = 0;
                     
                     if(!InsideInInner(i)){
-                    //TODO: InterPolation?
                         return currentColor;
                     }
                     
@@ -337,7 +338,7 @@
                     [unroll(width)] //optimization of the for loop
                     while(index >= 0)
                     {
-                        // calulate the colors values for the pixel => in the first round red has the last value of the recursion
+                        // calculate the colors values for the pixel => in the first round red has the last value of the recursion
                         // than we start to calculate the recursion backwards
                         uvCoordinates = uvCoordinates + fixed2(_MainTex_TexelSize.x, 0); 
                         
@@ -454,124 +455,61 @@
             ENDCG
         }
         
-         Pass //5 Debug Region
+        Pass //5 Debug: InnerRegion
         { 
             CGPROGRAM
                 #pragma vertex VertexProgram
 				#pragma fragment FragmentProgram
 
                 half4 FragmentProgram (Interpolators i) : SV_Target {
-                    fixed4 currentColor = tex2D(_MainTex, i.uv);
-					int regionP = tex2D(_RegionTex, i.uv).r;
-					
-                    if(regionP == 50){
-                        currentColor.r = 1;
-                        currentColor.b = 0; 
-                        currentColor.g = 0;
-                    } 
-                    if(regionP == 10){
-                        currentColor.r = 0;
-                        currentColor.b = 1; 
-                        currentColor.g = 0;
+					if(!InsideInInner(i)){
+                        return fixed4(0,0,0,1);
                     }
                     
-                    if(regionP == 100){
-                        currentColor.r = 0;
-                        currentColor.b = 0; 
-                        currentColor.g = 1;
+                    int regionP = tex2D(_RegionTex, i.uv).r;
+                    fixed4 color = tex2D(_MainTex, i.uv);
+                    
+                    if(regionP == 50) {
+                        color.rgba = fixed4(1,0,0, color.a);
                     }
                     
-                    return currentColor;
-				}
-            ENDCG
-        }
-        
-        Pass //6 Debug CoC
-        { 
-            CGPROGRAM
-                #pragma vertex VertexProgram
-				#pragma fragment FragmentProgram
-
-                half4 FragmentProgram (Interpolators i) : SV_Target {
-                    fixed4 currentColor = tex2D(_MainTex, i.uv);
-					float cocP = tex2D(_CoCTex, i.uv).r;
-					
-                    if(cocP <= 0.03){
-                        currentColor.r = 0;
-                        currentColor.b = 0; 
-                        currentColor.g = 0;
-                    } else {
-                        currentColor.r = 1;
-                        currentColor.b = 1; 
-                        currentColor.g = 1;
+                    if(regionP == 10) {
+                        color.rgba = fixed4(0,0,1, color.a);
                     }
                     
-                    return currentColor;
+                    if(regionP == 100) {
+                        color.rgba = fixed4(0,1,0, color.a);
+                    }
+					return color;
 				}
             ENDCG
         }
         
-        Pass //7 Debug pure CoC
+        Pass //5 Debug: MiddleRegion
         { 
             CGPROGRAM
                 #pragma vertex VertexProgram
 				#pragma fragment FragmentProgram
 
-                half4 FragmentProgram (Interpolators i) : SV_Target {
-					float cocP = tex2D(_CoCTex, i.uv).r;
-					
-                    return cocP;
-				}
-            ENDCG
-        }
-        
-        Pass //8 Debug colored CoC
-        { 
-            CGPROGRAM
-                #pragma vertex VertexProgram
-				#pragma fragment FragmentProgram
-
-                half4 FragmentProgram (Interpolators i) : SV_Target {
-                
-                    fixed4 currentColor = tex2D(_MainTex, i.uv);
-					float cocP = tex2D(_CoCTex, i.uv).r;
-					float schwellwert = 1;
-					
-					if(cocP == schwellwert){
-					    currentColor.r = 0;
-					    currentColor.b = 1;
-					    currentColor.g = 0;
-					}
-					
-					else if(cocP < schwellwert){
-					    currentColor.r = 1;
-					    currentColor.b = 0;
-					    currentColor.g = 0;
-					}
-					
-					else if(cocP > schwellwert){
-					currentColor.r = 0;
-					    currentColor.b = 0;
-					    currentColor.g = 1;
-					} else {
-					currentColor.r = 1;
-					    currentColor.b = 1;
-					    currentColor.g = 1;
-					}
-                    return currentColor;
-				}
-            ENDCG
-        }
-        
-        Pass //9 Debug depth
-        { 
-            CGPROGRAM
-                #pragma vertex VertexProgram
-				#pragma fragment FragmentProgram
-
-                half4 FragmentProgram (Interpolators i) : SV_Target {
-					half depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_LastCameraDepthTexture   , i.uv));
-					return  depth;
+                fixed4 FragmentProgram (Interpolators i) : SV_Target {
+					if(!InsideEllipse(i)){
+                        return fixed4(0,0,0,1);
+                    }
+                    int regionP = tex2D(_RegionTex, i.uv).r;
+                    fixed4 color = tex2D(_MainTex, i.uv);
+                    
+                    if(regionP == 50) {
+                        color.rgba = fixed4(1,0,0, color.a);
+                    }
+                    
+                    if(regionP == 10) {
+                        color.rgba = fixed4(0,0,1, color.a);
+                    }
+                    
+                    if(regionP == 100) {
+                        color.rgba = fixed4(0,1,0, color.a);
+                    }
+					return color;
 				}
             ENDCG
         }

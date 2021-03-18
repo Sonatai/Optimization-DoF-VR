@@ -11,9 +11,9 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     //D(p) ist the value from pixel p from the depth map
     //Alpha ist the weight
     
-    [SerializeField] private  float scalingFactor = 2f;
+    [SerializeField] private  float scalingFactor = 1f;
     [Range(0,65)]
-    [SerializeField] private  float focalLength = 10f;
+    [SerializeField] private  float focalLength = 36f;
     public float FocalLength
     {
         set => focalLength = value;
@@ -44,13 +44,12 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     private const int weightLeftRightPass = 2;
     private const int weightBotTopPass = 3;
     private const int filterPass = 4;
-    private const int debugRegionPass = 5;
-    private const int debugCocPass = 6;
-    private const int debugPureCocValuesPass = 7;
-    private const int debugColoredCocValuesPass = 8;
-    private const int debugDepthPass = 9;
     
-    //Gaze Calulations?
+    //Debug Passes:
+    private const int debugInnerRegion = 5;
+    private const int debugMiddleRegion = 6;
+
+    //For radii calculation
     Vector2 eyeResolution = Vector2.one;
     Vector3 normalizedGazeDirection = new Vector3(0.0f, 0.0f, 1.0f);
     [SerializeField] private ViveFoveatedRendering viveFoveatedRendering;
@@ -112,11 +111,6 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
         );
         
-        RenderTexture depth = RenderTexture.GetTemporary(
-            source.width, source.height, 0,
-            RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
-        );
-
         if (isOptimized)
         {
             optimizedDofMaterial.SetFloat("_FocalLength", focalLength);
@@ -143,7 +137,8 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             optimizedDofMaterial.SetVector("_GazeData", new Vector4(gazeData.x, gazeData.y, 0, 0));
 
             var innerRadii = viveFoveatedRendering.GetRegionRadii(TargetArea.INNER) * 0.5f;
-            var middleRadii = viveFoveatedRendering.GetRegionRadii(TargetArea.MIDDLE) * 0.5f;
+            var middleRadii = (viveFoveatedRendering.GetRegionRadii(TargetArea.INNER) * 1.15f) * 0.5f;
+            //var middleRadii = viveFoveatedRendering.GetRegionRadii(TargetArea.MIDDLE)  * 0.5f;
                         
             //  To keep the shape of given region, invert the aspect ratio.
             //  Align short side.
@@ -183,26 +178,13 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
                     Graphics.Blit(source,weightTopBot, optimizedDofMaterial, weightBotTopPass);
                     Graphics.Blit(source,destination, optimizedDofMaterial, filterPass);
                     break;
-                case DebugType.Region:
+                case DebugType.InnerRegion:
                     Graphics.Blit(source,region, optimizedDofMaterial, regionPass);
-                    Graphics.Blit(region,destination, optimizedDofMaterial, debugRegionPass);
+                    Graphics.Blit(region,destination, optimizedDofMaterial, debugInnerRegion);
                     break;
-                case DebugType.Coc:
-                    Graphics.Blit(source, coc, optimizedDofMaterial, circleOfConfusionPass);
-                    Graphics.Blit(coc, destination, optimizedDofMaterial,debugCocPass);
-                    break;
-                case DebugType.PurCocValues:
-                    Graphics.Blit(coc, destination, optimizedDofMaterial,debugPureCocValuesPass);
-                    break;
-                case DebugType.ColoredCocValues:
-                    Graphics.Blit(coc, destination, optimizedDofMaterial,debugColoredCocValuesPass);
-                    break;
-                case DebugType.Weight:
-                    Graphics.Blit(source,destination, optimizedDofMaterial, weightLeftRightPass);
-                    break;
-                case DebugType.Depth:
-                    Graphics.Blit(source,depth, optimizedDofMaterial, debugDepthPass);
-                    Graphics.Blit(depth,destination, optimizedDofMaterial);
+                case DebugType.MiddleRegion:
+                    Graphics.Blit(source,region, optimizedDofMaterial, regionPass);
+                    Graphics.Blit(region,destination, optimizedDofMaterial, debugMiddleRegion);
                     break;
             }
         }
@@ -219,44 +201,18 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             dofMaterial.SetTexture("_WeightLeftRightTex", weightLeftRight);
             dofMaterial.SetTexture("_WeightTopBotTex", weightTopBot);
 
-            switch (debugMode)
-            {
-                case DebugType.None:
-                    Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
-                    Graphics.Blit(source,region, dofMaterial, regionPass);
-                    Graphics.Blit(source, weightLeftRight, dofMaterial, weightLeftRightPass);
-                    Graphics.Blit(source,weightTopBot, dofMaterial, weightBotTopPass);
-                    Graphics.Blit(source,destination, dofMaterial, filterPass);
-                    break;
-                case DebugType.Region:
-                    Graphics.Blit(source,region, dofMaterial, regionPass);
-                    Graphics.Blit(region,destination, dofMaterial, debugRegionPass);
-                    break;
-                case DebugType.Coc:
-                    Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
-                    Graphics.Blit(coc, destination, dofMaterial,debugCocPass);
-                    break;
-                case DebugType.PurCocValues:
-                    Graphics.Blit(coc, destination, dofMaterial,debugPureCocValuesPass);
-                    break;
-                case DebugType.ColoredCocValues:
-                    Graphics.Blit(coc, destination, dofMaterial,debugColoredCocValuesPass);
-                    break;
-                case DebugType.Weight:
-                    Graphics.Blit(source,destination, dofMaterial, weightLeftRightPass);
-                    break;
-                case DebugType.Depth:
-                    Graphics.Blit(source,depth, dofMaterial, debugDepthPass);
-                    Graphics.Blit(depth,destination, dofMaterial);
-                    break;
-            }
+
+            Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
+            Graphics.Blit(source,region, dofMaterial, regionPass);
+            Graphics.Blit(source, weightLeftRight, dofMaterial, weightLeftRightPass);
+            Graphics.Blit(source,weightTopBot, dofMaterial, weightBotTopPass);
+            Graphics.Blit(source,destination, dofMaterial, filterPass);
         }
         
         RenderTexture.ReleaseTemporary(coc);
         RenderTexture.ReleaseTemporary(region);
         RenderTexture.ReleaseTemporary(weightLeftRight);
         RenderTexture.ReleaseTemporary(weightTopBot);
-        RenderTexture.ReleaseTemporary(depth);
     }
     
 }
@@ -264,10 +220,6 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
 enum DebugType
 {
     None,
-    Region,
-    Coc,
-    Weight,
-    Depth,
-    PurCocValues,
-    ColoredCocValues
+    InnerRegion,
+    MiddleRegion
 }
