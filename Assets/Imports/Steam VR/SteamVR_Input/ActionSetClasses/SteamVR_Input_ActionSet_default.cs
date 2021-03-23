@@ -41,11 +41,11 @@ namespace Valve.VR
             }
         }
         
-        public virtual SteamVR_Action_Boolean Grab
+        public virtual SteamVR_Action_Boolean GrabGrip
         {
             get
             {
-                return SteamVR_Actions.default_Grab;
+                return SteamVR_Actions.default_GrabGrip;
             }
         }
         
@@ -89,67 +89,19 @@ namespace Valve.VR
             }
         }
         
-        public virtual SteamVR_Action_Boolean Interaction
+        public virtual SteamVR_Action_Boolean SnapTurnLeft
         {
             get
             {
-                return SteamVR_Actions.default_Interaction;
+                return SteamVR_Actions.default_SnapTurnLeft;
             }
         }
         
-        public virtual SteamVR_Action_Boolean TeleportLine
+        public virtual SteamVR_Action_Boolean SnapTurnRight
         {
             get
             {
-                return SteamVR_Actions.default_TeleportLine;
-            }
-        }
-        
-        public virtual SteamVR_Action_Boolean Shoot
-        {
-            get
-            {
-                return SteamVR_Actions.default_Shoot;
-            }
-        }
-        
-        public virtual SteamVR_Action_Boolean Release
-        {
-            get
-            {
-                return SteamVR_Actions.default_Release;
-            }
-        }
-        
-        public virtual SteamVR_Action_Boolean ChangeAmmo
-        {
-            get
-            {
-                return SteamVR_Actions.default_ChangeAmmo;
-            }
-        }
-        
-        public virtual SteamVR_Action_Boolean ActivateMenu
-        {
-            get
-            {
-                return SteamVR_Actions.default_ActivateMenu;
-            }
-        }
-        
-        public virtual SteamVR_Action_Boolean SelectAmmo
-        {
-            get
-            {
-                return SteamVR_Actions.default_SelectAmmo;
-            }
-        }
-        
-        public virtual SteamVR_Action_Vector2 MenuSelectionPosition
-        {
-            get
-            {
-                return SteamVR_Actions.default_MenuSelectionPosition;
+                return SteamVR_Actions.default_SnapTurnRight;
             }
         }
         

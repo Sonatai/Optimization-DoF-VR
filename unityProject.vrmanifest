@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.bachelorarbeitfovdof.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Users\\gebau\\OneDrive\\Desktop\\Bachelor-Arbeit\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "Bachelor-Arbeit-Fov-Dof [Testing]"
+        }
+      }
+    }
+  ]
+}
