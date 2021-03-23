@@ -1,6 +1,7 @@
 ﻿//========= Copyright 2020, HTC Corporation. All rights reserved. ===========
 
 using UnityEngine;
+
 #if USE_SRANIPAL
 using ViveSR.anipal.Eye;
 #endif
@@ -27,7 +28,7 @@ namespace HTC.UnityPlugin.FoveatedRendering
 #endif
             return false;
         }
-        
+
         void OnEnable()
         {
 #if USE_SRANIPAL
@@ -43,7 +44,7 @@ namespace HTC.UnityPlugin.FoveatedRendering
             }
 #endif
         }
-        
+
         void Update()
         {
 #if USE_SRANIPAL
@@ -61,6 +62,5 @@ namespace HTC.UnityPlugin.FoveatedRendering
             }
 #endif
         }
-
     }
 }

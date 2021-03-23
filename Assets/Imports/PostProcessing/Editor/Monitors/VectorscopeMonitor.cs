@@ -50,9 +50,13 @@ namespace UnityEditor.PostProcessing
             float exposure = m_MonitorSettings.vectorscopeExposure;
             bool showBackground = m_MonitorSettings.vectorscopeShowBackground;
 
-            refreshOnPlay = GUILayout.Toggle(refreshOnPlay, new GUIContent(FxStyles.playIcon, "Keep refreshing the vectorscope in play mode; this may impact performances."), FxStyles.preButton);
-            exposure = GUILayout.HorizontalSlider(exposure, 0.05f, 0.3f, FxStyles.preSlider, FxStyles.preSliderThumb, GUILayout.Width(40f));
-            showBackground = GUILayout.Toggle(showBackground, new GUIContent(FxStyles.checkerIcon, "Show an YUV background in the vectorscope."), FxStyles.preButton);
+            refreshOnPlay = GUILayout.Toggle(refreshOnPlay,
+                new GUIContent(FxStyles.playIcon,
+                    "Keep refreshing the vectorscope in play mode; this may impact performances."), FxStyles.preButton);
+            exposure = GUILayout.HorizontalSlider(exposure, 0.05f, 0.3f, FxStyles.preSlider, FxStyles.preSliderThumb,
+                GUILayout.Width(40f));
+            showBackground = GUILayout.Toggle(showBackground,
+                new GUIContent(FxStyles.checkerIcon, "Show an YUV background in the vectorscope."), FxStyles.preButton);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -89,17 +93,18 @@ namespace UnityEditor.PostProcessing
                 }
 
                 m_MonitorAreaRect = new Rect(
-                        Mathf.Floor(r.x + r.width / 2f - size / 2f),
-                        Mathf.Floor(r.y + r.height / 2f - size / 2f - 5f),
-                        size, size
-                        );
+                    Mathf.Floor(r.x + r.width / 2f - size / 2f),
+                    Mathf.Floor(r.y + r.height / 2f - size / 2f - 5f),
+                    size, size
+                );
 
                 if (m_VectorscopeTexture != null)
                 {
                     m_Material.SetFloat("_Exposure", m_MonitorSettings.vectorscopeExposure);
 
                     var oldActive = RenderTexture.active;
-                    Graphics.Blit(null, m_VectorscopeTexture, m_Material, m_MonitorSettings.vectorscopeShowBackground ? 0 : 1);
+                    Graphics.Blit(null, m_VectorscopeTexture, m_Material,
+                        m_MonitorSettings.vectorscopeShowBackground ? 0 : 1);
                     RenderTexture.active = oldActive;
 
                     Graphics.DrawTexture(m_MonitorAreaRect, m_VectorscopeTexture);
@@ -116,8 +121,10 @@ namespace UnityEditor.PostProcessing
                     // Cross
                     color.a *= 0.5f;
                     Handles.color = color;
-                    Handles.DrawLine(new Vector2(midX, m_MonitorAreaRect.y), new Vector2(midX, m_MonitorAreaRect.y + m_MonitorAreaRect.height));
-                    Handles.DrawLine(new Vector2(m_MonitorAreaRect.x, midY), new Vector2(m_MonitorAreaRect.x + m_MonitorAreaRect.width, midY));
+                    Handles.DrawLine(new Vector2(midX, m_MonitorAreaRect.y),
+                        new Vector2(midX, m_MonitorAreaRect.y + m_MonitorAreaRect.height));
+                    Handles.DrawLine(new Vector2(m_MonitorAreaRect.x, midY),
+                        new Vector2(m_MonitorAreaRect.x + m_MonitorAreaRect.width, midY));
 
                     if (m_MonitorAreaRect.width > 100f)
                     {
@@ -127,7 +134,7 @@ namespace UnityEditor.PostProcessing
                         Handles.color = color;
                         for (int i = 0; i < kTickCount; i++)
                         {
-                            float a = (float)i / (float)kTickCount;
+                            float a = (float) i / (float) kTickCount;
                             float theta = a * (Mathf.PI * 2f);
                             float tx = Mathf.Cos(theta + (Mathf.PI / 2f));
                             float ty = Mathf.Sin(theta - (Mathf.PI / 2f));
@@ -178,7 +185,7 @@ namespace UnityEditor.PostProcessing
             if (Mathf.Approximately(m_MonitorAreaRect.width, 0) || Mathf.Approximately(m_MonitorAreaRect.height, 0))
                 return;
 
-            float ratio = (float)source.width / (float)source.height;
+            float ratio = (float) source.width / (float) source.height;
             int h = 384;
             int w = Mathf.FloorToInt(h * ratio);
 
@@ -220,10 +227,12 @@ namespace UnityEditor.PostProcessing
             cs.SetVector("_Res", new Vector4(source.width, source.height, 0f, 0f));
             cs.Dispatch(kernel, Mathf.CeilToInt(source.width / 32f), Mathf.CeilToInt(source.height / 32f), 1);
 
-            if (m_VectorscopeTexture == null || m_VectorscopeTexture.width != source.width || m_VectorscopeTexture.height != source.height)
+            if (m_VectorscopeTexture == null || m_VectorscopeTexture.width != source.width ||
+                m_VectorscopeTexture.height != source.height)
             {
                 GraphicsUtils.Destroy(m_VectorscopeTexture);
-                m_VectorscopeTexture = new RenderTexture(source.width, source.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear)
+                m_VectorscopeTexture = new RenderTexture(source.width, source.height, 0, RenderTextureFormat.ARGB32,
+                    RenderTextureReadWrite.Linear)
                 {
                     hideFlags = HideFlags.DontSave,
                     wrapMode = TextureWrapMode.Clamp,
@@ -232,7 +241,8 @@ namespace UnityEditor.PostProcessing
             }
 
             if (m_Material == null)
-                m_Material = new Material(Shader.Find("Hidden/Post FX/Monitors/Vectorscope Render")) { hideFlags = HideFlags.DontSave };
+                m_Material = new Material(Shader.Find("Hidden/Post FX/Monitors/Vectorscope Render"))
+                    {hideFlags = HideFlags.DontSave};
 
             m_Material.SetBuffer("_Vectorscope", m_Buffer);
             m_Material.SetVector("_Size", new Vector2(m_VectorscopeTexture.width, m_VectorscopeTexture.height));

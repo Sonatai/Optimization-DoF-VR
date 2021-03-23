@@ -17,14 +17,12 @@ namespace Valve.VR.InteractionSystem.Sample
         {
             public float mass;
 
-            [Range(0, 1)]
-            public float pos;
+            [Range(0, 1)] public float pos;
 
             public Vector3 forwardAxis;
 
             public SkinnedMeshRenderer renderer;
-            [HideInInspector]
-            public SteamVR_Action_Single squeezyAction;
+            [HideInInspector] public SteamVR_Action_Single squeezyAction;
             public SteamVR_Input_Sources inputSource;
 
             public Transform[] bones;
@@ -33,13 +31,15 @@ namespace Valve.VR.InteractionSystem.Sample
 
             public enum eulerAxis
             {
-                X, Y, Z
+                X,
+                Y,
+                Z
             }
+
             public eulerAxis referenceAxis;
 
 
-            [HideInInspector]
-            public float flexAngle;
+            [HideInInspector] public float flexAngle;
 
             private Vector3[] rotation;
             private Vector3[] velocity;
@@ -61,7 +61,6 @@ namespace Valve.VR.InteractionSystem.Sample
                 {
                     velocity[i] += worldForce / 50;
                 }
-
             }
 
 
@@ -118,17 +117,22 @@ namespace Valve.VR.InteractionSystem.Sample
                         bool useOffset = boneTips[boneIndex] != null;
                         if (useOffset) // inertia sim
                         {
-                            Vector3 offset = (boneTips[boneIndex].localPosition - bones[boneIndex].InverseTransformPoint(oldTipPosition[boneIndex])) / deltaTime;
+                            Vector3 offset =
+                                (boneTips[boneIndex].localPosition -
+                                 bones[boneIndex].InverseTransformPoint(oldTipPosition[boneIndex])) / deltaTime;
                             Vector3 inertia = (offset - oldTipDelta[boneIndex]) / deltaTime;
                             oldTipDelta[boneIndex] = offset;
 
                             Vector3 drag = offset * -2;
                             inertia *= -2f;
 
-                            for (int offsetIndex = inertiaSteps - 1; offsetIndex > 0; offsetIndex--) // offset inertia steps
+                            for (int offsetIndex = inertiaSteps - 1;
+                                offsetIndex > 0;
+                                offsetIndex--) // offset inertia steps
                             {
                                 inertiaSmoothing[boneIndex, offsetIndex] = inertiaSmoothing[boneIndex, offsetIndex - 1];
                             }
+
                             inertiaSmoothing[boneIndex, 0] = inertia;
 
                             Vector3 smoothedInertia = Vector3.zero;
@@ -150,7 +154,6 @@ namespace Valve.VR.InteractionSystem.Sample
                             velocity[boneIndex] += FixVector(dragQuaternion.eulerAngles) * 2 * deltaTime;
                             velocity[boneIndex] += FixVector(inertiaQuaternion.eulerAngles) * 50 * deltaTime;
                             velocity[boneIndex] = Vector3.ClampMagnitude(velocity[boneIndex], 1000);
-
                         }
 
                         Vector3 targetPos = pos * Vector3.right * (flexAngle / bones.Length);

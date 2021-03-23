@@ -26,6 +26,7 @@ namespace Unity.XR.OpenVR
         private const float estimatedTimeToInstall = 90; // in seconds
 
         private const string updaterKeyTemplate = "com.valvesoftware.unity.openvr.updateState.{0}";
+
         private static string updaterKey
         {
             get { return string.Format(updaterKeyTemplate, Application.productName); }
@@ -40,9 +41,10 @@ namespace Unity.XR.OpenVR
                 Debug.Log("[DEBUG] Update State: " + value.ToString());
 #endif
                 _updateState = value;
-                EditorPrefs.SetInt(updaterKey, (int)value);
+                EditorPrefs.SetInt(updaterKey, (int) value);
             }
         }
+
         private static UpdateStates _updateState = UpdateStates.Idle;
 
         private static double runningSeconds
@@ -61,7 +63,7 @@ namespace Unity.XR.OpenVR
         {
             EditorApplication.update -= Update;
             EditorApplication.update += Update;
-            
+
             if (force)
             {
                 RemoveScopedRegistry();
@@ -70,9 +72,9 @@ namespace Unity.XR.OpenVR
 
         static OpenVRPackageInstaller()
         {
-            #if OPENVR_XR_API //if we're updating, go ahead and just start
+#if OPENVR_XR_API //if we're updating, go ahead and just start
             Start();
-            #endif
+#endif
         }
 
         /// <summary>
@@ -92,13 +94,14 @@ namespace Unity.XR.OpenVR
                 case UpdateStates.Idle:
                     if (EditorPrefs.HasKey(updaterKey))
                     {
-                        _updateState = (UpdateStates)EditorPrefs.GetInt(updaterKey);
+                        _updateState = (UpdateStates) EditorPrefs.GetInt(updaterKey);
                         packageTime.Start();
                     }
                     else
                     {
                         RequestExisting();
                     }
+
                     break;
 
                 case UpdateStates.WaitingOnExistingCheck:
@@ -109,7 +112,8 @@ namespace Unity.XR.OpenVR
                     }
                     else if (listRequest != null && listRequest.IsCompleted)
                     {
-                        if (listRequest.Error != null || listRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
+                        if (listRequest.Error != null ||
+                            listRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
                         {
                             DisplayErrorAndStop("Error while checking for an existing OpenVR package.", listRequest);
                         }
@@ -117,20 +121,26 @@ namespace Unity.XR.OpenVR
                         {
                             if (listRequest.Result.Any(package => package.name == valveOpenVRPackageString))
                             {
-                                var existingPackage = listRequest.Result.FirstOrDefault(package => package.name == valveOpenVRPackageString);
+                                var existingPackage = listRequest.Result.FirstOrDefault(package =>
+                                    package.name == valveOpenVRPackageString);
 
                                 string latestTarball = GetLatestTarballVersion();
 
-                                if (latestTarball != null && latestTarball.CompareTo(existingPackage.version) == 1) 
+                                if (latestTarball != null && latestTarball.CompareTo(existingPackage.version) == 1)
                                 {
                                     //we have a tarball higher than the currently installed version
-                                    string upgradeString = string.Format("This SteamVR Unity Plugin has a newer version of the Unity XR OpenVR package than you have installed. Would you like to upgrade?\n\nCurrent: {0}\nUpgrade: {1} (recommended)", existingPackage.version, latestTarball);
-                                    bool upgrade = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Updater", upgradeString, "Upgrade", "Cancel");
+                                    string upgradeString = string.Format(
+                                        "This SteamVR Unity Plugin has a newer version of the Unity XR OpenVR package than you have installed. Would you like to upgrade?\n\nCurrent: {0}\nUpgrade: {1} (recommended)",
+                                        existingPackage.version, latestTarball);
+                                    bool upgrade = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Updater",
+                                        upgradeString, "Upgrade", "Cancel");
                                     if (upgrade)
                                         RemoveScopedRegistry();
                                     else
                                     {
-                                        bool delete = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Updater", "Would you like to remove this updater script so we don't ask again?", "Remove updater", "Keep");
+                                        bool delete = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Updater",
+                                            "Would you like to remove this updater script so we don't ask again?",
+                                            "Remove updater", "Keep");
                                         if (delete)
                                         {
                                             Stop();
@@ -146,17 +156,21 @@ namespace Unity.XR.OpenVR
                             }
                             else
                             {
-                                #if UNITY_2020_1_OR_NEWER
+#if UNITY_2020_1_OR_NEWER
                                 RemoveScopedRegistry(); //just install if we're on 2020 and they don't have the package
                                 return;
-                                #else
+#else
                                 //they don't have the package yet. Ask if they want to install (only for 2019)
-                                bool blankInstall = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Installer", "The SteamVR Unity Plugin can be used with the legacy Unity VR API (Unity 5.4 - 2019) or with the Unity XR API (2019+). Would you like to install OpenVR for Unity XR?", "Install", "Cancel");
+                                bool blankInstall = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Installer",
+                                    "The SteamVR Unity Plugin can be used with the legacy Unity VR API (Unity 5.4 - 2019) or with the Unity XR API (2019+). Would you like to install OpenVR for Unity XR?",
+                                    "Install", "Cancel");
                                 if (blankInstall)
                                     RemoveScopedRegistry();
                                 else
                                 {
-                                    bool delete = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Installer", "Would you like to remove this installer script so we don't ask again?", "Remove installer", "Keep");
+                                    bool delete = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Installer",
+                                        "Would you like to remove this installer script so we don't ask again?",
+                                        "Remove installer", "Keep");
                                     if (delete)
                                     {
                                         Stop();
@@ -168,10 +182,11 @@ namespace Unity.XR.OpenVR
                                         return;
                                     }
                                 }
-                                #endif
+#endif
                             }
                         }
                     }
+
                     break;
 
                 case UpdateStates.WaitingForAdd:
@@ -182,7 +197,8 @@ namespace Unity.XR.OpenVR
                     }
                     else if (addRequest != null && addRequest.IsCompleted)
                     {
-                        if (addRequest.Error != null || addRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
+                        if (addRequest.Error != null ||
+                            addRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
                         {
                             DisplayErrorAndStop("Error adding new version of OpenVR package.", addRequest);
                         }
@@ -199,6 +215,7 @@ namespace Unity.XR.OpenVR
                         else
                             DisplayProgressBar();
                     }
+
                     break;
 
                 case UpdateStates.WaitingForAddConfirmation:
@@ -209,16 +226,20 @@ namespace Unity.XR.OpenVR
                     }
                     else if (listRequest != null && listRequest.IsCompleted)
                     {
-                        if (listRequest.Error != null || listRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
+                        if (listRequest.Error != null ||
+                            listRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
                         {
-                            DisplayErrorAndStop("Error while confirming the OpenVR package has been added.", listRequest);
+                            DisplayErrorAndStop("Error while confirming the OpenVR package has been added.",
+                                listRequest);
                         }
                         else
                         {
                             if (listRequest.Result.Any(package => package.name == valveOpenVRPackageString))
                             {
                                 updateState = UpdateStates.RemoveSelf;
-                                UnityEditor.EditorUtility.DisplayDialog("OpenVR Unity XR Installer", "OpenVR Unity XR successfully installed.\n\nA restart of the Unity Editor may be necessary.", "Ok");
+                                UnityEditor.EditorUtility.DisplayDialog("OpenVR Unity XR Installer",
+                                    "OpenVR Unity XR successfully installed.\n\nA restart of the Unity Editor may be necessary.",
+                                    "Ok");
                             }
                             else
                             {
@@ -231,11 +252,13 @@ namespace Unity.XR.OpenVR
                     {
                         if (runningSeconds > estimatedTimeToInstall)
                         {
-                            DisplayErrorAndStop("Error while confirming the OpenVR package has been added.", listRequest);
+                            DisplayErrorAndStop("Error while confirming the OpenVR package has been added.",
+                                listRequest);
                         }
                         else
                             DisplayProgressBar();
                     }
+
                     break;
 
                 case UpdateStates.RemoveSelf:
@@ -248,12 +271,17 @@ namespace Unity.XR.OpenVR
                     return;
 #endif
 
-                    var script = MonoScript.FromScriptableObject(OpenVRPackageInstaller.CreateInstance<OpenVRPackageInstaller>());
+                    var script =
+                        MonoScript.FromScriptableObject(OpenVRPackageInstaller
+                            .CreateInstance<OpenVRPackageInstaller>());
                     var path = AssetDatabase.GetAssetPath(script);
-                    FileInfo updaterScript = new FileInfo(path); updaterScript.IsReadOnly = false;
+                    FileInfo updaterScript = new FileInfo(path);
+                    updaterScript.IsReadOnly = false;
                     FileInfo updaterScriptMeta = new FileInfo(path + ".meta");
-                    FileInfo simpleJSONScript = new FileInfo(Path.Combine(updaterScript.Directory.FullName, "OpenVRSimpleJSON.cs"));
-                    FileInfo simpleJSONScriptMeta = new FileInfo(Path.Combine(updaterScript.Directory.FullName, "OpenVRSimpleJSON.cs.meta"));
+                    FileInfo simpleJSONScript =
+                        new FileInfo(Path.Combine(updaterScript.Directory.FullName, "OpenVRSimpleJSON.cs"));
+                    FileInfo simpleJSONScriptMeta =
+                        new FileInfo(Path.Combine(updaterScript.Directory.FullName, "OpenVRSimpleJSON.cs.meta"));
 
                     updaterScript.IsReadOnly = false;
                     updaterScriptMeta.IsReadOnly = false;
@@ -263,7 +291,8 @@ namespace Unity.XR.OpenVR
                     updaterScriptMeta.Delete();
                     if (updaterScriptMeta.Exists)
                     {
-                        DisplayErrorAndStop("Error while removing package installer script. Please delete manually.", listRequest);
+                        DisplayErrorAndStop("Error while removing package installer script. Please delete manually.",
+                            listRequest);
                         return;
                     }
 
@@ -289,7 +318,8 @@ namespace Unity.XR.OpenVR
 
         private static FileInfo GetAvailableTarballs(out FileInfo[] packages)
         {
-            var installerScript = MonoScript.FromScriptableObject(OpenVRPackageInstaller.CreateInstance<OpenVRPackageInstaller>());
+            var installerScript =
+                MonoScript.FromScriptableObject(OpenVRPackageInstaller.CreateInstance<OpenVRPackageInstaller>());
             var scriptPath = AssetDatabase.GetAssetPath(installerScript);
             FileInfo thisScript = new FileInfo(scriptPath);
 
@@ -374,7 +404,9 @@ namespace Unity.XR.OpenVR
                 {
                     var oldFilesNames = oldFiles.Select(file => file.Name);
                     string oldFilesString = string.Join("\n", oldFilesNames);
-                    bool delete = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Installer", "Would you like to delete the old OpenVR packages?\n\n" + oldFilesString, "Delete old files", "Keep");
+                    bool delete = UnityEditor.EditorUtility.DisplayDialog("OpenVR XR Installer",
+                        "Would you like to delete the old OpenVR packages?\n\n" + oldFilesString, "Delete old files",
+                        "Keep");
                     if (delete)
                     {
                         foreach (FileInfo file in oldFiles)
@@ -422,11 +454,13 @@ namespace Unity.XR.OpenVR
             listRequest = Client.List(true, true);
         }
 
-        private static string dialogText = "Installing OpenVR Unity XR package from local storage using Unity Package Manager...";
+        private static string dialogText =
+            "Installing OpenVR Unity XR package from local storage using Unity Package Manager...";
 
         private static void DisplayProgressBar()
         {
-            bool cancel = UnityEditor.EditorUtility.DisplayCancelableProgressBar("SteamVR", dialogText, (float)packageTime.Elapsed.TotalSeconds / estimatedTimeToInstall);
+            bool cancel = UnityEditor.EditorUtility.DisplayCancelableProgressBar("SteamVR", dialogText,
+                (float) packageTime.Elapsed.TotalSeconds / estimatedTimeToInstall);
             if (cancel)
                 Stop();
         }
@@ -437,7 +471,9 @@ namespace Unity.XR.OpenVR
             if (request != null)
                 error = request.Error.message;
 
-            string errorMessage = string.Format("{0}:\n\t{1}\n\nPlease manually reinstall the package through the package manager.", stepInfo, error);
+            string errorMessage =
+                string.Format("{0}:\n\t{1}\n\nPlease manually reinstall the package through the package manager.",
+                    stepInfo, error);
 
             UnityEngine.Debug.LogError(errorMessage);
 

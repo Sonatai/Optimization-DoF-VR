@@ -32,8 +32,8 @@ namespace UnityEditor.PostProcessing
             {
                 m_BlendingIcon = EditorResources.Load<Texture>("UI/MotionBlendingIcon.png");
 
-                m_LowerCenterStyle = new GUIStyle(EditorStyles.miniLabel) { alignment = TextAnchor.LowerCenter };
-                m_MiddleCenterStyle = new GUIStyle(EditorStyles.miniLabel) { alignment = TextAnchor.MiddleCenter };
+                m_LowerCenterStyle = new GUIStyle(EditorStyles.miniLabel) {alignment = TextAnchor.LowerCenter};
+                m_MiddleCenterStyle = new GUIStyle(EditorStyles.miniLabel) {alignment = TextAnchor.MiddleCenter};
 
                 if (EditorGUIUtility.isProSkin)
                 {
@@ -113,6 +113,7 @@ namespace UnityEditor.PostProcessing
                     GUI.color = Color.white;
                     GUI.Label(rect, (weight * 100).ToString("0") + "%", m_LowerCenterStyle);
                 }
+
                 // EditorGUIUtility.isProSkin
             }
 
@@ -136,9 +137,9 @@ namespace UnityEditor.PostProcessing
             void DrawArc(Vector2 center, float radius, float angle, Color fill)
             {
                 var start = new Vector2(
-                        -Mathf.Cos(Mathf.Deg2Rad * angle / 2f),
-                        Mathf.Sin(Mathf.Deg2Rad * angle / 2f)
-                        );
+                    -Mathf.Cos(Mathf.Deg2Rad * angle / 2f),
+                    Mathf.Sin(Mathf.Deg2Rad * angle / 2f)
+                );
 
                 Handles.color = fill;
                 Handles.DrawSolidArc(center, Vector3.forward, start, angle, radius);
@@ -188,7 +189,9 @@ namespace UnityEditor.PostProcessing
             EditorGUILayout.PropertyField(m_FrameBlending);
 
             if (fbValue > 0f)
-                EditorGUILayout.HelpBox("Multi-Frame Blending lowers precision of the final picture for optimization purposes.", MessageType.Info);
+                EditorGUILayout.HelpBox(
+                    "Multi-Frame Blending lowers precision of the final picture for optimization purposes.",
+                    MessageType.Info);
 
 
             EditorGUI.indentLevel--;

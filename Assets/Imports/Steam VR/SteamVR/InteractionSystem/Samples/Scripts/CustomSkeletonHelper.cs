@@ -24,6 +24,7 @@ namespace Valve.VR.InteractionSystem.Sample
                 finger.middle.destination.rotation = finger.middle.source.rotation;
                 finger.distal.destination.rotation = finger.distal.source.rotation;
             }
+
             for (int thumbIndex = 0; thumbIndex < thumbs.Length; thumbIndex++)
             {
                 Thumb thumb = thumbs[thumbIndex];
@@ -84,7 +85,8 @@ namespace Valve.VR.InteractionSystem.Sample
 
             public Transform aux;
 
-            public Finger(Retargetable metacarpal, Retargetable proximal, Retargetable middle, Retargetable distal, Transform aux)
+            public Finger(Retargetable metacarpal, Retargetable proximal, Retargetable middle, Retargetable distal,
+                Transform aux)
             {
                 this.metacarpal = metacarpal;
                 this.proximal = proximal;

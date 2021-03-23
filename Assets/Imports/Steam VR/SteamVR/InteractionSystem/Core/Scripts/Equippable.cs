@@ -10,7 +10,6 @@ using UnityEngine;
 
 namespace Valve.VR.InteractionSystem
 {
-
     public enum WhichHand
     {
         Left,
@@ -18,10 +17,8 @@ namespace Valve.VR.InteractionSystem
     }
 
     [RequireComponent(typeof(Throwable))]
-
     public class Equippable : MonoBehaviour
     {
-
         [Tooltip("Array of children you do not want to be mirrored. Text, logos, etc.")]
         public Transform[] antiFlip;
 
@@ -53,7 +50,8 @@ namespace Valve.VR.InteractionSystem
             if (interactable.attachedToHand)
             {
                 Vector3 flipScale = initialScale;
-                if ((attachedHandType == SteamVR_Input_Sources.RightHand && defaultHand == WhichHand.Right) || (attachedHandType == SteamVR_Input_Sources.LeftHand && defaultHand == WhichHand.Left))
+                if ((attachedHandType == SteamVR_Input_Sources.RightHand && defaultHand == WhichHand.Right) ||
+                    (attachedHandType == SteamVR_Input_Sources.LeftHand && defaultHand == WhichHand.Left))
                 {
                     flipScale.x *= 1;
                     for (int transformIndex = 0; transformIndex < antiFlip.Length; transformIndex++)
@@ -69,6 +67,7 @@ namespace Valve.VR.InteractionSystem
                         antiFlip[transformIndex].localScale = new Vector3(-1, 1, 1);
                     }
                 }
+
                 transform.localScale = flipScale;
             }
         }

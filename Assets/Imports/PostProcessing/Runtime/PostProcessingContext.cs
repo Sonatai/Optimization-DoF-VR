@@ -26,6 +26,7 @@ namespace UnityEngine.PostProcessing
         }
 
         #region Helpers
+
         public bool isGBufferAvailable
         {
             get { return camera.actualRenderingPath == RenderingPath.DeferredShading; }
@@ -55,6 +56,7 @@ namespace UnityEngine.PostProcessing
         {
             get { return camera.rect; } // Normalized coordinates
         }
+
         #endregion
     }
 }

@@ -17,14 +17,13 @@ namespace Valve.VR
     {
         public static VRActiveActionSet_t[] rawActiveActionSetArray;
 
-        [NonSerialized]
-        private static uint activeActionSetSize;
+        [NonSerialized] private static uint activeActionSetSize;
 
         private static bool changed = false;
 
         public static void Initialize()
         {
-            activeActionSetSize = (uint)(Marshal.SizeOf(typeof(VRActiveActionSet_t)));
+            activeActionSetSize = (uint) (Marshal.SizeOf(typeof(VRActiveActionSet_t)));
         }
 
         /// <summary>
@@ -41,6 +40,7 @@ namespace Valve.VR
         }
 
         private static int lastFrameUpdated;
+
         public static void UpdateActionStates(bool force = false)
         {
             if (force || Time.frameCount != lastFrameUpdated)
@@ -56,7 +56,8 @@ namespace Valve.VR
                 {
                     if (OpenVR.Input != null)
                     {
-                        EVRInputError err = OpenVR.Input.UpdateActionState(rawActiveActionSetArray, activeActionSetSize);
+                        EVRInputError err =
+                            OpenVR.Input.UpdateActionState(rawActiveActionSetArray, activeActionSetSize);
                         if (err != EVRInputError.None)
                             Debug.LogError("<b>[SteamVR]</b> UpdateActionState error: " + err.ToString());
                         //else Debug.Log("Action sets activated: " + activeActionSets.Length);
@@ -101,6 +102,7 @@ namespace Valve.VR
                             if (activeActionSetsList[insertionIndex].nPriority > activeSet.nPriority)
                                 break;
                         }
+
                         activeActionSetsList.Insert(insertionIndex, activeSet);
                     }
                 }
@@ -128,6 +130,7 @@ namespace Valve.VR
 
         public static string debugActiveSetListText;
         public static bool updateDebugTextInBuilds = false;
+
         private static void UpdateDebugText()
         {
             StringBuilder stringBuilder = new StringBuilder();

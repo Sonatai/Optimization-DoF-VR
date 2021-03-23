@@ -10,9 +10,13 @@ namespace HTC.UnityPlugin.FoveatedRendering
         const string VIVE_VID = "VID_0BB4";
         const string VIVE_PRO_PID = "PID_0309";
         const string VIVE_COSMOS_PID = "PID_0313";
+
         public static bool SetParamByHMD(ViveFoveatedRendering vfr, bool isEyeTracked = false)
         {
-            if (vfr == null) { return false; }
+            if (vfr == null)
+            {
+                return false;
+            }
 
             bool setParamSuccess = false;
 

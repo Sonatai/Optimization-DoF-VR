@@ -18,11 +18,9 @@ namespace Valve.VR.InteractionSystem.Sample
 
         public float minSlip;
 
-        [HideInInspector]
-        public float amt;
+        [HideInInspector] public float amt;
 
-        [HideInInspector]
-        public Vector3 slip;
+        [HideInInspector] public Vector3 slip;
 
         private float emitTimer;
 
@@ -45,6 +43,7 @@ namespace Valve.VR.InteractionSystem.Sample
                 slip += Vector3.forward * -hit.forwardSlip;
                 //print(slip);
             }
+
             amt = slip.magnitude;
             //print(amt);
         }
@@ -61,6 +60,7 @@ namespace Valve.VR.InteractionSystem.Sample
                         emitTimer += Mathf.Clamp((EmissionMul * amt), 0.01f, maxEmission);
                     }
                 }
+
                 emitTimer = 0;
                 DoEmit();
             }

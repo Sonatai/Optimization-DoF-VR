@@ -10,12 +10,12 @@ namespace UnityEngine.PostProcessing
         static class Uniforms
         {
             internal static readonly int _DepthScale = Shader.PropertyToID("_DepthScale");
-            internal static readonly int _TempRT     = Shader.PropertyToID("_TempRT");
-            internal static readonly int _Opacity    = Shader.PropertyToID("_Opacity");
-            internal static readonly int _MainTex    = Shader.PropertyToID("_MainTex");
-            internal static readonly int _TempRT2    = Shader.PropertyToID("_TempRT2");
-            internal static readonly int _Amplitude  = Shader.PropertyToID("_Amplitude");
-            internal static readonly int _Scale      = Shader.PropertyToID("_Scale");
+            internal static readonly int _TempRT = Shader.PropertyToID("_TempRT");
+            internal static readonly int _Opacity = Shader.PropertyToID("_Opacity");
+            internal static readonly int _MainTex = Shader.PropertyToID("_MainTex");
+            internal static readonly int _TempRT2 = Shader.PropertyToID("_TempRT2");
+            internal static readonly int _Amplitude = Shader.PropertyToID("_Amplitude");
+            internal static readonly int _Scale = Shader.PropertyToID("_Scale");
         }
 
         const string k_ShaderString = "Hidden/Post FX/Builtin Debug Views";
@@ -61,9 +61,9 @@ namespace UnityEngine.PostProcessing
                     for (int ix = 0; ix < columns; ix++)
                     {
                         var uv = new Vector2(
-                                (0.5f + ix) / columns,
-                                (0.5f + iy) / rows
-                                );
+                            (0.5f + ix) / columns,
+                            (0.5f + iy) / rows
+                        );
 
                         for (int i = 0; i < 6; i++)
                         {
@@ -80,7 +80,7 @@ namespace UnityEngine.PostProcessing
                     indices[i] = i;
 
                 // initialize the mesh object
-                mesh = new Mesh { hideFlags = HideFlags.DontSave };
+                mesh = new Mesh {hideFlags = HideFlags.DontSave};
                 mesh.SetVertices(vertices);
                 mesh.SetUVs(0, uvs);
                 mesh.SetIndices(indices, MeshTopology.Lines, 0);
@@ -132,8 +132,8 @@ namespace UnityEngine.PostProcessing
         public override CameraEvent GetCameraEvent()
         {
             return model.settings.mode == Mode.MotionVectors
-                   ? CameraEvent.BeforeImageEffects
-                   : CameraEvent.BeforeImageEffectsOpaque;
+                ? CameraEvent.BeforeImageEffects
+                : CameraEvent.BeforeImageEffectsOpaque;
         }
 
         public override string GetName()
@@ -172,13 +172,13 @@ namespace UnityEngine.PostProcessing
             var settings = model.settings.depth;
 
             cb.SetGlobalFloat(Uniforms._DepthScale, 1f / settings.scale);
-            cb.Blit((Texture)null, BuiltinRenderTextureType.CameraTarget, material, (int)Pass.Depth);
+            cb.Blit((Texture) null, BuiltinRenderTextureType.CameraTarget, material, (int) Pass.Depth);
         }
 
         void DepthNormalsPass(CommandBuffer cb)
         {
             var material = context.materialFactory.Get(k_ShaderString);
-            cb.Blit((Texture)null, BuiltinRenderTextureType.CameraTarget, material, (int)Pass.Normals);
+            cb.Blit((Texture) null, BuiltinRenderTextureType.CameraTarget, material, (int) Pass.Normals);
         }
 
         void MotionVectorsPass(CommandBuffer cb)
@@ -198,7 +198,7 @@ namespace UnityEngine.PostProcessing
             cb.GetTemporaryRT(tempRT, context.width, context.height, 0, FilterMode.Bilinear);
             cb.SetGlobalFloat(Uniforms._Opacity, settings.sourceOpacity);
             cb.SetGlobalTexture(Uniforms._MainTex, BuiltinRenderTextureType.CameraTarget);
-            cb.Blit(BuiltinRenderTextureType.CameraTarget, tempRT, material, (int)Pass.MovecOpacity);
+            cb.Blit(BuiltinRenderTextureType.CameraTarget, tempRT, material, (int) Pass.MovecOpacity);
 
             // Motion vectors (imaging)
             if (settings.motionImageOpacity > 0f && settings.motionImageAmplitude > 0f)
@@ -208,7 +208,7 @@ namespace UnityEngine.PostProcessing
                 cb.SetGlobalFloat(Uniforms._Opacity, settings.motionImageOpacity);
                 cb.SetGlobalFloat(Uniforms._Amplitude, settings.motionImageAmplitude);
                 cb.SetGlobalTexture(Uniforms._MainTex, tempRT);
-                cb.Blit(tempRT, tempRT2, material, (int)Pass.MovecImaging);
+                cb.Blit(tempRT, tempRT2, material, (int) Pass.MovecImaging);
                 cb.ReleaseTemporaryRT(tempRT);
                 tempRT = tempRT2;
             }
@@ -224,7 +224,7 @@ namespace UnityEngine.PostProcessing
                 cb.SetGlobalVector(Uniforms._Scale, new Vector2(sx, sy));
                 cb.SetGlobalFloat(Uniforms._Opacity, settings.motionVectorsOpacity);
                 cb.SetGlobalFloat(Uniforms._Amplitude, settings.motionVectorsAmplitude);
-                cb.DrawMesh(m_Arrows.mesh, Matrix4x4.identity, material, 0, (int)Pass.MovecArrows);
+                cb.DrawMesh(m_Arrows.mesh, Matrix4x4.identity, material, 0, (int) Pass.MovecArrows);
             }
 
             cb.SetGlobalTexture(Uniforms._MainTex, tempRT);

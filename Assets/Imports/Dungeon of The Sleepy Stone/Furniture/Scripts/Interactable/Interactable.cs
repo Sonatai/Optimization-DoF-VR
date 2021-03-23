@@ -37,7 +37,7 @@ public abstract class Interactable : MonoBehaviour
     {
         //is needed to be overwritten
     }
-    
+
     private void OnTriggerEnter(Collider other)
     {
         OnEnter(other);
@@ -52,6 +52,6 @@ public abstract class Interactable : MonoBehaviour
     {
         OnExit(other);
     }
+
     public abstract void ButtonUsed(HandController hand, ButtonEventKind buttonEventKind);
-    
 }

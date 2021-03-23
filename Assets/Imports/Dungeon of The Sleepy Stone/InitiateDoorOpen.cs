@@ -7,8 +7,7 @@ public class InitiateDoorOpen : MonoBehaviour
 {
     public Animator anim;
     public Collider floor;
-    [SerializeField]
-    private NavMeshObstacle navCollider;
+    [SerializeField] private NavMeshObstacle navCollider;
 
 
     void Start()
@@ -18,6 +17,4 @@ public class InitiateDoorOpen : MonoBehaviour
         if (navCollider != null)
             navCollider.enabled = false;
     }
-
-    
 }

@@ -43,10 +43,12 @@ namespace Valve.VR.InteractionSystem.Sample
                 pinch = pinchSqueeze.GetAxis(interactable.attachedToHand.handType);
             }
 
-            renderer.SetBlendShapeWeight(0, Mathf.Lerp(renderer.GetBlendShapeWeight(0), grip * 100, Time.deltaTime * 10));
+            renderer.SetBlendShapeWeight(0,
+                Mathf.Lerp(renderer.GetBlendShapeWeight(0), grip * 100, Time.deltaTime * 10));
 
             if (renderer.sharedMesh.blendShapeCount > 1) // make sure there's a pinch blend shape
-                renderer.SetBlendShapeWeight(1, Mathf.Lerp(renderer.GetBlendShapeWeight(1), pinch * 100, Time.deltaTime * 10));
+                renderer.SetBlendShapeWeight(1,
+                    Mathf.Lerp(renderer.GetBlendShapeWeight(1), pinch * 100, Time.deltaTime * 10));
 
             if (affectMaterial)
             {

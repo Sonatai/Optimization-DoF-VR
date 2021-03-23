@@ -14,11 +14,11 @@ namespace UnityEngine.PostProcessing
         [Serializable]
         public struct Settings
         {
-            [Tooltip("Use the \"Classic\" mode for parametric controls. Use the \"Masked\" mode to use your own texture mask.")]
+            [Tooltip(
+                "Use the \"Classic\" mode for parametric controls. Use the \"Masked\" mode to use your own texture mask.")]
             public Mode mode;
 
-            [ColorUsage(false)]
-            [Tooltip("Vignette color. Use the alpha channel for transparency.")]
+            [ColorUsage(false)] [Tooltip("Vignette color. Use the alpha channel for transparency.")]
             public Color color;
 
             [Tooltip("Sets the vignette center point (screen center is [0.5,0.5]).")]
@@ -62,8 +62,8 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        [SerializeField] Settings m_Settings = Settings.defaultSettings;
+
         public Settings settings
         {
             get { return m_Settings; }

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Valve Corporation, All rights reserved. ======================================================================================================
 
 
-
 using UnityEngine;
 using System.Collections;
 
@@ -56,7 +55,8 @@ namespace Valve.VR.InteractionSystem
         {
             Player player = Player.instance;
 
-            if (canRotate && snapLeftAction != null && snapRightAction != null && snapLeftAction.activeBinding && snapRightAction.activeBinding)
+            if (canRotate && snapLeftAction != null && snapRightAction != null && snapLeftAction.activeBinding &&
+                snapRightAction.activeBinding)
             {
                 //only allow snap turning after a quarter second after the last teleport
                 if (Time.time < (teleportLastActiveTime + canTurnEverySeconds))
@@ -65,21 +65,22 @@ namespace Valve.VR.InteractionSystem
                 // only allow snap turning when not holding something
 
                 bool rightHandValid = player.rightHand.currentAttachedObject == null ||
-                    (player.rightHand.currentAttachedObject != null
-                    && player.rightHand.currentAttachedTeleportManager != null
-                    && player.rightHand.currentAttachedTeleportManager.teleportAllowed);
+                                      (player.rightHand.currentAttachedObject != null
+                                       && player.rightHand.currentAttachedTeleportManager != null
+                                       && player.rightHand.currentAttachedTeleportManager.teleportAllowed);
 
                 bool leftHandValid = player.leftHand.currentAttachedObject == null ||
-                    (player.leftHand.currentAttachedObject != null
-                    && player.leftHand.currentAttachedTeleportManager != null
-                    && player.leftHand.currentAttachedTeleportManager.teleportAllowed);
+                                     (player.leftHand.currentAttachedObject != null
+                                      && player.leftHand.currentAttachedTeleportManager != null
+                                      && player.leftHand.currentAttachedTeleportManager.teleportAllowed);
 
 
                 bool leftHandTurnLeft = snapLeftAction.GetStateDown(SteamVR_Input_Sources.LeftHand) && leftHandValid;
                 bool rightHandTurnLeft = snapLeftAction.GetStateDown(SteamVR_Input_Sources.RightHand) && rightHandValid;
 
                 bool leftHandTurnRight = snapRightAction.GetStateDown(SteamVR_Input_Sources.LeftHand) && leftHandValid;
-                bool rightHandTurnRight = snapRightAction.GetStateDown(SteamVR_Input_Sources.RightHand) && rightHandValid;
+                bool rightHandTurnRight =
+                    snapRightAction.GetStateDown(SteamVR_Input_Sources.RightHand) && rightHandValid;
 
                 if (leftHandTurnLeft || rightHandTurnLeft)
                 {
@@ -94,6 +95,7 @@ namespace Valve.VR.InteractionSystem
 
 
         private Coroutine rotateCoroutine;
+
         public void RotatePlayer(float angle)
         {
             if (rotateCoroutine != null)
@@ -149,7 +151,9 @@ namespace Valve.VR.InteractionSystem
             {
                 yield return null;
                 UpdateOrientation(fx);
-            };
+            }
+
+            ;
 
             fx.SetActive(false);
             canRotate = true;
@@ -175,9 +179,11 @@ namespace Valve.VR.InteractionSystem
 
             //position fx in front of face
             this.transform.position = player.hmdTransform.position + (player.hmdTransform.forward * distanceFromFace);
-            this.transform.rotation = Quaternion.LookRotation(player.hmdTransform.position - this.transform.position, Vector3.up);
+            this.transform.rotation =
+                Quaternion.LookRotation(player.hmdTransform.position - this.transform.position, Vector3.up);
             this.transform.Translate(additionalOffset, Space.Self);
-            this.transform.rotation = Quaternion.LookRotation(player.hmdTransform.position - this.transform.position, Vector3.up);
+            this.transform.rotation =
+                Quaternion.LookRotation(player.hmdTransform.position - this.transform.position, Vector3.up);
         }
     }
 }

@@ -2,9 +2,10 @@
 using UnityEngine;
 
 
-public class PlayerBody : MonoBehaviour {
-
+public class PlayerBody : MonoBehaviour
+{
     public float health;
+
     //public int deff;
     bool isAlive = true;
     HeartbeatController heartbeatController;
@@ -26,16 +27,19 @@ public class PlayerBody : MonoBehaviour {
 
     public bool Hit(int damage)
     {
-        if (!isAlive)//no need to execute when already dead, also hit sound wont be played then
+        if (!isAlive) //no need to execute when already dead, also hit sound wont be played then
         {
             return false;
         }
+
         health -= damage;
         heartbeatController.UpdateHp(health);
-        if (health <= 0) {
+        if (health <= 0)
+        {
             isAlive = false;
             (FindObjectOfType(typeof(FadingScript)) as FadingScript).Death();
         }
+
         return true;
     }
 }

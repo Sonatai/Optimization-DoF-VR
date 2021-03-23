@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
 /**
  * Reduces Health Points of Player
  */
-public class EnemyMeleeHit : MonoBehaviour {
+public class EnemyMeleeHit : MonoBehaviour
+{
     public int damage;
     public EnemyBehavior myStats;
 

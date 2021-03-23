@@ -9,6 +9,7 @@ using Valve.VR;
 public class ExitLadderController : Triggerable
 {
     private bool _enteredNextLevel = false;
+
     public override void Trigger(HandController hand)
     {
         if (!_enteredNextLevel)

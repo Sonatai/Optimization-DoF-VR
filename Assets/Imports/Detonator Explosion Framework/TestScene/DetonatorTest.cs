@@ -33,15 +33,18 @@ public class DetonatorTest : MonoBehaviour
         {
             NextExplosion();
         }
+
         if (GUILayout.Button("Rebuild Wall"))
         {
             SpawnWall();
         }
+
         if (GUILayout.Button("Camera Far"))
         {
             Camera.main.transform.position = new Vector3(0, 0, -7);
             Camera.main.transform.eulerAngles = new Vector3(13.5f, 0, 0);
         }
+
         if (GUILayout.Button("Camera Near"))
         {
             Camera.main.transform.position = new Vector3(0, -8.664466f, 31.38269f);
@@ -92,6 +95,7 @@ public class DetonatorTest : MonoBehaviour
                     SpawnExplosion();
                 }
             }
+
             Time.timeScale = timeScale;
         }
     }
@@ -102,18 +106,16 @@ public class DetonatorTest : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 1000))
         {
-            Detonator dTemp = (Detonator)currentDetonator.GetComponent("Detonator");
+            Detonator dTemp = (Detonator) currentDetonator.GetComponent("Detonator");
 
-            float offsetSize = dTemp.size/3;
+            float offsetSize = dTemp.size / 3;
             Vector3 hitPoint = hit.point +
-                                      ((Vector3.Scale(hit.normal, new Vector3(offsetSize, offsetSize, offsetSize))));
+                               ((Vector3.Scale(hit.normal, new Vector3(offsetSize, offsetSize, offsetSize))));
             GameObject exp = (GameObject) Instantiate(currentDetonator, hitPoint, Quaternion.identity);
-            dTemp = (Detonator)exp.GetComponent("Detonator");
+            dTemp = (Detonator) exp.GetComponent("Detonator");
             dTemp.detail = detailLevel;
 
             Destroy(exp, explosionLife);
         }
-
-
     }
 }

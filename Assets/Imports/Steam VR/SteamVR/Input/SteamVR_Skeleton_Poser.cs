@@ -12,9 +12,11 @@ namespace Valve.VR
     public class SteamVR_Skeleton_Poser : MonoBehaviour
     {
         #region Editor Storage
+
         public bool poseEditorExpanded = true;
         public bool blendEditorExpanded = true;
         public string[] poseNames;
+
         #endregion
 
         public GameObject overridePreviewLeftHandPrefab;
@@ -23,22 +25,20 @@ namespace Valve.VR
         public SteamVR_Skeleton_Pose skeletonMainPose;
         public List<SteamVR_Skeleton_Pose> skeletonAdditionalPoses = new List<SteamVR_Skeleton_Pose>();
 
-        [SerializeField]
-        protected bool showLeftPreview = false;
+        [SerializeField] protected bool showLeftPreview = false;
 
-        [SerializeField]
-        protected bool showRightPreview = true; //show the right hand by default
+        [SerializeField] protected bool showRightPreview = true; //show the right hand by default
 
-        [SerializeField]
-        protected GameObject previewLeftInstance;
+        [SerializeField] protected GameObject previewLeftInstance;
 
-        [SerializeField]
-        protected GameObject previewRightInstance;
+        [SerializeField] protected GameObject previewRightInstance;
 
-        [SerializeField]
-        protected int previewPoseSelection = 0;
+        [SerializeField] protected int previewPoseSelection = 0;
 
-        public int blendPoseCount { get { return blendPoses.Length; } }
+        public int blendPoseCount
+        {
+            get { return blendPoses.Length; }
+        }
 
         public List<PoseBlendingBehaviour> blendingBehaviours = new List<PoseBlendingBehaviour>();
 
@@ -75,7 +75,6 @@ namespace Valve.VR
         }
 
 
-
         /// <summary>
         /// Set the blending value of a blendingBehaviour. Works best on Manual type behaviours.
         /// </summary>
@@ -88,10 +87,13 @@ namespace Valve.VR
 
                 if (behaviour.type != PoseBlendingBehaviour.BlenderTypes.Manual)
                 {
-                    Debug.LogWarning("[SteamVR] Blending Behaviour: " + behaviourName + " is not a manual behaviour. Its value will likely be overriden.", this);
+                    Debug.LogWarning(
+                        "[SteamVR] Blending Behaviour: " + behaviourName +
+                        " is not a manual behaviour. Its value will likely be overriden.", this);
                 }
             }
         }
+
         /// <summary>
         /// Get the blending value of a blendingBehaviour.
         /// </summary>
@@ -102,6 +104,7 @@ namespace Valve.VR
             {
                 return behaviour.value;
             }
+
             return 0;
         }
 
@@ -116,6 +119,7 @@ namespace Valve.VR
                 behaviour.enabled = value;
             }
         }
+
         /// <summary>
         /// Check if a blending behaviour is enabled.
         /// </summary>
@@ -131,6 +135,7 @@ namespace Valve.VR
 
             return false;
         }
+
         /// <summary>
         /// Get a blending behaviour by name.
         /// </summary>
@@ -146,7 +151,9 @@ namespace Valve.VR
             if (behaviour == null)
             {
                 if (throwErrors)
-                    Debug.LogError("[SteamVR] Blending Behaviour: " + behaviourName + " not found on Skeleton Poser: " + gameObject.name, this);
+                    Debug.LogError(
+                        "[SteamVR] Blending Behaviour: " + behaviourName + " not found on Skeleton Poser: " +
+                        gameObject.name, this);
 
                 return null;
             }
@@ -157,8 +164,14 @@ namespace Valve.VR
 
         public SteamVR_Skeleton_Pose GetPoseByIndex(int index)
         {
-            if (index == 0) { return skeletonMainPose; }
-            else { return skeletonAdditionalPoses[index - 1]; }
+            if (index == 0)
+            {
+                return skeletonMainPose;
+            }
+            else
+            {
+                return skeletonAdditionalPoses[index - 1];
+            }
         }
 
         private SteamVR_Skeleton_PoseSnapshot GetHandSnapshot(SteamVR_Input_Sources inputSource)
@@ -174,7 +187,8 @@ namespace Valve.VR
         /// </summary>
         /// <param name="forAction">The skeleton action you want to blend between</param>
         /// <param name="handType">If this is for the left or right hand</param>
-        public SteamVR_Skeleton_PoseSnapshot GetBlendedPose(SteamVR_Action_Skeleton skeletonAction, SteamVR_Input_Sources handType)
+        public SteamVR_Skeleton_PoseSnapshot GetBlendedPose(SteamVR_Action_Skeleton skeletonAction,
+            SteamVR_Input_Sources handType)
         {
             UpdatePose(skeletonAction, handType);
             return GetHandSnapshot(handType);
@@ -219,26 +233,27 @@ namespace Valve.VR
                 blendedSnapshotL = snap;
         }
 
-        protected void ApplyBlenderBehaviours(SteamVR_Action_Skeleton skeletonAction, SteamVR_Input_Sources inputSource, SteamVR_Skeleton_PoseSnapshot snapshot)
+        protected void ApplyBlenderBehaviours(SteamVR_Action_Skeleton skeletonAction, SteamVR_Input_Sources inputSource,
+            SteamVR_Skeleton_PoseSnapshot snapshot)
         {
-
             // apply blending for each behaviour
             for (int behaviourIndex = 0; behaviourIndex < blendingBehaviours.Count; behaviourIndex++)
             {
                 blendingBehaviours[behaviourIndex].Update(Time.deltaTime, inputSource);
                 // if disabled or very low influence, skip for perf
-                if (blendingBehaviours[behaviourIndex].enabled && blendingBehaviours[behaviourIndex].influence * blendingBehaviours[behaviourIndex].value > 0.01f)
+                if (blendingBehaviours[behaviourIndex].enabled && blendingBehaviours[behaviourIndex].influence *
+                    blendingBehaviours[behaviourIndex].value > 0.01f)
                 {
                     if (blendingBehaviours[behaviourIndex].pose != 0 && skeletonAction.activeBinding)
                     {
                         // update additive animation only as needed
-                        blendPoses[blendingBehaviours[behaviourIndex].pose].UpdateAdditiveAnimation(skeletonAction, inputSource);
+                        blendPoses[blendingBehaviours[behaviourIndex].pose]
+                            .UpdateAdditiveAnimation(skeletonAction, inputSource);
                     }
 
                     blendingBehaviours[behaviourIndex].ApplyBlending(snapshot, blendPoses, inputSource);
                 }
             }
-
         }
 
         protected void LateUpdate()
@@ -255,6 +270,7 @@ namespace Valve.VR
             {
                 blendedVector += vectors[i] * weights[i];
             }
+
             return blendedVector;
         }
 
@@ -266,6 +282,7 @@ namespace Valve.VR
             {
                 outquat *= Quaternion.Slerp(Quaternion.identity, quaternions[i], weights[i]);
             }
+
             return outquat;
         }
 
@@ -294,7 +311,8 @@ namespace Valve.VR
                 }
             }
 
-            public void UpdateAdditiveAnimation(SteamVR_Action_Skeleton skeletonAction, SteamVR_Input_Sources inputSource)
+            public void UpdateAdditiveAnimation(SteamVR_Action_Skeleton skeletonAction,
+                SteamVR_Input_Sources inputSource)
             {
                 if (skeletonAction.GetSkeletalTrackingLevel() == EVRSkeletalTrackingLevel.VRSkeletalTracking_Estimated)
                 {
@@ -315,17 +333,23 @@ namespace Valve.VR
                         snapshot.bonePositions[boneIndex] = skeletonAction.bonePositions[boneIndex];
                         snapshot.boneRotations[boneIndex] = skeletonAction.boneRotations[boneIndex];
                     }
+
                     if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Extend)
                     {
                         // lerp to open pose by fingercurl
-                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex], skeletonAction.bonePositions[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
-                        snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex], skeletonAction.boneRotations[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
+                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex],
+                            skeletonAction.bonePositions[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
+                        snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex],
+                            skeletonAction.boneRotations[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex]);
                     }
+
                     if (extensionType == SteamVR_Skeleton_FingerExtensionTypes.Contract)
                     {
                         // lerp to closed pose by fingercurl
-                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex], skeletonAction.bonePositions[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
-                        snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex], skeletonAction.boneRotations[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
+                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(poseHand.bonePositions[boneIndex],
+                            skeletonAction.bonePositions[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
+                        snapshot.boneRotations[boneIndex] = Quaternion.Lerp(poseHand.boneRotations[boneIndex],
+                            skeletonAction.boneRotations[boneIndex], skeletonAction.fingerCurls[fingerIndex]);
                     }
                 }
             }
@@ -336,8 +360,10 @@ namespace Valve.VR
             public SkeletonBlendablePose(SteamVR_Skeleton_Pose p)
             {
                 pose = p;
-                snapshotR = new SteamVR_Skeleton_PoseSnapshot(p.rightHand.bonePositions.Length, SteamVR_Input_Sources.RightHand);
-                snapshotL = new SteamVR_Skeleton_PoseSnapshot(p.leftHand.bonePositions.Length, SteamVR_Input_Sources.LeftHand);
+                snapshotR = new SteamVR_Skeleton_PoseSnapshot(p.rightHand.bonePositions.Length,
+                    SteamVR_Input_Sources.RightHand);
+                snapshotL = new SteamVR_Skeleton_PoseSnapshot(p.leftHand.bonePositions.Length,
+                    SteamVR_Input_Sources.LeftHand);
             }
 
             /// <summary>
@@ -356,7 +382,9 @@ namespace Valve.VR
                 pose.leftHand.boneRotations.CopyTo(snapshotL.boneRotations, 0);
             }
 
-            public SkeletonBlendablePose() { }
+            public SkeletonBlendablePose()
+            {
+            }
         }
 
         /// <summary>
@@ -391,12 +419,14 @@ namespace Valve.VR
                     else
                         value = Mathf.Lerp(value, action_single.GetAxis(inputSource), deltaTime * smoothingSpeed);
                 }
+
                 if (type == BlenderTypes.BooleanAction)
                 {
                     if (smoothingSpeed == 0)
                         value = action_bool.GetState(inputSource) ? 1 : 0;
                     else
-                        value = Mathf.Lerp(value, action_bool.GetState(inputSource) ? 1 : 0, deltaTime * smoothingSpeed);
+                        value = Mathf.Lerp(value, action_bool.GetState(inputSource) ? 1 : 0,
+                            deltaTime * smoothingSpeed);
                 }
             }
 
@@ -406,7 +436,8 @@ namespace Valve.VR
             /// <param name="snapshot">Snapshot to modify</param>
             /// <param name="blendPoses">List of blend poses to get the target pose</param>
             /// <param name="inputSource">Which hand to receive input from</param>
-            public void ApplyBlending(SteamVR_Skeleton_PoseSnapshot snapshot, SkeletonBlendablePose[] blendPoses, SteamVR_Input_Sources inputSource)
+            public void ApplyBlending(SteamVR_Skeleton_PoseSnapshot snapshot, SkeletonBlendablePose[] blendPoses,
+                SteamVR_Input_Sources inputSource)
             {
                 SteamVR_Skeleton_PoseSnapshot targetSnapshot = blendPoses[pose].GetHandSnapshot(inputSource);
                 if (mask.GetFinger(0) || useMask == false)
@@ -418,10 +449,13 @@ namespace Valve.VR
                 for (int boneIndex = 0; boneIndex < snapshot.bonePositions.Length; boneIndex++)
                 {
                     // verify the current finger is enabled in the mask, or if no mask is used.
-                    if (mask.GetFinger(SteamVR_Skeleton_JointIndexes.GetFingerForBone(boneIndex) + 1) || useMask == false)
+                    if (mask.GetFinger(SteamVR_Skeleton_JointIndexes.GetFingerForBone(boneIndex) + 1) ||
+                        useMask == false)
                     {
-                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(snapshot.bonePositions[boneIndex], targetSnapshot.bonePositions[boneIndex], influence * value);
-                        snapshot.boneRotations[boneIndex] = Quaternion.Slerp(snapshot.boneRotations[boneIndex], targetSnapshot.boneRotations[boneIndex], influence * value);
+                        snapshot.bonePositions[boneIndex] = Vector3.Lerp(snapshot.bonePositions[boneIndex],
+                            targetSnapshot.bonePositions[boneIndex], influence * value);
+                        snapshot.boneRotations[boneIndex] = Quaternion.Slerp(snapshot.boneRotations[boneIndex],
+                            targetSnapshot.boneRotations[boneIndex], influence * value);
                     }
                 }
             }
@@ -434,7 +468,9 @@ namespace Valve.VR
 
             public enum BlenderTypes
             {
-                Manual, AnalogAction, BooleanAction
+                Manual,
+                AnalogAction,
+                BooleanAction
             }
         }
 
@@ -499,8 +535,6 @@ namespace Valve.VR
                 boneRotations[i] = source.boneRotations[i];
             }
         }
-
-
     }
 
 
@@ -545,6 +579,7 @@ namespace Valve.VR
             {
                 values[i] = true;
             }
+
             Apply();
         }
 
@@ -560,5 +595,4 @@ namespace Valve.VR
 
         public static readonly SteamVR_Skeleton_HandMask fullMask = new SteamVR_Skeleton_HandMask();
     };
-
 }

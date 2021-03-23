@@ -14,7 +14,7 @@ namespace Agent.Enemy
     {
         //... Public attributes
         public GameObject Flame;
-        
+
         public Transform eyes;
         public LayerMask searchMask;
         public bool hasAlzheimer;
@@ -46,7 +46,7 @@ namespace Agent.Enemy
         protected Vector3 _lastRelativeHitPosition = new Vector3();
         protected Vector3 _lastSeenPlayerPosition = new Vector3();
         protected Vector3 _lastSearchPosition = new Vector3();
-        
+
 
         private bool _flameOn;
         //private 
@@ -62,7 +62,7 @@ namespace Agent.Enemy
         public SenseStates currentSenseState = SenseStates.neverSeenPlayer;
 
         protected ActionState _state = new Idle(20f);
-        
+
         private void Start()
         {
             animator = GetComponent<Animator>();
@@ -71,7 +71,7 @@ namespace Agent.Enemy
             navMeshAgent = navMeshAgent == null ? GetComponentInChildren<NavMeshAgent>() : navMeshAgent;
             sound = GetComponent<AudioSource>();
             sound = sound == null ? GetComponentInChildren<AudioSource>() : sound;
-            
+
             currHP = maxHP;
             navMeshAgent.speed = movementSpeed / 10f;
             //anim.speed = MS / 10f;
@@ -84,7 +84,7 @@ namespace Agent.Enemy
             navMeshAgent.stoppingDistance = 0.1f;
             Construct();
         }
-      
+
 
         //............................................................................
         public float GetAttackDistance()
@@ -94,7 +94,6 @@ namespace Agent.Enemy
 
         protected virtual void Construct()
         {
-            
         }
 
         public abstract ActionState NotDead();
@@ -139,18 +138,18 @@ namespace Agent.Enemy
                         }
                     }
                 }
-                
+
 
                 var playerPosition = Player.transform.position;
                 Vector3 vectorToPlayer = eyes.transform.position - playerPosition;
-                
+
                 float distanceFromPlayer = vectorToPlayer.magnitude;
                 float angel = Vector3.Angle(-transform.forward, vectorToPlayer);
 
                 //Debug.Log("distanceFromPlayer: " +distanceFromPlayer);
                 if (distanceFromPlayer > 35)
                 {
-                    SwitchEnemyColliderState(false);//Improve performance
+                    SwitchEnemyColliderState(false); //Improve performance
                 }
                 else
                 {
@@ -163,7 +162,7 @@ namespace Agent.Enemy
                             && !Physics.Linecast(eyes.position, Player.transform.position, searchMask))
                     )
                     {
-                        if (Mathf.Abs(eyes.position.y - playerPosition.y)<3f)//Vertical distance is narrowed.
+                        if (Mathf.Abs(eyes.position.y - playerPosition.y) < 3f) //Vertical distance is narrowed.
                         {
                             //...only when player is on the same level attacking makes sense!
                             _lastSeenPlayerPosition = Player.transform.position;

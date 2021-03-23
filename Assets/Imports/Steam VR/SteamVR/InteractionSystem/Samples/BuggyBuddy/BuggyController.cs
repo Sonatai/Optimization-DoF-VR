@@ -33,9 +33,11 @@ namespace Valve.VR.InteractionSystem.Sample
 
         public Transform resetToPoint;
 
-        public SteamVR_Action_Vector2 actionSteering = SteamVR_Input.GetAction<SteamVR_Action_Vector2>("buggy", "Steering");
+        public SteamVR_Action_Vector2 actionSteering =
+            SteamVR_Input.GetAction<SteamVR_Action_Vector2>("buggy", "Steering");
 
-        public SteamVR_Action_Single actionThrottle = SteamVR_Input.GetAction<SteamVR_Action_Single>("buggy", "Throttle");
+        public SteamVR_Action_Single actionThrottle =
+            SteamVR_Input.GetAction<SteamVR_Action_Single>("buggy", "Throttle");
 
         public SteamVR_Action_Boolean actionBrake = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("buggy", "Brake");
 
@@ -101,10 +103,11 @@ namespace Valve.VR.InteractionSystem.Sample
 
                 usteer = Mathf.Lerp(usteer, steer.x, Time.deltaTime * 9);
                 ui_steer.localEulerAngles = Vector3.forward * usteer * -ui_steerangle;
-                ui_rpm.fillAmount = Mathf.Lerp(ui_rpm.fillAmount, Mathf.Lerp(ui_fillAngles.x, ui_fillAngles.y, throttle), Time.deltaTime * 4);
+                ui_rpm.fillAmount = Mathf.Lerp(ui_rpm.fillAmount,
+                    Mathf.Lerp(ui_fillAngles.x, ui_fillAngles.y, throttle), Time.deltaTime * 4);
                 float speedLim = 40;
-                ui_speed.fillAmount = Mathf.Lerp(ui_fillAngles.x, ui_fillAngles.y, 1 - (Mathf.Exp(-buggy.speed / speedLim)));
-
+                ui_speed.fillAmount = Mathf.Lerp(ui_fillAngles.x, ui_fillAngles.y,
+                    1 - (Mathf.Exp(-buggy.speed / speedLim)));
             }
 
             modelJoystick.localRotation = joySRot;
@@ -144,7 +147,8 @@ namespace Valve.VR.InteractionSystem.Sample
 
             while (Time.time < endTime)
             {
-                buggy.transform.localScale = Vector3.Lerp(buggy.transform.localScale, initialScale, Time.deltaTime * 5f);
+                buggy.transform.localScale =
+                    Vector3.Lerp(buggy.transform.localScale, initialScale, Time.deltaTime * 5f);
                 yield return null;
             }
 
@@ -154,6 +158,7 @@ namespace Valve.VR.InteractionSystem.Sample
         }
 
         private float buzztimer;
+
         private IEnumerator DoBuzz()
         {
             while (true)
@@ -167,7 +172,8 @@ namespace Valve.VR.InteractionSystem.Sample
                 buzztimer = 0;
                 if (interactable.attachedToHand)
                 {
-                    interactable.attachedToHand.TriggerHapticPulse((ushort)Mathf.RoundToInt(300 * Mathf.Lerp(1.0f, 0.6f, buggy.mvol)));
+                    interactable.attachedToHand.TriggerHapticPulse(
+                        (ushort) Mathf.RoundToInt(300 * Mathf.Lerp(1.0f, 0.6f, buggy.mvol)));
                 }
             }
         }

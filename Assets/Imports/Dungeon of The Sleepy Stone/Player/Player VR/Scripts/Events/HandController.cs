@@ -14,7 +14,7 @@ public class HandController : MonoBehaviour
     public SteamVR_Behaviour_Pose controllerPose;
     public SteamVR_Action_Boolean triggerButtonTrigger; //Grab Pinch is the trigger, select from inspecter
     public SteamVR_Action_Boolean gripButtonTrigger; //Grab Pinch is the trigger, select from inspecter
-    public SteamVR_Input_Sources inputSource;//which controller
+    public SteamVR_Input_Sources inputSource; //which controller
 
 
     void OnEnable()
@@ -23,7 +23,7 @@ public class HandController : MonoBehaviour
         {
             triggerButtonTrigger.AddOnChangeListener(OnTriggerButtonUsed, inputSource);
         }
-        
+
         if (gripButtonTrigger != null)
         {
             gripButtonTrigger.AddOnChangeListener(OnGripButtonUsed, inputSource);
@@ -36,7 +36,7 @@ public class HandController : MonoBehaviour
         {
             triggerButtonTrigger.RemoveOnChangeListener(OnTriggerButtonUsed, inputSource);
         }
-        
+
         if (gripButtonTrigger != null)
         {
             gripButtonTrigger.RemoveOnChangeListener(OnGripButtonUsed, inputSource);
@@ -47,7 +47,7 @@ public class HandController : MonoBehaviour
     {
         TriggerButtonAtInteracting(newState ? ButtonEventKind.TriggerButtonDown : ButtonEventKind.TriggerButtonUp);
     }
-    
+
     private void OnGripButtonUsed(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource, bool newState)
     {
         TriggerButtonAtInteracting(newState ? ButtonEventKind.GrabButtonDown : ButtonEventKind.GrabButtonUp);
@@ -81,19 +81,18 @@ public class HandController : MonoBehaviour
     public void EnterObject(GameObject collidingObject)
     {
         var collidingObjectInteractableScript = collidingObject.GetComponent<Interactable>();
-        
+
         if (collidingObjectInteractableScript && !_collidingInteractables.Contains(collidingObjectInteractableScript))
         {
             _collidingInteractables.Add(collidingObjectInteractableScript);
             _interactingObjectInteractable = collidingObject.GetComponent<Interactable>();
-            
         }
     }
 
     public void ExitObject(GameObject exitingObject)
     {
         var exitingObjectInteractableScript = exitingObject.GetComponent<Interactable>();
-        
+
         if (exitingObjectInteractableScript)
         {
             _collidingInteractables.Remove(exitingObjectInteractableScript);
@@ -121,7 +120,7 @@ public class HandController : MonoBehaviour
             //releases object if grabable didnt release in ReleaseFromHand
             ReleaseObject();
         }
-        
+
         _objectInHandGrabable = collidingObject.GetComponent<Grabable>();
 
         CreateFixedJoint(collidingObject);
@@ -132,7 +131,7 @@ public class HandController : MonoBehaviour
         if (_objectInHandGrabable)
         {
             DestroyFixedJoint();
-            
+
             //Some objects get immediately destroyed and would never be exited
             ExitObject(_objectInHandGrabable.gameObject);
 

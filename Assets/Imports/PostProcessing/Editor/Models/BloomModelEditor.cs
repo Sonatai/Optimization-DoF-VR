@@ -119,13 +119,13 @@ namespace UnityEditor.PostProcessing
                 m_RectVertices,
                 fill < 0 ? Color.clear : Color.white * fill,
                 line < 0 ? Color.clear : Color.white * line
-                );
+            );
         }
 
         // Update internal state with a given bloom instance
         public void PrepareGraph()
         {
-            var bloom = (BloomModel)target;
+            var bloom = (BloomModel) target;
             m_RangeX = 5f;
             m_RangeY = 2f;
 
@@ -163,7 +163,7 @@ namespace UnityEditor.PostProcessing
             Handles.Label(
                 PointInRect(0, m_RangeY) + Vector3.right,
                 "Brightness Response (linear)", EditorStyles.miniLabel
-                );
+            );
 
             // Threshold line
             DrawLine(m_GraphThreshold, 0, m_GraphThreshold, m_RangeY, 0.6f);
@@ -188,6 +188,7 @@ namespace UnityEditor.PostProcessing
                         var clip = (m_RectGraph.y - v1.y) / (v2.y - v1.y);
                         m_CurveVertices[vcount - 1] = v1 + (v2 - v1) * clip;
                     }
+
                     break;
                 }
             }

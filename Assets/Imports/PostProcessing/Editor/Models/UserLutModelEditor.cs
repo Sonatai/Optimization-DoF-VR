@@ -24,15 +24,15 @@ namespace UnityEditor.PostProcessing
             // Checks import settings on the lut, offers to fix them if invalid
             if (lut != null)
             {
-                var importer = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(lut));
+                var importer = (TextureImporter) AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(lut));
 
                 if (importer != null) // Fails when using an internal texture
                 {
 #if UNITY_5_5_OR_NEWER
                     bool valid = importer.anisoLevel == 0
-                        && importer.mipmapEnabled == false
-                        && importer.sRGBTexture == false
-                        && (importer.textureCompression == TextureImporterCompression.Uncompressed);
+                                 && importer.mipmapEnabled == false
+                                 && importer.sRGBTexture == false
+                                 && (importer.textureCompression == TextureImporterCompression.Uncompressed);
 #else
                     bool valid = importer.anisoLevel == 0
                         && importer.mipmapEnabled == false
@@ -53,8 +53,10 @@ namespace UnityEditor.PostProcessing
                                 SetLUTImportSettings(importer);
                                 AssetDatabase.Refresh();
                             }
+
                             GUILayout.Space(8);
                         }
+
                         GUILayout.Space(11);
                     }
                 }

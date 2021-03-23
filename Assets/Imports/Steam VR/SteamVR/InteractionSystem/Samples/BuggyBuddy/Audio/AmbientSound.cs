@@ -39,7 +39,6 @@ namespace Valve.VR.InteractionSystem.Sample
                 t += Time.deltaTime / fadeintime;
                 s.volume = t * vol;
             }
-
         }
     }
 }

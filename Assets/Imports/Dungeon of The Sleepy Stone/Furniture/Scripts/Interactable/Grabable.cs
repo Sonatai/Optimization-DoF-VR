@@ -8,6 +8,7 @@ public class Grabable : Interactable
     private Rigidbody _rigibody;
 
     [SerializeField] private ButtonEventKind _releaseButtonAction = ButtonEventKind.GrabButtonUp;
+
     public ButtonEventKind releaseButtonAction
     {
         get => _releaseButtonAction;
@@ -21,11 +22,11 @@ public class Grabable : Interactable
 
     public override void ButtonUsed(HandController hand, ButtonEventKind buttonEventKind)
     {
-        if (buttonEventKind == ButtonEventKind.TriggerButtonDown  && !attachedHand)
+        if (buttonEventKind == ButtonEventKind.TriggerButtonDown && !attachedHand)
         {
             AttachToHand(hand);
         }
-        else if (buttonEventKind == ButtonEventKind.TriggerButtonUp  && attachedHand)
+        else if (buttonEventKind == ButtonEventKind.TriggerButtonUp && attachedHand)
         {
             ReleaseFromHand();
         }

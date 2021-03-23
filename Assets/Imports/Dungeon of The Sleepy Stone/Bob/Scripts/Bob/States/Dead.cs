@@ -1,9 +1,12 @@
 ﻿namespace Agent.Enemy
 {
     using UnityEngine;
+
     public class Dead : ActionState
     {
-        public Dead(float lifetime) : base(lifetime) { }
+        public Dead(float lifetime) : base(lifetime)
+        {
+        }
 
         public override ActionState update(AbstractAI ai, float delta)
         {
@@ -14,6 +17,7 @@
                 //ai.PlayDeathSound();
                 AbstractAI.Destroy(ai.gameObject);
             }
+
             return this;
         }
     }

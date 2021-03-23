@@ -7,9 +7,8 @@ public class Level1_MainPuzzle : MonoBehaviour
 {
     public bool crossbowFound = false;
     public bool quiverFound = false;
-    [SerializeField]
-    private NextScene _nextScene;
-    
+    [SerializeField] private NextScene _nextScene;
+
     public void CheckOpenExit()
     {
         if (crossbowFound && quiverFound)
@@ -17,5 +16,4 @@ public class Level1_MainPuzzle : MonoBehaviour
             _nextScene.TriggerNextScene();
         }
     }
-
 }

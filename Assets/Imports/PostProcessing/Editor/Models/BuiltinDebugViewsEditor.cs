@@ -53,11 +53,11 @@ namespace UnityEditor.PostProcessing
 
             int mode = m_Mode.intValue;
 
-            if (mode == (int)Mode.Depth)
+            if (mode == (int) Mode.Depth)
             {
                 EditorGUILayout.PropertyField(m_Depth.scale);
             }
-            else if (mode == (int)Mode.MotionVectors)
+            else if (mode == (int) Mode.MotionVectors)
             {
                 EditorGUILayout.HelpBox("Switch to play mode to see motion vectors.", MessageType.Info);
 
@@ -72,35 +72,45 @@ namespace UnityEditor.PostProcessing
                 EditorGUI.indentLevel++;
 
                 if (m_MotionVectors.motionImageOpacity.floatValue > 0f)
-                    EditorGUILayout.HelpBox("Please keep opacity to 0 if you're subject to motion sickness.", MessageType.Warning);
+                    EditorGUILayout.HelpBox("Please keep opacity to 0 if you're subject to motion sickness.",
+                        MessageType.Warning);
 
-                EditorGUILayout.PropertyField(m_MotionVectors.motionImageOpacity, EditorGUIHelper.GetContent("Opacity"));
-                EditorGUILayout.PropertyField(m_MotionVectors.motionImageAmplitude, EditorGUIHelper.GetContent("Amplitude"));
+                EditorGUILayout.PropertyField(m_MotionVectors.motionImageOpacity,
+                    EditorGUIHelper.GetContent("Opacity"));
+                EditorGUILayout.PropertyField(m_MotionVectors.motionImageAmplitude,
+                    EditorGUIHelper.GetContent("Amplitude"));
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.Space();
 
                 EditorGUILayout.LabelField("Motion Vectors (arrows)", EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(m_MotionVectors.motionVectorsOpacity, EditorGUIHelper.GetContent("Opacity"));
-                EditorGUILayout.PropertyField(m_MotionVectors.motionVectorsResolution, EditorGUIHelper.GetContent("Resolution"));
-                EditorGUILayout.PropertyField(m_MotionVectors.motionVectorsAmplitude, EditorGUIHelper.GetContent("Amplitude"));
+                EditorGUILayout.PropertyField(m_MotionVectors.motionVectorsOpacity,
+                    EditorGUIHelper.GetContent("Opacity"));
+                EditorGUILayout.PropertyField(m_MotionVectors.motionVectorsResolution,
+                    EditorGUIHelper.GetContent("Resolution"));
+                EditorGUILayout.PropertyField(m_MotionVectors.motionVectorsAmplitude,
+                    EditorGUIHelper.GetContent("Amplitude"));
                 EditorGUI.indentLevel--;
             }
             else
             {
-                CheckActiveEffect(mode == (int)Mode.AmbientOcclusion && !profile.ambientOcclusion.enabled, "Ambient Occlusion");
-                CheckActiveEffect(mode == (int)Mode.FocusPlane && !profile.depthOfField.enabled, "Depth Of Field");
-                CheckActiveEffect(mode == (int)Mode.EyeAdaptation && !profile.eyeAdaptation.enabled, "Eye Adaptation");
-                CheckActiveEffect((mode == (int)Mode.LogLut || mode == (int)Mode.PreGradingLog) && !profile.colorGrading.enabled, "Color Grading");
-                CheckActiveEffect(mode == (int)Mode.UserLut && !profile.userLut.enabled, "User Lut");
+                CheckActiveEffect(mode == (int) Mode.AmbientOcclusion && !profile.ambientOcclusion.enabled,
+                    "Ambient Occlusion");
+                CheckActiveEffect(mode == (int) Mode.FocusPlane && !profile.depthOfField.enabled, "Depth Of Field");
+                CheckActiveEffect(mode == (int) Mode.EyeAdaptation && !profile.eyeAdaptation.enabled, "Eye Adaptation");
+                CheckActiveEffect(
+                    (mode == (int) Mode.LogLut || mode == (int) Mode.PreGradingLog) && !profile.colorGrading.enabled,
+                    "Color Grading");
+                CheckActiveEffect(mode == (int) Mode.UserLut && !profile.userLut.enabled, "User Lut");
             }
         }
 
         void CheckActiveEffect(bool expr, string name)
         {
             if (expr)
-                EditorGUILayout.HelpBox(string.Format("{0} isn't enabled, the debug view won't work.", name), MessageType.Warning);
+                EditorGUILayout.HelpBox(string.Format("{0} isn't enabled, the debug view won't work.", name),
+                    MessageType.Warning);
         }
     }
 }

@@ -40,14 +40,15 @@ namespace UnityEditor.PostProcessing
         {
             m_Method.intValue = EditorGUILayout.Popup("Method", m_Method.intValue, s_MethodNames);
 
-            if (m_Method.intValue == (int)Method.Fxaa)
+            if (m_Method.intValue == (int) Method.Fxaa)
             {
                 EditorGUILayout.PropertyField(m_FxaaPreset);
             }
-            else if (m_Method.intValue == (int)Method.Taa)
+            else if (m_Method.intValue == (int) Method.Taa)
             {
                 if (QualitySettings.antiAliasing > 1)
-                    EditorGUILayout.HelpBox("Temporal Anti-Aliasing doesn't work correctly when MSAA is enabled.", MessageType.Warning);
+                    EditorGUILayout.HelpBox("Temporal Anti-Aliasing doesn't work correctly when MSAA is enabled.",
+                        MessageType.Warning);
 
                 EditorGUILayout.LabelField("Jitter", EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;

@@ -8,9 +8,9 @@ using UnityEngine;
 using Valve.VR;
 using System.IO;
 using System.Linq;
-
 #if UNITY_2017_2_OR_NEWER
-    using UnityEngine.XR;
+using UnityEngine.XR;
+
 #else
 using XRSettings = UnityEngine.VR.VRSettings;
 using XRDevice = UnityEngine.VR.VRDevice;
@@ -22,10 +22,14 @@ namespace Valve.VR
     {
         // Use this to check if SteamVR is currently active without attempting
         // to activate it in the process.
-        public static bool active { get { return _instance != null; } }
+        public static bool active
+        {
+            get { return _instance != null; }
+        }
 
         // Set this to false to keep from auto-initializing when calling SteamVR.instance.
         private static bool _enabled = true;
+
         public static bool enabled
         {
             get
@@ -55,6 +59,7 @@ namespace Valve.VR
         }
 
         private static SteamVR _instance;
+
         public static SteamVR instance
         {
             get
@@ -122,21 +127,26 @@ namespace Valve.VR
             string errorLog = "<b>[SteamVR]</b> Initialization failed. ";
 
 #if OPENVR_XR_API
-            errorLog += "Please verify that you have SteamVR installed, your hmd is functioning, and OpenVR Loader is checked in the XR Plugin Management section of Project Settings.";
+            errorLog +=
+ "Please verify that you have SteamVR installed, your hmd is functioning, and OpenVR Loader is checked in the XR Plugin Management section of Project Settings.";
 #else
 
             if (XRSettings.enabled == false)
-                errorLog += "VR may be disabled in player settings. Go to player settings in the editor and check the 'Virtual Reality Supported' checkbox'. ";
+                errorLog +=
+                    "VR may be disabled in player settings. Go to player settings in the editor and check the 'Virtual Reality Supported' checkbox'. ";
             if (XRSettings.supportedDevices != null && XRSettings.supportedDevices.Length > 0)
             {
                 if (XRSettings.supportedDevices.Contains("OpenVR") == false)
-                    errorLog += "OpenVR is not in your list of supported virtual reality SDKs. Add it to the list in player settings. ";
+                    errorLog +=
+                        "OpenVR is not in your list of supported virtual reality SDKs. Add it to the list in player settings. ";
                 else if (XRSettings.supportedDevices.First().Contains("OpenVR") == false)
-                    errorLog += "OpenVR is not first in your list of supported virtual reality SDKs. <b>This is okay, but if you have an Oculus device plugged in, and Oculus above OpenVR in this list, it will try and use the Oculus SDK instead of OpenVR.</b> ";
+                    errorLog +=
+                        "OpenVR is not first in your list of supported virtual reality SDKs. <b>This is okay, but if you have an Oculus device plugged in, and Oculus above OpenVR in this list, it will try and use the Oculus SDK instead of OpenVR.</b> ";
             }
             else
             {
-                errorLog += "You have no SDKs in your Player Settings list of supported virtual reality SDKs. Add OpenVR to it. ";
+                errorLog +=
+                    "You have no SDKs in your Player Settings list of supported virtual reality SDKs. Add OpenVR to it. ";
             }
 
             errorLog += "To attempt to force OpenVR initialization call SteamVR.Initialize(true). ";
@@ -202,7 +212,8 @@ namespace Valve.VR
                 SteamVR_Input.IdentifyActionsFile();
 #endif
 
-                if (SteamVR_Settings.instance.inputUpdateMode != SteamVR_UpdateModes.Nothing || SteamVR_Settings.instance.poseUpdateMode != SteamVR_UpdateModes.Nothing)
+                if (SteamVR_Settings.instance.inputUpdateMode != SteamVR_UpdateModes.Nothing ||
+                    SteamVR_Settings.instance.poseUpdateMode != SteamVR_UpdateModes.Nothing)
                 {
                     SteamVR_Input.Initialize();
 
@@ -232,13 +243,16 @@ namespace Valve.VR
                 case EVRInitError.None:
                     break;
                 case EVRInitError.VendorSpecific_UnableToConnectToOculusRuntime:
-                    Debug.LogWarning("<b>[SteamVR]</b> Initialization Failed!  Make sure device is on, Oculus runtime is installed, and OVRService_*.exe is running.");
+                    Debug.LogWarning(
+                        "<b>[SteamVR]</b> Initialization Failed!  Make sure device is on, Oculus runtime is installed, and OVRService_*.exe is running.");
                     break;
                 case EVRInitError.Init_VRClientDLLNotFound:
-                    Debug.LogWarning("<b>[SteamVR]</b> Drivers not found!  They can be installed via Steam under Library > Tools.  Visit http://steampowered.com to install Steam.");
+                    Debug.LogWarning(
+                        "<b>[SteamVR]</b> Drivers not found!  They can be installed via Steam under Library > Tools.  Visit http://steampowered.com to install Steam.");
                     break;
                 case EVRInitError.Driver_RuntimeOutOfDate:
-                    Debug.LogWarning("<b>[SteamVR]</b> Initialization Failed!  Make sure device's runtime is up to date.");
+                    Debug.LogWarning(
+                        "<b>[SteamVR]</b> Initialization Failed!  Make sure device's runtime is up to date.");
                     break;
                 default:
                     Debug.LogWarning("<b>[SteamVR]</b> " + OpenVR.GetStringForHmdError(error));
@@ -269,13 +283,35 @@ namespace Valve.VR
         public ETextureType textureType;
 
         // hmd properties
-        public string hmd_TrackingSystemName { get { return GetStringProperty(ETrackedDeviceProperty.Prop_TrackingSystemName_String); } }
-        public string hmd_ModelNumber { get { return GetStringProperty(ETrackedDeviceProperty.Prop_ModelNumber_String); } }
-        public string hmd_SerialNumber { get { return GetStringProperty(ETrackedDeviceProperty.Prop_SerialNumber_String); } }
-        public string hmd_Type { get { return GetStringProperty(ETrackedDeviceProperty.Prop_ControllerType_String); } }
+        public string hmd_TrackingSystemName
+        {
+            get { return GetStringProperty(ETrackedDeviceProperty.Prop_TrackingSystemName_String); }
+        }
 
-        public float hmd_SecondsFromVsyncToPhotons { get { return GetFloatProperty(ETrackedDeviceProperty.Prop_SecondsFromVsyncToPhotons_Float); } }
-        public float hmd_DisplayFrequency { get { return GetFloatProperty(ETrackedDeviceProperty.Prop_DisplayFrequency_Float); } }
+        public string hmd_ModelNumber
+        {
+            get { return GetStringProperty(ETrackedDeviceProperty.Prop_ModelNumber_String); }
+        }
+
+        public string hmd_SerialNumber
+        {
+            get { return GetStringProperty(ETrackedDeviceProperty.Prop_SerialNumber_String); }
+        }
+
+        public string hmd_Type
+        {
+            get { return GetStringProperty(ETrackedDeviceProperty.Prop_ControllerType_String); }
+        }
+
+        public float hmd_SecondsFromVsyncToPhotons
+        {
+            get { return GetFloatProperty(ETrackedDeviceProperty.Prop_SecondsFromVsyncToPhotons_Float); }
+        }
+
+        public float hmd_DisplayFrequency
+        {
+            get { return GetFloatProperty(ETrackedDeviceProperty.Prop_DisplayFrequency_Float); }
+        }
 
         public EDeviceActivityLevel GetHeadsetActivityLevel()
         {
@@ -285,13 +321,16 @@ namespace Valve.VR
         public string GetTrackedDeviceString(uint deviceId)
         {
             var error = ETrackedPropertyError.TrackedProp_Success;
-            var capacity = hmd.GetStringTrackedDeviceProperty(deviceId, ETrackedDeviceProperty.Prop_AttachedDeviceId_String, null, 0, ref error);
+            var capacity = hmd.GetStringTrackedDeviceProperty(deviceId,
+                ETrackedDeviceProperty.Prop_AttachedDeviceId_String, null, 0, ref error);
             if (capacity > 1)
             {
-                var result = new System.Text.StringBuilder((int)capacity);
-                hmd.GetStringTrackedDeviceProperty(deviceId, ETrackedDeviceProperty.Prop_AttachedDeviceId_String, result, capacity, ref error);
+                var result = new System.Text.StringBuilder((int) capacity);
+                hmd.GetStringTrackedDeviceProperty(deviceId, ETrackedDeviceProperty.Prop_AttachedDeviceId_String,
+                    result, capacity, ref error);
                 return result.ToString();
             }
+
             return null;
         }
 
@@ -301,10 +340,11 @@ namespace Valve.VR
             var capactiy = hmd.GetStringTrackedDeviceProperty(deviceId, prop, null, 0, ref error);
             if (capactiy > 1)
             {
-                var result = new System.Text.StringBuilder((int)capactiy);
+                var result = new System.Text.StringBuilder((int) capactiy);
                 hmd.GetStringTrackedDeviceProperty(deviceId, prop, result, capactiy, ref error);
                 return result.ToString();
             }
+
             return (error != ETrackedPropertyError.TrackedProp_Success) ? error.ToString() : "<unknown>";
         }
 
@@ -316,6 +356,7 @@ namespace Valve.VR
 
 
         private static bool runningTemporarySession = false;
+
         public static bool InitializeTemporarySession(bool initInput = false)
         {
             if (Application.isEditor)
@@ -371,10 +412,12 @@ namespace Valve.VR
 
 
             Valve.VR.EVRSettingsError bindingFlagError = Valve.VR.EVRSettingsError.None;
-            Valve.VR.OpenVR.Settings.SetBool(Valve.VR.OpenVR.k_pch_SteamVR_Section, Valve.VR.OpenVR.k_pch_SteamVR_DebugInputBinding, true, ref bindingFlagError);
+            Valve.VR.OpenVR.Settings.SetBool(Valve.VR.OpenVR.k_pch_SteamVR_Section,
+                Valve.VR.OpenVR.k_pch_SteamVR_DebugInputBinding, true, ref bindingFlagError);
 
             if (bindingFlagError != Valve.VR.EVRSettingsError.None)
-                Debug.LogError("<b>[SteamVR]</b> Error turning on the debug input binding flag in steamvr: " + bindingFlagError.ToString());
+                Debug.LogError("<b>[SteamVR]</b> Error turning on the debug input binding flag in steamvr: " +
+                               bindingFlagError.ToString());
 
             if (Application.isPlaying == false)
             {
@@ -405,7 +448,8 @@ namespace Valve.VR
             else
             {
                 System.IO.DirectoryInfo assetsDirectoryInfo = new DirectoryInfo(Application.dataPath);
-                string localPath = fullPath.Substring(assetsDirectoryInfo.Parent.FullName.Length + 1); //plus separator char
+                string localPath =
+                    fullPath.Substring(assetsDirectoryInfo.Parent.FullName.Length + 1); //plus separator char
                 return localPath;
             }
         }
@@ -426,7 +470,8 @@ namespace Valve.VR
             else
             {
                 System.IO.DirectoryInfo assetsDirectoryInfo = new DirectoryInfo(Application.dataPath);
-                string localPath = fullPath.Substring(assetsDirectoryInfo.Parent.FullName.Length + 1); //plus separator char
+                string localPath =
+                    fullPath.Substring(assetsDirectoryInfo.Parent.FullName.Length + 1); //plus separator char
                 return localPath;
             }
         }
@@ -487,7 +532,8 @@ namespace Valve.VR
             if (File.Exists(fullPath))
             {
                 string jsonText = File.ReadAllText(fullPath);
-                SteamVR_Input_ManifestFile existingFile = Valve.Newtonsoft.Json.JsonConvert.DeserializeObject<SteamVR_Input_ManifestFile>(jsonText);
+                SteamVR_Input_ManifestFile existingFile =
+                    Valve.Newtonsoft.Json.JsonConvert.DeserializeObject<SteamVR_Input_ManifestFile>(jsonText);
 
                 if (existingFile != null && existingFile.applications != null && existingFile.applications.Count > 0 &&
                     existingFile.applications[0].app_key != SteamVR_Settings.instance.editorAppKey)
@@ -502,7 +548,8 @@ namespace Valve.VR
                 if (existingFile != null && existingFile.applications != null && existingFile.applications.Count > 0 &&
                     existingFile.applications[0].action_manifest_path != fullManifestPath.FullName)
                 {
-                    Debug.Log("<b>[SteamVR]</b> Deleting existing VRManifest because it has a different action manifest path:" +
+                    Debug.Log(
+                        "<b>[SteamVR]</b> Deleting existing VRManifest because it has a different action manifest path:" +
                         "\nExisting:" + existingFile.applications[0].action_manifest_path +
                         "\nNew: " + fullManifestPath.FullName);
                     FileInfo existingInfo = new FileInfo(fullPath);
@@ -516,7 +563,8 @@ namespace Valve.VR
             {
                 SteamVR_Input_ManifestFile manifestFile = new SteamVR_Input_ManifestFile();
                 manifestFile.source = "Unity";
-                SteamVR_Input_ManifestFile_Application manifestApplication = new SteamVR_Input_ManifestFile_Application();
+                SteamVR_Input_ManifestFile_Application manifestApplication =
+                    new SteamVR_Input_ManifestFile_Application();
                 manifestApplication.app_key = SteamVR_Settings.instance.editorAppKey;
                 manifestApplication.action_manifest_path = fullManifestPath.FullName;
                 manifestApplication.launch_type = "url";
@@ -524,7 +572,9 @@ namespace Valve.VR
                 //manifestApplication.binary_path_linux = SteamVR_Utils.ConvertToForwardSlashes(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
                 //manifestApplication.binary_path_osx = SteamVR_Utils.ConvertToForwardSlashes(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
                 manifestApplication.url = "steam://launch/";
-                manifestApplication.strings.Add("en_us", new SteamVR_Input_ManifestFile_ApplicationString() { name = string.Format("{0} [Testing]", Application.productName) });
+                manifestApplication.strings.Add("en_us",
+                    new SteamVR_Input_ManifestFile_ApplicationString()
+                        {name = string.Format("{0} [Testing]", Application.productName)});
 
                 /*
                 var bindings = new System.Collections.Generic.List<SteamVR_Input_ManifestFile_Application_Binding>();
@@ -555,11 +605,14 @@ namespace Valve.VR
                 }
                 */
 
-                manifestFile.applications = new System.Collections.Generic.List<SteamVR_Input_ManifestFile_Application>();
+                manifestFile.applications =
+                    new System.Collections.Generic.List<SteamVR_Input_ManifestFile_Application>();
                 manifestFile.applications.Add(manifestApplication);
 
-                string json = Valve.Newtonsoft.Json.JsonConvert.SerializeObject(manifestFile, Valve.Newtonsoft.Json.Formatting.Indented,
-                    new Valve.Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Valve.Newtonsoft.Json.NullValueHandling.Ignore });
+                string json = Valve.Newtonsoft.Json.JsonConvert.SerializeObject(manifestFile,
+                    Valve.Newtonsoft.Json.Formatting.Indented,
+                    new Valve.Newtonsoft.Json.JsonSerializerSettings
+                        {NullValueHandling = Valve.Newtonsoft.Json.NullValueHandling.Ignore});
 
                 File.WriteAllText(fullPath, json);
             }
@@ -573,7 +626,8 @@ namespace Valve.VR
 
             if (string.IsNullOrEmpty(SteamVR_Settings.instance.editorAppKey))
             {
-                Debug.LogError("<b>[SteamVR]</b> Critical Error identifying application. EditorAppKey is null or empty. Input may not work.");
+                Debug.LogError(
+                    "<b>[SteamVR]</b> Critical Error identifying application. EditorAppKey is null or empty. Input may not work.");
                 return;
             }
 
@@ -589,18 +643,21 @@ namespace Valve.VR
             }
 
             int processId = System.Diagnostics.Process.GetCurrentProcess().Id;
-            EVRApplicationError applicationIdentifyErr = OpenVR.Applications.IdentifyApplication((uint)processId, SteamVR_Settings.instance.editorAppKey);
+            EVRApplicationError applicationIdentifyErr =
+                OpenVR.Applications.IdentifyApplication((uint) processId, SteamVR_Settings.instance.editorAppKey);
 
             if (applicationIdentifyErr != EVRApplicationError.None)
                 Debug.LogError("<b>[SteamVR]</b> Error identifying application: " + applicationIdentifyErr.ToString());
             else
             {
                 if (showLogs)
-                    Debug.Log(string.Format("<b>[SteamVR]</b> Successfully identified process as editor project to SteamVR ({0})", SteamVR_Settings.instance.editorAppKey));
+                    Debug.Log(string.Format(
+                        "<b>[SteamVR]</b> Successfully identified process as editor project to SteamVR ({0})",
+                        SteamVR_Settings.instance.editorAppKey));
             }
         }
 
-#region Event callbacks
+        #region Event callbacks
 
         private void OnInitializing(bool initializing)
         {
@@ -665,12 +722,13 @@ namespace Valve.VR
             }
         }
 
-#endregion
+        #endregion
 
         private SteamVR()
         {
             hmd = OpenVR.System;
-            Debug.LogFormat("<b>[SteamVR]</b> Initialized. Connected to {0} : {1} : {2} :: {3}", hmd_TrackingSystemName, hmd_ModelNumber, hmd_SerialNumber, hmd_Type);
+            Debug.LogFormat("<b>[SteamVR]</b> Initialized. Connected to {0} : {1} : {2} :: {3}", hmd_TrackingSystemName,
+                hmd_ModelNumber, hmd_SerialNumber, hmd_Type);
 
             compositor = OpenVR.Compositor;
             overlay = OpenVR.Overlay;
@@ -678,8 +736,8 @@ namespace Valve.VR
             // Setup render values
             uint w = 0, h = 0;
             hmd.GetRecommendedRenderTargetSize(ref w, ref h);
-            sceneWidth = (float)w;
-            sceneHeight = (float)h;
+            sceneWidth = (float) w;
+            sceneHeight = (float) h;
 
             float l_left = 0.0f, l_right = 0.0f, l_top = 0.0f, l_bottom = 0.0f;
             hmd.GetProjectionRaw(EVREye.Eye_Left, ref l_left, ref l_right, ref l_top, ref l_bottom);
@@ -704,15 +762,19 @@ namespace Valve.VR
             textureBounds[1].vMax = 0.5f - 0.5f * r_top / tanHalfFov.y;
 
             // Grow the recommended size to account for the overlapping fov
-            sceneWidth = sceneWidth / Mathf.Max(textureBounds[0].uMax - textureBounds[0].uMin, textureBounds[1].uMax - textureBounds[1].uMin);
-            sceneHeight = sceneHeight / Mathf.Max(textureBounds[0].vMax - textureBounds[0].vMin, textureBounds[1].vMax - textureBounds[1].vMin);
+            sceneWidth = sceneWidth / Mathf.Max(textureBounds[0].uMax - textureBounds[0].uMin,
+                textureBounds[1].uMax - textureBounds[1].uMin);
+            sceneHeight = sceneHeight / Mathf.Max(textureBounds[0].vMax - textureBounds[0].vMin,
+                textureBounds[1].vMax - textureBounds[1].vMin);
 
             aspect = tanHalfFov.x / tanHalfFov.y;
             fieldOfView = 2.0f * Mathf.Atan(tanHalfFov.y) * Mathf.Rad2Deg;
 
-            eyes = new SteamVR_Utils.RigidTransform[] {
-            new SteamVR_Utils.RigidTransform(hmd.GetEyeToHeadTransform(EVREye.Eye_Left)),
-            new SteamVR_Utils.RigidTransform(hmd.GetEyeToHeadTransform(EVREye.Eye_Right)) };
+            eyes = new SteamVR_Utils.RigidTransform[]
+            {
+                new SteamVR_Utils.RigidTransform(hmd.GetEyeToHeadTransform(EVREye.Eye_Left)),
+                new SteamVR_Utils.RigidTransform(hmd.GetEyeToHeadTransform(EVREye.Eye_Right))
+            };
 
             switch (SystemInfo.graphicsDeviceType)
             {
@@ -725,9 +787,9 @@ namespace Valve.VR
                     textureType = ETextureType.OpenGL;
                     break;
 #if !(UNITY_5_4)
-			case UnityEngine.Rendering.GraphicsDeviceType.Vulkan:
-				textureType = ETextureType.Vulkan;
-				break;
+                case UnityEngine.Rendering.GraphicsDeviceType.Vulkan:
+                    textureType = ETextureType.Vulkan;
+                    break;
 #endif
                 default:
                     textureType = ETextureType.DirectX;

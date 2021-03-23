@@ -6,11 +6,11 @@ namespace UnityEngine.PostProcessing
     {
         static class Uniforms
         {
-            internal static int _Jitter               = Shader.PropertyToID("_Jitter");
-            internal static int _SharpenParameters    = Shader.PropertyToID("_SharpenParameters");
+            internal static int _Jitter = Shader.PropertyToID("_Jitter");
+            internal static int _SharpenParameters = Shader.PropertyToID("_SharpenParameters");
             internal static int _FinalBlendParameters = Shader.PropertyToID("_FinalBlendParameters");
-            internal static int _HistoryTex           = Shader.PropertyToID("_HistoryTex");
-            internal static int _MainTex              = Shader.PropertyToID("_MainTex");
+            internal static int _HistoryTex = Shader.PropertyToID("_HistoryTex");
+            internal static int _MainTex = Shader.PropertyToID("_MainTex");
         }
 
         const string k_ShaderString = "Hidden/Post FX/Temporal Anti-aliasing";
@@ -87,7 +87,8 @@ namespace UnityEngine.PostProcessing
 
             var settings = model.settings.taaSettings;
 
-            if (m_ResetHistory || m_HistoryTexture == null || m_HistoryTexture.width != source.width || m_HistoryTexture.height != source.height)
+            if (m_ResetHistory || m_HistoryTexture == null || m_HistoryTexture.width != source.width ||
+                m_HistoryTexture.height != source.height)
             {
                 if (m_HistoryTexture)
                     RenderTexture.ReleaseTemporary(m_HistoryTexture);
@@ -100,7 +101,8 @@ namespace UnityEngine.PostProcessing
 
             const float kMotionAmplification = 100f * 60f;
             material.SetVector(Uniforms._SharpenParameters, new Vector4(settings.sharpen, 0f, 0f, 0f));
-            material.SetVector(Uniforms._FinalBlendParameters, new Vector4(settings.stationaryBlending, settings.motionBlending, kMotionAmplification, 0f));
+            material.SetVector(Uniforms._FinalBlendParameters,
+                new Vector4(settings.stationaryBlending, settings.motionBlending, kMotionAmplification, 0f));
             material.SetTexture(Uniforms._MainTex, source);
             material.SetTexture(Uniforms._HistoryTex, m_HistoryTexture);
 
@@ -122,14 +124,14 @@ namespace UnityEngine.PostProcessing
         float GetHaltonValue(int index, int radix)
         {
             float result = 0f;
-            float fraction = 1f / (float)radix;
+            float fraction = 1f / (float) radix;
 
             while (index > 0)
             {
-                result += (float)(index % radix) * fraction;
+                result += (float) (index % radix) * fraction;
 
                 index /= radix;
-                fraction /= (float)radix;
+                fraction /= (float) radix;
             }
 
             return result;
@@ -138,8 +140,8 @@ namespace UnityEngine.PostProcessing
         Vector2 GenerateRandomOffset()
         {
             var offset = new Vector2(
-                    GetHaltonValue(m_SampleIndex & 1023, 2),
-                    GetHaltonValue(m_SampleIndex & 1023, 3));
+                GetHaltonValue(m_SampleIndex & 1023, 2),
+                GetHaltonValue(m_SampleIndex & 1023, 3));
 
             if (++m_SampleIndex >= k_SampleCount)
                 m_SampleIndex = 0;
@@ -176,8 +178,10 @@ namespace UnityEngine.PostProcessing
 
             matrix[2, 0] = 0f;
             matrix[2, 1] = 0f;
-            matrix[2, 2] = -(context.camera.farClipPlane + context.camera.nearClipPlane) / (context.camera.farClipPlane - context.camera.nearClipPlane);
-            matrix[2, 3] = -(2f * context.camera.farClipPlane * context.camera.nearClipPlane) / (context.camera.farClipPlane - context.camera.nearClipPlane);
+            matrix[2, 2] = -(context.camera.farClipPlane + context.camera.nearClipPlane) /
+                           (context.camera.farClipPlane - context.camera.nearClipPlane);
+            matrix[2, 3] = -(2f * context.camera.farClipPlane * context.camera.nearClipPlane) /
+                           (context.camera.farClipPlane - context.camera.nearClipPlane);
 
             matrix[3, 0] = 0f;
             matrix[3, 1] = 0f;

@@ -22,16 +22,16 @@ namespace UnityEngine.PostProcessing
         {
             var settings = model.settings.fxaaSettings;
             var material = context.materialFactory.Get("Hidden/Post FX/FXAA");
-            var qualitySettings = AntialiasingModel.FxaaQualitySettings.presets[(int)settings.preset];
-            var consoleSettings = AntialiasingModel.FxaaConsoleSettings.presets[(int)settings.preset];
+            var qualitySettings = AntialiasingModel.FxaaQualitySettings.presets[(int) settings.preset];
+            var consoleSettings = AntialiasingModel.FxaaConsoleSettings.presets[(int) settings.preset];
 
             material.SetVector(Uniforms._QualitySettings,
                 new Vector3(
                     qualitySettings.subpixelAliasingRemovalAmount,
                     qualitySettings.edgeDetectionThreshold,
                     qualitySettings.minimumRequiredLuminance
-                    )
-                );
+                )
+            );
 
             material.SetVector(Uniforms._ConsoleSettings,
                 new Vector4(
@@ -39,8 +39,8 @@ namespace UnityEngine.PostProcessing
                     consoleSettings.edgeSharpnessAmount,
                     consoleSettings.edgeDetectionThreshold,
                     consoleSettings.minimumRequiredLuminance
-                    )
-                );
+                )
+            );
 
             Graphics.Blit(source, destination, material, 0);
         }

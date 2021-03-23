@@ -13,7 +13,8 @@ namespace Valve.VR
     {
         private static bool importing = false;
 
-        static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+        static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets,
+            string[] movedFromAssetPaths)
         {
             if (importing)
                 return;
@@ -34,11 +35,14 @@ namespace Valve.VR
         }
 
         public const string partialManifestFilename = "steamvr_partial_manifest.json";
+
         public static void CreatePartial(string name, int version, bool overwriteOld, bool removeUnused)
         {
             if (SteamVR_Input.actionFile.action_sets.Any(set => set.name == "default"))
             {
-                bool confirm = EditorUtility.DisplayDialog("Confirmation", "We don't recommend you create a partial binding manifest with an action set named 'default'. There will often be collisions with existing actions. Are you sure you want to continue creating this partial binding manifest?", "Create", "Cancel");
+                bool confirm = EditorUtility.DisplayDialog("Confirmation",
+                    "We don't recommend you create a partial binding manifest with an action set named 'default'. There will often be collisions with existing actions. Are you sure you want to continue creating this partial binding manifest?",
+                    "Create", "Cancel");
                 if (confirm == false)
                     return;
             }
@@ -49,8 +53,10 @@ namespace Valve.VR
             string directorySeparatorChar = System.IO.Path.DirectorySeparatorChar.ToString();
 
             string mainFolderPath = string.Format("{0}", folderName);
-            string versionFolderPath = string.Format("{1}{0}{2}", directorySeparatorChar, folderName, version.ToString());
-            string manifestPath = string.Format("{1}{0}{2}{0}{3}", directorySeparatorChar, folderName, version.ToString(), partialManifestFilename);
+            string versionFolderPath =
+                string.Format("{1}{0}{2}", directorySeparatorChar, folderName, version.ToString());
+            string manifestPath = string.Format("{1}{0}{2}{0}{3}", directorySeparatorChar, folderName,
+                version.ToString(), partialManifestFilename);
 
             if (Directory.Exists(mainFolderPath) == false)
             {
@@ -70,7 +76,8 @@ namespace Valve.VR
             partial.removeUnused = removeUnused;
 
 
-            string jsonText = JsonConvert.SerializeObject(partial, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            string jsonText = JsonConvert.SerializeObject(partial, Formatting.Indented,
+                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
 
             if (File.Exists(manifestPath))
             {
@@ -96,7 +103,8 @@ namespace Valve.VR
             return null;
         }
 
-        protected static int ImportLocalization(SteamVR_Input_ActionFile currentActionsFile, SteamVR_Input_ActionFile newActionsFile, SteamVR_PartialInputBindings partialBinding)
+        protected static int ImportLocalization(SteamVR_Input_ActionFile currentActionsFile,
+            SteamVR_Input_ActionFile newActionsFile, SteamVR_PartialInputBindings partialBinding)
         {
             int count = 0;
 
@@ -106,12 +114,16 @@ namespace Valve.VR
 
                 if (string.IsNullOrEmpty(newLanguage))
                 {
-                    Debug.LogError("<b>[SteamVR Input]</b> Localization entry in partial actions file is missing a language tag: " + partialBinding.path);
+                    Debug.LogError(
+                        "<b>[SteamVR Input]</b> Localization entry in partial actions file is missing a language tag: " +
+                        partialBinding.path);
                     continue;
                 }
 
                 int currentLanguage = -1;
-                for (int currentLanguageIndex = 0; currentLanguageIndex < currentActionsFile.localization.Count; currentLanguageIndex++)
+                for (int currentLanguageIndex = 0;
+                    currentLanguageIndex < currentActionsFile.localization.Count;
+                    currentLanguageIndex++)
                 {
                     string language = FindLanguageInDictionary(currentActionsFile.localization[currentLanguageIndex]);
                     if (newLanguage == language)
@@ -156,7 +168,8 @@ namespace Valve.VR
             return count;
         }
 
-        protected static int ImportActionSets(SteamVR_Input_ActionFile currentActionsFile, SteamVR_Input_ActionFile newActionsFile)
+        protected static int ImportActionSets(SteamVR_Input_ActionFile currentActionsFile,
+            SteamVR_Input_ActionFile newActionsFile)
         {
             int count = 0;
 
@@ -172,7 +185,8 @@ namespace Valve.VR
             return count;
         }
 
-        protected static int ImportActions(SteamVR_Input_ActionFile currentActionsFile, SteamVR_Input_ActionFile newActionsFile)
+        protected static int ImportActions(SteamVR_Input_ActionFile currentActionsFile,
+            SteamVR_Input_ActionFile newActionsFile)
         {
             int count = 0;
 
@@ -185,7 +199,8 @@ namespace Valve.VR
                 }
                 else
                 {
-                    SteamVR_Input_ActionFile_Action existingAction = currentActionsFile.actions.First(actionInCurrent => newAction.name == actionInCurrent.name);
+                    SteamVR_Input_ActionFile_Action existingAction =
+                        currentActionsFile.actions.First(actionInCurrent => newAction.name == actionInCurrent.name);
 
                     //todo: better merge? should we overwrite?
                     existingAction.type = newAction.type;
@@ -208,13 +223,15 @@ namespace Valve.VR
 
             string jsonText = File.ReadAllText(path);
 
-            SteamVR_Input_BindingFile importingBindingFile = JsonConvert.DeserializeObject<SteamVR_Input_BindingFile>(jsonText);
+            SteamVR_Input_BindingFile importingBindingFile =
+                JsonConvert.DeserializeObject<SteamVR_Input_BindingFile>(jsonText);
 
             return importingBindingFile;
         }
 
 
-        protected static void WriteBindingFileObject(SteamVR_Input_BindingFile currentBindingFile, string currentBindingPath)
+        protected static void WriteBindingFileObject(SteamVR_Input_BindingFile currentBindingFile,
+            string currentBindingPath)
         {
             if (File.Exists(currentBindingPath))
             {
@@ -222,18 +239,21 @@ namespace Valve.VR
                 fileInfo.IsReadOnly = false;
             }
 
-            string newJSON = JsonConvert.SerializeObject(currentBindingFile, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            string newJSON = JsonConvert.SerializeObject(currentBindingFile, Formatting.Indented,
+                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
 
             File.WriteAllText(currentBindingPath, newJSON);
 
             Debug.Log("<b>[SteamVR]</b> Added action bindings to: " + currentBindingPath);
         }
 
-        protected static void ImportBindings(SteamVR_Input_ActionFile currentActionsFile, SteamVR_Input_ActionFile newActionsFile, string directory)
+        protected static void ImportBindings(SteamVR_Input_ActionFile currentActionsFile,
+            SteamVR_Input_ActionFile newActionsFile, string directory)
         {
             foreach (var newDefaultPath in newActionsFile.default_bindings)
             {
-                if (currentActionsFile.default_bindings.Any(currentDefaultPath => newDefaultPath.controller_type == currentDefaultPath.controller_type) == false)
+                if (currentActionsFile.default_bindings.Any(currentDefaultPath =>
+                    newDefaultPath.controller_type == currentDefaultPath.controller_type) == false)
                 {
                     currentActionsFile.default_bindings.Add(newDefaultPath.GetCopy());
 
@@ -243,20 +263,24 @@ namespace Valve.VR
                 else
                 {
                     string currentBindingDirectory = SteamVR_Input.GetActionsFileFolder();
-                    string currentBindingPath = currentActionsFile.default_bindings.First(binding => binding.controller_type == newDefaultPath.controller_type).binding_url;
+                    string currentBindingPath = currentActionsFile.default_bindings
+                        .First(binding => binding.controller_type == newDefaultPath.controller_type).binding_url;
                     currentBindingPath = Path.Combine(currentBindingDirectory, currentBindingPath);
 
                     SteamVR_Input_BindingFile currentBindingFile = GetBindingFileObject(currentBindingPath);
                     if (currentBindingFile == null)
                     {
-                        Debug.LogError("<b>[SteamVR]</b> There was an error deserializing the binding at path: " + currentBindingPath);
+                        Debug.LogError("<b>[SteamVR]</b> There was an error deserializing the binding at path: " +
+                                       currentBindingPath);
                         continue;
                     }
 
-                    SteamVR_Input_BindingFile importingBindingFile = GetBindingFileObject(Path.Combine(directory, newDefaultPath.binding_url));
+                    SteamVR_Input_BindingFile importingBindingFile =
+                        GetBindingFileObject(Path.Combine(directory, newDefaultPath.binding_url));
                     if (importingBindingFile == null)
                     {
-                        Debug.LogError("<b>[SteamVR]</b> There was an error deserializing the binding at path: " + Path.Combine(directory, newDefaultPath.binding_url));
+                        Debug.LogError("<b>[SteamVR]</b> There was an error deserializing the binding at path: " +
+                                       Path.Combine(directory, newDefaultPath.binding_url));
                         continue;
                     }
 
@@ -266,13 +290,16 @@ namespace Valve.VR
                     {
                         if (currentBindingFile.bindings.Any(binding => binding.Key == importingActionList.Key))
                         {
-                            var currentSetBinding = currentBindingFile.bindings.FirstOrDefault(binding => binding.Key == importingActionList.Key);
+                            var currentSetBinding =
+                                currentBindingFile.bindings.FirstOrDefault(binding =>
+                                    binding.Key == importingActionList.Key);
 
                             //todo: better merge? if we don't have an exact copy of the item then we add a new one
 
                             foreach (var importingChord in importingActionList.Value.chords)
                             {
-                                if (currentSetBinding.Value.chords.Any(currentChord => importingChord.Equals(currentChord)) == false)
+                                if (currentSetBinding.Value.chords.Any(currentChord =>
+                                    importingChord.Equals(currentChord)) == false)
                                 {
                                     changed = true;
                                     currentSetBinding.Value.chords.Add(importingChord);
@@ -281,7 +308,8 @@ namespace Valve.VR
 
                             foreach (var importingHaptic in importingActionList.Value.haptics)
                             {
-                                if (currentSetBinding.Value.haptics.Any(currentHaptic => importingHaptic.Equals(currentHaptic)) == false)
+                                if (currentSetBinding.Value.haptics.Any(currentHaptic =>
+                                    importingHaptic.Equals(currentHaptic)) == false)
                                 {
                                     changed = true;
                                     currentSetBinding.Value.haptics.Add(importingHaptic);
@@ -290,7 +318,8 @@ namespace Valve.VR
 
                             foreach (var importingPose in importingActionList.Value.poses)
                             {
-                                if (currentSetBinding.Value.poses.Any(currentPose => importingPose.Equals(currentPose)) == false)
+                                if (currentSetBinding.Value.poses.Any(currentPose =>
+                                    importingPose.Equals(currentPose)) == false)
                                 {
                                     changed = true;
                                     currentSetBinding.Value.poses.Add(importingPose);
@@ -299,7 +328,8 @@ namespace Valve.VR
 
                             foreach (var importingSkeleton in importingActionList.Value.skeleton)
                             {
-                                if (currentSetBinding.Value.skeleton.Any(currentSkeleton => importingSkeleton.Equals(currentSkeleton)) == false)
+                                if (currentSetBinding.Value.skeleton.Any(currentSkeleton =>
+                                    importingSkeleton.Equals(currentSkeleton)) == false)
                                 {
                                     changed = true;
                                     currentSetBinding.Value.skeleton.Add(importingSkeleton);
@@ -308,7 +338,8 @@ namespace Valve.VR
 
                             foreach (var importingSource in importingActionList.Value.sources)
                             {
-                                if (currentSetBinding.Value.sources.Any(currentSource => importingSource.Equals(currentSource)) == false)
+                                if (currentSetBinding.Value.sources.Any(currentSource =>
+                                    importingSource.Equals(currentSource)) == false)
                                 {
                                     changed = true;
                                     currentSetBinding.Value.sources.Add(importingSource);
@@ -335,7 +366,9 @@ namespace Valve.VR
             SteamVR_Input.InitializeFile(true);
             SteamVR_Input_ActionFile currentActionsFile = SteamVR_Input.actionFile;
 
-            for (int localizationIndex = 0; localizationIndex < currentActionsFile.localization.Count; localizationIndex++)
+            for (int localizationIndex = 0;
+                localizationIndex < currentActionsFile.localization.Count;
+                localizationIndex++)
             {
                 Dictionary<string, string> dictionary = currentActionsFile.localization[localizationIndex];
                 bool removed;
@@ -348,7 +381,8 @@ namespace Valve.VR
                         if (key == SteamVR_Input_ActionFile_LocalizationItem.languageTagKeyName)
                             continue;
 
-                        if (currentActionsFile.actions.Any(action => string.Equals(action.name, key, StringComparison.CurrentCultureIgnoreCase)) == false)
+                        if (currentActionsFile.actions.Any(action =>
+                            string.Equals(action.name, key, StringComparison.CurrentCultureIgnoreCase)) == false)
                         {
                             missingAction = key;
                         }
@@ -366,13 +400,15 @@ namespace Valve.VR
 
             for (int bindingIndex = 0; bindingIndex < currentActionsFile.default_bindings.Count; bindingIndex++)
             {
-                SteamVR_Input_ActionFile_DefaultBinding currentBinding = currentActionsFile.default_bindings[bindingIndex];
+                SteamVR_Input_ActionFile_DefaultBinding currentBinding =
+                    currentActionsFile.default_bindings[bindingIndex];
 
                 string bindingPath = Path.Combine(SteamVR_Input.GetActionsFileFolder(), currentBinding.binding_url);
                 if (File.Exists(bindingPath) == false)
                 {
                     if (verbose)
-                        Debug.Log("<b>[SteamVR Input]</b> Removing binding entry for missing file: '" + currentBinding.controller_type + "' at: " + bindingPath);
+                        Debug.Log("<b>[SteamVR Input]</b> Removing binding entry for missing file: '" +
+                                  currentBinding.controller_type + "' at: " + bindingPath);
 
                     currentActionsFile.default_bindings.RemoveAt(bindingIndex);
                     bindingIndex--;
@@ -382,7 +418,8 @@ namespace Valve.VR
                 SteamVR_Input_BindingFile bindingFile = GetBindingFileObject(bindingPath);
                 if (bindingFile == null)
                 {
-                    Debug.LogError("<b>[SteamVR Input]</b> Error parsing binding file for: '" + currentBinding.controller_type + "' at: " + bindingPath);
+                    Debug.LogError("<b>[SteamVR Input]</b> Error parsing binding file for: '" +
+                                   currentBinding.controller_type + "' at: " + bindingPath);
                     continue;
                 }
 
@@ -393,10 +430,13 @@ namespace Valve.VR
                     for (int itemIndex = 0; itemIndex < actionList.Value.chords.Count; itemIndex++)
                     {
                         string outputActionPath = actionList.Value.chords[itemIndex].output;
-                        if (currentActionsFile.actions.Any(action => string.Equals(action.name, outputActionPath, StringComparison.CurrentCultureIgnoreCase)) == false)
+                        if (currentActionsFile.actions.Any(action =>
+                            string.Equals(action.name, outputActionPath,
+                                StringComparison.CurrentCultureIgnoreCase)) == false)
                         {
                             if (verbose)
-                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type + ": Removing chord binding for action: " + outputActionPath);
+                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type +
+                                          ": Removing chord binding for action: " + outputActionPath);
 
                             actionList.Value.chords.RemoveAt(itemIndex);
                             itemIndex--;
@@ -407,10 +447,13 @@ namespace Valve.VR
                     for (int itemIndex = 0; itemIndex < actionList.Value.haptics.Count; itemIndex++)
                     {
                         string outputActionPath = actionList.Value.haptics[itemIndex].output;
-                        if (currentActionsFile.actions.Any(action => string.Equals(action.name, outputActionPath, StringComparison.CurrentCultureIgnoreCase)) == false)
+                        if (currentActionsFile.actions.Any(action =>
+                            string.Equals(action.name, outputActionPath,
+                                StringComparison.CurrentCultureIgnoreCase)) == false)
                         {
                             if (verbose)
-                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type + ": Removing haptics binding for action: " + outputActionPath);
+                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type +
+                                          ": Removing haptics binding for action: " + outputActionPath);
 
                             actionList.Value.haptics.RemoveAt(itemIndex);
                             itemIndex--;
@@ -421,10 +464,13 @@ namespace Valve.VR
                     for (int itemIndex = 0; itemIndex < actionList.Value.poses.Count; itemIndex++)
                     {
                         string outputActionPath = actionList.Value.poses[itemIndex].output;
-                        if (currentActionsFile.actions.Any(action => string.Equals(action.name, outputActionPath, StringComparison.CurrentCultureIgnoreCase)) == false)
+                        if (currentActionsFile.actions.Any(action =>
+                            string.Equals(action.name, outputActionPath,
+                                StringComparison.CurrentCultureIgnoreCase)) == false)
                         {
                             if (verbose)
-                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type + ": Removing pose binding for action: " + outputActionPath);
+                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type +
+                                          ": Removing pose binding for action: " + outputActionPath);
 
                             actionList.Value.poses.RemoveAt(itemIndex);
                             itemIndex--;
@@ -435,10 +481,13 @@ namespace Valve.VR
                     for (int itemIndex = 0; itemIndex < actionList.Value.skeleton.Count; itemIndex++)
                     {
                         string outputActionPath = actionList.Value.skeleton[itemIndex].output;
-                        if (currentActionsFile.actions.Any(action => string.Equals(action.name, outputActionPath, StringComparison.CurrentCultureIgnoreCase)) == false)
+                        if (currentActionsFile.actions.Any(action =>
+                            string.Equals(action.name, outputActionPath,
+                                StringComparison.CurrentCultureIgnoreCase)) == false)
                         {
                             if (verbose)
-                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type + ": Removing skeleton binding for action: " + outputActionPath);
+                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type +
+                                          ": Removing skeleton binding for action: " + outputActionPath);
 
                             actionList.Value.skeleton.RemoveAt(itemIndex);
                             itemIndex--;
@@ -449,10 +498,13 @@ namespace Valve.VR
                     for (int itemIndex = 0; itemIndex < actionList.Value.sources.Count; itemIndex++)
                     {
                         string outputActionPath = actionList.Value.sources[itemIndex].GetOutput();
-                        if (currentActionsFile.actions.Any(action => string.Equals(action.name, outputActionPath, StringComparison.CurrentCultureIgnoreCase)) == false)
+                        if (currentActionsFile.actions.Any(action =>
+                            string.Equals(action.name, outputActionPath,
+                                StringComparison.CurrentCultureIgnoreCase)) == false)
                         {
                             if (verbose)
-                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type + ": Removing source binding for action: " + outputActionPath);
+                                Debug.Log("<b>[SteamVR Input]</b> " + currentBinding.controller_type +
+                                          ": Removing source binding for action: " + outputActionPath);
 
                             actionList.Value.sources.RemoveAt(itemIndex);
                             itemIndex--;
@@ -482,7 +534,8 @@ namespace Valve.VR
             SteamVR_Input.InitializeFile();
             SteamVR_Input_ActionFile currentActionsFile = SteamVR_Input.actionFile;
 
-            SteamVR_Input_ActionFile newActionsFile = ReadJson<SteamVR_Input_ActionFile>(partialBinding.GetActionsPath());
+            SteamVR_Input_ActionFile newActionsFile =
+                ReadJson<SteamVR_Input_ActionFile>(partialBinding.GetActionsPath());
 
             /*
             int sets = ImportActionSets(currentActionsFile, newActionsFile);
@@ -534,14 +587,15 @@ namespace Valve.VR
 
             string bindingsFolder = SteamVR_Input.GetActionsFileFolder();
 
-            SteamVR_Input_ActionFile newActionsFile = ReadJson<SteamVR_Input_ActionFile>(SteamVR_Input.GetActionsFilePath());
+            SteamVR_Input_ActionFile newActionsFile =
+                ReadJson<SteamVR_Input_ActionFile>(SteamVR_Input.GetActionsFilePath());
             string partialBindingDirectory = partialBinding.GetDirectory();
 
             foreach (var newDefaultPath in newActionsFile.default_bindings)
             {
                 string bindingPath = Path.Combine(partialBindingDirectory, newDefaultPath.binding_url);
                 string newBindingPath = Path.Combine(bindingsFolder, newDefaultPath.binding_url);
-                File.Copy(bindingPath, newBindingPath, true); 
+                File.Copy(bindingPath, newBindingPath, true);
             }
 
             partialBinding.imported = true;
@@ -574,15 +628,18 @@ namespace Valve.VR
             return default(T);
         }
 
-        protected static List<SteamVR_Input_ActionFile_Action> RemoveOldActions(List<SteamVR_PartialInputBindings> partialBindingList)
+        protected static List<SteamVR_Input_ActionFile_Action> RemoveOldActions(
+            List<SteamVR_PartialInputBindings> partialBindingList)
         {
             List<SteamVR_Input_ActionFile_Action> toRemove = new List<SteamVR_Input_ActionFile_Action>();
 
-            SteamVR_Input_ActionFile newestActionsFile = ReadJson<SteamVR_Input_ActionFile>(partialBindingList[0].GetActionsPath());
+            SteamVR_Input_ActionFile newestActionsFile =
+                ReadJson<SteamVR_Input_ActionFile>(partialBindingList[0].GetActionsPath());
 
             for (int partialBindingIndex = 1; partialBindingIndex < partialBindingList.Count; partialBindingIndex++)
             {
-                SteamVR_Input_ActionFile oldActionsFile = ReadJson<SteamVR_Input_ActionFile>(partialBindingList[partialBindingIndex].GetActionsPath());
+                SteamVR_Input_ActionFile oldActionsFile =
+                    ReadJson<SteamVR_Input_ActionFile>(partialBindingList[partialBindingIndex].GetActionsPath());
 
                 for (int oldActionIndex = 0; oldActionIndex < oldActionsFile.actions.Count; oldActionIndex++)
                 {
@@ -590,7 +647,8 @@ namespace Valve.VR
 
                     if (newestActionsFile.actions.Any(newAction => oldAction.Equals(newAction)) == false)
                     {
-                        var existing = SteamVR_Input.actionFile.actions.FirstOrDefault(action => oldAction.Equals(action));
+                        var existing =
+                            SteamVR_Input.actionFile.actions.FirstOrDefault(action => oldAction.Equals(action));
                         if (existing != null)
                         {
                             SteamVR_Input.actionFile.actions.Remove(existing);
@@ -603,15 +661,18 @@ namespace Valve.VR
             return toRemove;
         }
 
-        protected static List<SteamVR_Input_ActionFile_ActionSet> RemoveOldActionSets(List<SteamVR_PartialInputBindings> partialBindingList)
+        protected static List<SteamVR_Input_ActionFile_ActionSet> RemoveOldActionSets(
+            List<SteamVR_PartialInputBindings> partialBindingList)
         {
             List<SteamVR_Input_ActionFile_ActionSet> toRemove = new List<SteamVR_Input_ActionFile_ActionSet>();
 
-            SteamVR_Input_ActionFile newestActionsFile = ReadJson<SteamVR_Input_ActionFile>(partialBindingList[0].GetActionsPath());
+            SteamVR_Input_ActionFile newestActionsFile =
+                ReadJson<SteamVR_Input_ActionFile>(partialBindingList[0].GetActionsPath());
 
             for (int partialBindingIndex = 1; partialBindingIndex < partialBindingList.Count; partialBindingIndex++)
             {
-                SteamVR_Input_ActionFile oldActionsFile = ReadJson<SteamVR_Input_ActionFile>(partialBindingList[0].GetActionsPath());
+                SteamVR_Input_ActionFile oldActionsFile =
+                    ReadJson<SteamVR_Input_ActionFile>(partialBindingList[0].GetActionsPath());
 
                 for (int oldActionIndex = 0; oldActionIndex < oldActionsFile.action_sets.Count; oldActionIndex++)
                 {
@@ -619,7 +680,9 @@ namespace Valve.VR
 
                     if (newestActionsFile.action_sets.Any(newAction => oldActionSet.Equals(newAction)) == false)
                     {
-                        var existing = SteamVR_Input.actionFile.action_sets.FirstOrDefault(actionSet => oldActionSet.Equals(actionSet));
+                        var existing =
+                            SteamVR_Input.actionFile.action_sets.FirstOrDefault(actionSet =>
+                                oldActionSet.Equals(actionSet));
                         if (existing != null)
                         {
                             SteamVR_Input.actionFile.action_sets.Remove(existing);
@@ -649,7 +712,8 @@ namespace Valve.VR
             return count;
         }
 
-        protected static void RemoveOldActionsAndSetsFromBindings(List<SteamVR_Input_ActionFile_ActionSet> setsToRemove, List<SteamVR_Input_ActionFile_Action> actionsToRemove)
+        protected static void RemoveOldActionsAndSetsFromBindings(List<SteamVR_Input_ActionFile_ActionSet> setsToRemove,
+            List<SteamVR_Input_ActionFile_Action> actionsToRemove)
         {
             foreach (var defaultBindingItem in SteamVR_Input.actionFile.default_bindings)
             {
@@ -658,7 +722,8 @@ namespace Valve.VR
                 SteamVR_Input_BindingFile currentBindingFile = GetBindingFileObject(currentBindingPath);
                 if (currentBindingFile == null)
                 {
-                    Debug.LogError("<b>[SteamVR]</b> There was an error deserializing the binding at path: " + currentBindingPath);
+                    Debug.LogError("<b>[SteamVR]</b> There was an error deserializing the binding at path: " +
+                                   currentBindingPath);
                     continue;
                 }
 
@@ -730,7 +795,9 @@ namespace Valve.VR
                     }
                 }
 
-                for (int bindingListToRemoveIndex = 0; bindingListToRemoveIndex < bindingListsToRemove.Count; bindingListToRemoveIndex++)
+                for (int bindingListToRemoveIndex = 0;
+                    bindingListToRemoveIndex < bindingListsToRemove.Count;
+                    bindingListToRemoveIndex++)
                 {
                     currentBindingFile.bindings.Remove(bindingListsToRemove[bindingListToRemoveIndex]);
                 }
@@ -751,7 +818,9 @@ namespace Valve.VR
             int actions = actionsToRemove.Count;
             int locs = RemoveOldLocalizations(actionsToRemove);
 
-            string dialogText = string.Format("We've found a old {0} action sets, {1} actions, and {2} localization entries from old versions of this partial binding. Would you like to remove them from the actions file and default bindings?", sets, actions, locs);
+            string dialogText = string.Format(
+                "We've found a old {0} action sets, {1} actions, and {2} localization entries from old versions of this partial binding. Would you like to remove them from the actions file and default bindings?",
+                sets, actions, locs);
 
             bool confirm = EditorUtility.DisplayDialog("SteamVR Input", dialogText, "Import", "Cancel");
             if (confirm)
@@ -764,11 +833,14 @@ namespace Valve.VR
             }
             else
             {
-                SteamVR_Input.InitializeFile(true); // reload since we actually removed the actions / sets to display this message
+                SteamVR_Input
+                    .InitializeFile(
+                        true); // reload since we actually removed the actions / sets to display this message
             }
         }
 
         protected const string dontAskAgainTemplate = "{0}_{1}_DontAskAgain";
+
         protected static void ConfirmImport(List<SteamVR_PartialInputBindings> partialBindingList)
         {
             SteamVR_PartialInputBindings partial = partialBindingList.First();
@@ -776,7 +848,10 @@ namespace Valve.VR
             //bool dontAskAgain = EditorPrefs.GetBool(dontAskAgainTemplate, false);
 
             //todo: implement 'do not ask again'
-            string dialogText = string.Format("We've found a partial SteamVR Input binding for '{0}' version '{1}'. Would you like to import it?", partial.name, partial.version);
+            string dialogText =
+                string.Format(
+                    "We've found a partial SteamVR Input binding for '{0}' version '{1}'. Would you like to import it?",
+                    partial.name, partial.version);
 
             bool confirm = EditorUtility.DisplayDialog("SteamVR Input", dialogText, "Import", "Cancel");
             if (confirm)
@@ -785,8 +860,10 @@ namespace Valve.VR
 
                 if (actionsExists)
                 {
-                    string mergeDialogText = "You have two options for importing this binding:\n Replace your current action file (delete all your actions)\n Merge the partial action file with your existing actions";
-                    bool shouldMerge = EditorUtility.DisplayDialog("SteamVR Input", mergeDialogText, "Merge", "Replace");
+                    string mergeDialogText =
+                        "You have two options for importing this binding:\n Replace your current action file (delete all your actions)\n Merge the partial action file with your existing actions";
+                    bool shouldMerge =
+                        EditorUtility.DisplayDialog("SteamVR Input", mergeDialogText, "Merge", "Replace");
 
                     if (shouldMerge)
                     {
@@ -811,20 +888,25 @@ namespace Valve.VR
 
         public static Dictionary<string, List<SteamVR_PartialInputBindings>> ScanForPartials()
         {
-            string[] partialManifestPaths = Directory.GetFiles(Application.dataPath, partialManifestFilename, SearchOption.AllDirectories);
-            Dictionary<string, List<SteamVR_PartialInputBindings>> partialBindings = new Dictionary<string, List<SteamVR_PartialInputBindings>>();
+            string[] partialManifestPaths = Directory.GetFiles(Application.dataPath, partialManifestFilename,
+                SearchOption.AllDirectories);
+            Dictionary<string, List<SteamVR_PartialInputBindings>> partialBindings =
+                new Dictionary<string, List<SteamVR_PartialInputBindings>>();
 
             for (int partialIndex = 0; partialIndex < partialManifestPaths.Length; partialIndex++)
             {
                 string path = partialManifestPaths[partialIndex];
                 string jsonText = File.ReadAllText(path);
 
-                SteamVR_PartialInputBindings partialBinding = JsonConvert.DeserializeObject<SteamVR_PartialInputBindings>(jsonText);
+                SteamVR_PartialInputBindings partialBinding =
+                    JsonConvert.DeserializeObject<SteamVR_PartialInputBindings>(jsonText);
                 partialBinding.path = path;
 
                 if (partialBindings.ContainsKey(partialBinding.name))
                 {
-                    for (int versionIndex = 0; versionIndex < partialBindings[partialBinding.name].Count; versionIndex++)
+                    for (int versionIndex = 0;
+                        versionIndex < partialBindings[partialBinding.name].Count;
+                        versionIndex++)
                     {
                         if (partialBinding.version < partialBindings[partialBinding.name][versionIndex].version)
                             partialBindings[partialBinding.name].Insert(versionIndex, partialBinding);
@@ -832,7 +914,7 @@ namespace Valve.VR
                 }
                 else
                 {
-                    partialBindings.Add(partialBinding.name, new List<SteamVR_PartialInputBindings>() { partialBinding });
+                    partialBindings.Add(partialBinding.name, new List<SteamVR_PartialInputBindings>() {partialBinding});
                 }
             }
 
@@ -848,8 +930,7 @@ namespace Valve.VR
         public bool removeUnused;
         public bool imported;
 
-        [JsonIgnore]
-        public string path { get; set; }
+        [JsonIgnore] public string path { get; set; }
 
         public string GetActionsPath()
         {
@@ -871,7 +952,8 @@ namespace Valve.VR
 
             //SanitizeActionFile(); //todo: shouldn't we be doing this?
 
-            string json = JsonConvert.SerializeObject(this, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            string json = JsonConvert.SerializeObject(this, Formatting.Indented,
+                new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
 
             File.WriteAllText(path, json);
         }

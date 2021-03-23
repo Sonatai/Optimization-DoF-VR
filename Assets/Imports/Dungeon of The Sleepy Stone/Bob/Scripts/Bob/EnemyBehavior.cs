@@ -13,10 +13,12 @@ public class EnemyBehavior : AbstractAI
     //public String ANIM_WALKING = "Walking";
     //public String ANIM_ATTACKING = "isAttack";
     //public String ANIM_DYING = "isDead";
-    [FormerlySerializedAs("ANIMS_WALKING")] public String[] ANIMS_MOVING = { "Walking"};
-    public String[] ANIMS_ATTACKING = { "isAttack" };
-    public String[] ANIMS_DYING = { "isDead" };
-    
+    [FormerlySerializedAs("ANIMS_WALKING")]
+    public String[] ANIMS_MOVING = {"Walking"};
+
+    public String[] ANIMS_ATTACKING = {"isAttack"};
+    public String[] ANIMS_DYING = {"isDead"};
+
     public float isIdleTimer = 0f;
     public int waypointCount = 0;
     public AudioClip[] footsounds;
@@ -31,17 +33,18 @@ public class EnemyBehavior : AbstractAI
             AudioSource.PlayClipAtPoint(hit, Player.transform.position, 1f);
         }
     }
+
     //... Footstep - Sound
     public void footstep(int _num)
     {
         sound.clip = footsounds[_num];
         sound.Play();
     }
-    
+
     public override ActionState NotDead()
     {
-        String chosen = ANIMS_MOVING[Math.Abs(new System.Random().Next()%ANIMS_MOVING.Length)];
-     
+        String chosen = ANIMS_MOVING[Math.Abs(new System.Random().Next() % ANIMS_MOVING.Length)];
+
         float speed = navMeshAgent.velocity.magnitude;
         //speed = (speed < 1f) ? 0f : (( speed - 1 ) * 2f);
         //Debug.Log("Speed of enemy: "+(speed));
@@ -51,7 +54,7 @@ public class EnemyBehavior : AbstractAI
 
     public override ActionState IsDying()
     {
-        String chosen = ANIMS_DYING[Math.Abs(new System.Random().Next()%ANIMS_DYING.Length)];
+        String chosen = ANIMS_DYING[Math.Abs(new System.Random().Next() % ANIMS_DYING.Length)];
         animator.SetBool(chosen, true);
         navMeshAgent.isStopped = true;
         PlayDeathSound();
@@ -101,7 +104,7 @@ public class EnemyBehavior : AbstractAI
                 //... switch to idle (for ever)
                 state = new Idle(patience);
             }
-            else//... go to the destination
+            else //... go to the destination
             {
                 navMeshAgent.isStopped = false;
                 NavMeshHit navHit;
@@ -113,7 +116,8 @@ public class EnemyBehavior : AbstractAI
                 //_DrawPath();
                 state = new Walk(patience);
             }
-        }// <= if waypoints are set! (...length>0)
+        } // <= if waypoints are set! (...length>0)
+
         return state;
     }
 
@@ -124,13 +128,14 @@ public class EnemyBehavior : AbstractAI
             waypointCount++;
             waypointCount %= waypoints.Length;
         }
+
         return null;
     }
 
     public override ActionState IsChasing(Vector3 target)
     {
         Vector3 direction = target - transform.position;
-        direction = new Vector3(direction.x, direction.y*0.5f, direction.z);
+        direction = new Vector3(direction.x, direction.y * 0.5f, direction.z);
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), 0.1f);
         return null;
     }
@@ -141,21 +146,22 @@ public class EnemyBehavior : AbstractAI
         if (attack)
         {
 //            Debug.Log("Trying to attack " + gameObject.name);
-           // String chosen = ANIMS_ATTACKING[Math.Abs(new System.Random().Next()%ANIMS_ATTACKING.Length)];
-           String chosen = ANIMS_ATTACKING[0];
+            // String chosen = ANIMS_ATTACKING[Math.Abs(new System.Random().Next()%ANIMS_ATTACKING.Length)];
+            String chosen = ANIMS_ATTACKING[0];
 //            Debug.Log("Choosen one: " + chosen + " " + gameObject.name);
             animator.SetBool(chosen, true);
-
         }
         else
         {
-           //animator.GetCurrentAnimatorClipInfo()
-            for (int i=0; i<ANIMS_ATTACKING.Length; i++)
+            //animator.GetCurrentAnimatorClipInfo()
+            for (int i = 0; i < ANIMS_ATTACKING.Length; i++)
             {
                 animator.SetBool(ANIMS_ATTACKING[i], false);
             }
+
             return new Search(0f);
         }
+
         return null;
     }
 
@@ -165,11 +171,11 @@ public class EnemyBehavior : AbstractAI
         NavMeshHit hit;
         float intensity = (currentSenseState == SenseStates.alarmed) ? 6 : 4;
         NavMesh.Raycast(
-            center, 
-            center + gameObject.transform.forward*6, out hit, 
+            center,
+            center + gameObject.transform.forward * 6, out hit,
             NavMesh.AllAreas
         );
-        float d = (hit.position-center).magnitude;
+        float d = (hit.position - center).magnitude;
         d = (d > intensity) ? intensity : d;
         d = (intensity - d) / 3.5f;
         if (currentSenseState == SenseStates.attackedByPlayer)
@@ -179,12 +185,13 @@ public class EnemyBehavior : AbstractAI
             //create the rotation we need to be in to look at the target
             Quaternion lookRotation = Quaternion.LookRotation(direction);
             //rotate us over time according to speed until we are in the required rotation
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime*d);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * d);
         }
         else
         {
-            transform.Rotate(0f, 120f * Time.deltaTime*d, 0f);
+            transform.Rotate(0f, 120f * Time.deltaTime * d, 0f);
         }
+
         return null;
     }
 }

@@ -10,20 +10,21 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     //Df ist the focal length -> Distance between the eye and the object
     //D(p) ist the value from pixel p from the depth map
     //Alpha ist the weight
-    
-    [SerializeField] private  float scalingFactor = 1f;
-    [Range(0,65)]
-    [SerializeField] private  float focalLength = 36f;
+
+    [SerializeField] private float scalingFactor = 1f;
+    [Range(0, 65)] [SerializeField] private float focalLength = 36f;
+
     public float FocalLength
     {
         set => focalLength = value;
     }
 
-    [SerializeField] private  float cocMinTreshold = 0.03f;
-    
-    [SerializeField] private  Camera camera;
+    [SerializeField] private float cocMinTreshold = 0.03f;
+
+    [SerializeField] private Camera camera;
 
     [SerializeField] private bool isOptimized;
+
     public bool IsOptimized
     {
         set => isOptimized = value;
@@ -33,18 +34,18 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     [HideInInspector] public Shader optimizedDofShader;
     [NonSerialized] private Material dofMaterial;
     [NonSerialized] private Material optimizedDofMaterial;
-    
+
     private float minimumFocalLength;
     private float maximumFocalLength;
 
-    [SerializeField]private DebugType debugMode = DebugType.None;
+    [SerializeField] private DebugType debugMode = DebugType.None;
 
     private const int circleOfConfusionPass = 0;
     private const int regionPass = 1;
     private const int weightLeftRightPass = 2;
     private const int weightBotTopPass = 3;
     private const int filterPass = 4;
-    
+
     //Debug Passes:
     private const int debugInnerRegion = 5;
     private const int debugMiddleRegion = 6;
@@ -53,10 +54,11 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
     Vector2 eyeResolution = Vector2.one;
     Vector3 normalizedGazeDirection = new Vector3(0.0f, 0.0f, 1.0f);
     [SerializeField] private ViveFoveatedRendering viveFoveatedRendering;
-    
-    void Start () {
+
+    void Start()
+    {
         camera.depthTextureMode = DepthTextureMode.Depth;
-        
+
         //========= Copyright 2020, HTC Corporation. All rights reserved. ===========
         if (XRSettings.enabled)
         {
@@ -68,20 +70,22 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             eyeResolution.x = Screen.width;
             eyeResolution.y = Screen.height;
         }
+
         //===========================================================================
     }
 
     //TODO: Clean Code
     //TODO: Interpolation an der Grenze?
-    void OnRenderImage (RenderTexture source, RenderTexture destination)
+    void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        
-        if (dofMaterial == null) {
+        if (dofMaterial == null)
+        {
             dofMaterial = new Material(dofShader);
             dofMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
-        
-        if (optimizedDofMaterial == null) {
+
+        if (optimizedDofMaterial == null)
+        {
             optimizedDofMaterial = new Material(optimizedDofShader);
             optimizedDofMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
@@ -89,41 +93,42 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
         //Far Plain Distance as max value for both
         minimumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor + cocMinTreshold),
             camera.farClipPlane);
-        maximumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor - cocMinTreshold),camera.farClipPlane);
-        
+        maximumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor - cocMinTreshold),
+            camera.farClipPlane);
+
         RenderTexture coc = RenderTexture.GetTemporary(
             source.width, source.height, 0,
             RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
         );
-        
+
         RenderTexture region = RenderTexture.GetTemporary(
             source.width, source.height, 0,
             RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
         );
-        
+
         RenderTexture weightLeftRight = RenderTexture.GetTemporary(
             source.width, source.height, 0,
             RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
         );
-        
+
         RenderTexture weightTopBot = RenderTexture.GetTemporary(
             source.width, source.height, 0,
             RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear
         );
-        
+
         if (isOptimized)
         {
             optimizedDofMaterial.SetFloat("_FocalLength", focalLength);
             optimizedDofMaterial.SetFloat("_MinimumFocalLength", minimumFocalLength);
             optimizedDofMaterial.SetFloat("_MaximumFocalLength", maximumFocalLength);
-            optimizedDofMaterial.SetFloat("_ScalingFactor",scalingFactor);
-            optimizedDofMaterial.SetFloat("_CocTreshhold",cocMinTreshold);
+            optimizedDofMaterial.SetFloat("_ScalingFactor", scalingFactor);
+            optimizedDofMaterial.SetFloat("_CocTreshhold", cocMinTreshold);
 
             optimizedDofMaterial.SetTexture("_CoCTex", coc);
             optimizedDofMaterial.SetTexture("_RegionTex", region);
             optimizedDofMaterial.SetTexture("_WeightLeftRightTex", weightLeftRight);
             optimizedDofMaterial.SetTexture("_WeightTopBotTex", weightTopBot);
-            
+
             //========= Copyright 2020, HTC Corporation. All rights reserved. ===========
             float tanHalfVerticalFov = Mathf.Tan(Mathf.Deg2Rad * camera.fieldOfView / 2.0f);
             float tanHalfHorizontalFov = tanHalfVerticalFov * camera.aspect;
@@ -139,7 +144,7 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             var innerRadii = viveFoveatedRendering.GetRegionRadii(TargetArea.INNER) * 0.5f;
             var middleRadii = (viveFoveatedRendering.GetRegionRadii(TargetArea.INNER) * 1.15f) * 0.5f;
             //var middleRadii = viveFoveatedRendering.GetRegionRadii(TargetArea.MIDDLE)  * 0.5f;
-                        
+
             //  To keep the shape of given region, invert the aspect ratio.
             //  Align short side.
             if (eyeResolution.x > eyeResolution.y)
@@ -168,23 +173,23 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             optimizedDofMaterial.SetVector("_InnerRadii", new Vector4(innerRadii.x, innerRadii.y, 0, 0));
             optimizedDofMaterial.SetVector("_MiddleRadii", new Vector4(middleRadii.x, middleRadii.y, 0, 0));
             //===============================================================
-            
+
             switch (debugMode)
             {
                 case DebugType.None:
                     Graphics.Blit(source, coc, optimizedDofMaterial, circleOfConfusionPass);
-                    Graphics.Blit(source,region, optimizedDofMaterial, regionPass);
+                    Graphics.Blit(source, region, optimizedDofMaterial, regionPass);
                     Graphics.Blit(source, weightLeftRight, optimizedDofMaterial, weightLeftRightPass);
-                    Graphics.Blit(source,weightTopBot, optimizedDofMaterial, weightBotTopPass);
-                    Graphics.Blit(source,destination, optimizedDofMaterial, filterPass);
+                    Graphics.Blit(source, weightTopBot, optimizedDofMaterial, weightBotTopPass);
+                    Graphics.Blit(source, destination, optimizedDofMaterial, filterPass);
                     break;
                 case DebugType.InnerRegion:
-                    Graphics.Blit(source,region, optimizedDofMaterial, regionPass);
-                    Graphics.Blit(region,destination, optimizedDofMaterial, debugInnerRegion);
+                    Graphics.Blit(source, region, optimizedDofMaterial, regionPass);
+                    Graphics.Blit(region, destination, optimizedDofMaterial, debugInnerRegion);
                     break;
                 case DebugType.MiddleRegion:
-                    Graphics.Blit(source,region, optimizedDofMaterial, regionPass);
-                    Graphics.Blit(region,destination, optimizedDofMaterial, debugMiddleRegion);
+                    Graphics.Blit(source, region, optimizedDofMaterial, regionPass);
+                    Graphics.Blit(region, destination, optimizedDofMaterial, debugMiddleRegion);
                     break;
             }
         }
@@ -193,8 +198,8 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             dofMaterial.SetFloat("_FocalLength", focalLength);
             dofMaterial.SetFloat("_MinimumFocalLength", minimumFocalLength);
             dofMaterial.SetFloat("_MaximumFocalLength", maximumFocalLength);
-            dofMaterial.SetFloat("_ScalingFactor",scalingFactor);
-            dofMaterial.SetFloat("_CocTreshhold",cocMinTreshold);
+            dofMaterial.SetFloat("_ScalingFactor", scalingFactor);
+            dofMaterial.SetFloat("_CocTreshhold", cocMinTreshold);
 
             dofMaterial.SetTexture("_CoCTex", coc);
             dofMaterial.SetTexture("_RegionTex", region);
@@ -203,18 +208,17 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
 
 
             Graphics.Blit(source, coc, dofMaterial, circleOfConfusionPass);
-            Graphics.Blit(source,region, dofMaterial, regionPass);
+            Graphics.Blit(source, region, dofMaterial, regionPass);
             Graphics.Blit(source, weightLeftRight, dofMaterial, weightLeftRightPass);
-            Graphics.Blit(source,weightTopBot, dofMaterial, weightBotTopPass);
-            Graphics.Blit(source,destination, dofMaterial, filterPass);
+            Graphics.Blit(source, weightTopBot, dofMaterial, weightBotTopPass);
+            Graphics.Blit(source, destination, dofMaterial, filterPass);
         }
-        
+
         RenderTexture.ReleaseTemporary(coc);
         RenderTexture.ReleaseTemporary(region);
         RenderTexture.ReleaseTemporary(weightLeftRight);
         RenderTexture.ReleaseTemporary(weightTopBot);
     }
-    
 }
 
 enum DebugType

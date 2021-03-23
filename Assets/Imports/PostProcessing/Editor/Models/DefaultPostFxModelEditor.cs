@@ -10,7 +10,7 @@ namespace UnityEditor.PostProcessing
         {
             var iter = m_SettingsProperty.Copy().GetEnumerator();
             while (iter.MoveNext())
-                m_Properties.Add(((SerializedProperty)iter.Current).Copy());
+                m_Properties.Add(((SerializedProperty) iter.Current).Copy());
         }
 
         public override void OnInspectorGUI()

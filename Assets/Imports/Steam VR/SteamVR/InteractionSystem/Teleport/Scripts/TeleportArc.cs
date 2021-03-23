@@ -25,8 +25,7 @@ namespace Valve.VR.InteractionSystem
 
         public Material material;
 
-        [HideInInspector]
-        public int traceLayerMask = 0;
+        [HideInInspector] public int traceLayerMask = 0;
 
         //Private data
         private LineRenderer[] lineRenderers;
@@ -63,7 +62,6 @@ namespace Valve.VR.InteractionSystem
         }
 
 
-
         //-------------------------------------------------
         private void CreateLineRendererObjects()
         {
@@ -94,8 +92,8 @@ namespace Valve.VR.InteractionSystem
 #if (UNITY_5_4)
                 lineRenderers[i].SetWidth(thickness, thickness);
 #else
-				lineRenderers[i].startWidth = thickness * scale;
-				lineRenderers[i].endWidth = thickness * scale;
+                lineRenderers[i].startWidth = thickness * scale;
+                lineRenderers[i].endWidth = thickness * scale;
 #endif
                 lineRenderers[i].enabled = false;
             }
@@ -113,6 +111,7 @@ namespace Valve.VR.InteractionSystem
             {
                 arcTimeOffset = Time.time;
             }
+
             arcInvalid = pointerAtBadAngle;
         }
 
@@ -136,6 +135,7 @@ namespace Valve.VR.InteractionSystem
             {
                 HideLineSegments(0, segmentCount);
             }
+
             showArc = false;
         }
 
@@ -180,6 +180,7 @@ namespace Valve.VR.InteractionSystem
                     {
                         firstSegmentEndTime = arcHitTime;
                     }
+
                     DrawArcSegment(0, 0.0f, firstSegmentEndTime);
 
                     loopStartSegment = 1;
@@ -246,8 +247,8 @@ namespace Valve.VR.InteractionSystem
 #if (UNITY_5_4)
                 lineRenderers[i].SetColors(color, color);
 #else
-				lineRenderers[i].startColor = color;
-				lineRenderers[i].endColor = color;
+                lineRenderers[i].startColor = color;
+                lineRenderers[i].endColor = color;
 #endif
             }
         }

@@ -2,8 +2,8 @@
 using System;
 using UnityEngine;
 
-public class AudioManager : MonoBehaviour {
-
+public class AudioManager : MonoBehaviour
+{
     public Sound[] sounds;
 
     void Awake()
@@ -17,14 +17,14 @@ public class AudioManager : MonoBehaviour {
             s.source.pitch = s.pitch;
             s.source.loop = s.loop;
         }
-
     }
+
     void Start()
     {
-        Play("Background");    
+        Play("Background");
     }
 
-    public void Play (string name)
+    public void Play(string name)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
         if (s == null)
@@ -32,6 +32,7 @@ public class AudioManager : MonoBehaviour {
             Debug.LogWarning("Sound " + name + " not found!");
             return;
         }
+
         s.source.Play();
     }
 }

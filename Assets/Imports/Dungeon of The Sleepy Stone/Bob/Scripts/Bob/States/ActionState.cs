@@ -3,11 +3,11 @@
 namespace Agent.Enemy
 {
     using UnityEngine;
+
     public abstract class ActionState
     {
-
         protected float _lifetime;
-        
+
         protected float _timer;
 
         public ActionState(float lifetime)
@@ -17,7 +17,5 @@ namespace Agent.Enemy
         }
 
         public abstract ActionState update(AbstractAI ai, float delta);
-
-
     }
 }

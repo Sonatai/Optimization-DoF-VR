@@ -11,7 +11,6 @@ namespace Valve.VR
         [PostProcessBuildAttribute(1)]
         public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            
         }
 
         private static void UpdateAppKey(string newFilePath, string executableName)
@@ -25,7 +24,6 @@ namespace Valve.VR
 
                 if (stringStart == -1)
                 {
-
                 }
                 else
                     return; //no app key

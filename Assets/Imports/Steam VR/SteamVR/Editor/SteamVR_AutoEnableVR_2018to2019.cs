@@ -5,6 +5,7 @@
 //=============================================================================
 
 //2019 will use some of this
+
 #if (UNITY_2018_1_OR_NEWER && !UNITY_2020_1_OR_NEWER)
 
 using UnityEngine;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Reflection;
-
 using Valve.VR.InteractionSystem;
 using UnityEditor.Callbacks;
 
@@ -65,6 +65,7 @@ namespace Valve.VR
                 EditorPrefs.SetBool(forceInstallKey, value);
             }
         }
+
         private static bool forceEnable
         {
             get
@@ -91,7 +92,7 @@ namespace Valve.VR
             if (_updateState.HasValue == false)
             {
                 if (EditorPrefs.HasKey(updateStateKey))
-                    _updateState = (PackageStates)EditorPrefs.GetInt(updateStateKey);
+                    _updateState = (PackageStates) EditorPrefs.GetInt(updateStateKey);
                 else
                     _updateState = PackageStates.None;
             }
@@ -108,7 +109,7 @@ namespace Valve.VR
             set
             {
                 _updateState = value;
-                EditorPrefs.SetInt(updateStateKey, (int)value);
+                EditorPrefs.SetInt(updateStateKey, (int) value);
             }
         }
 
@@ -158,7 +159,9 @@ namespace Valve.VR
             {
                 if (forceInstall == false)
                 {
-                    int shouldInstall = UnityEditor.EditorUtility.DisplayDialogComplex("SteamVR", "Would you like to enable Virtual Reality mode?\n\nThis will install the OpenVR for Desktop package and enable it in Player Settings.", "Yes", "No, and don't ask again", "No");
+                    int shouldInstall = UnityEditor.EditorUtility.DisplayDialogComplex("SteamVR",
+                        "Would you like to enable Virtual Reality mode?\n\nThis will install the OpenVR for Desktop package and enable it in Player Settings.",
+                        "Yes", "No, and don't ask again", "No");
 
                     switch (shouldInstall)
                     {
@@ -176,7 +179,8 @@ namespace Valve.VR
                     }
                 }
 
-                Debug.Log("<b>[SteamVR Setup]</b> Enabled virtual reality support in Player Settings. (you can disable this by unchecking Assets/SteamVR/SteamVR_Settings.autoEnableVR)");
+                Debug.Log(
+                    "<b>[SteamVR Setup]</b> Enabled virtual reality support in Player Settings. (you can disable this by unchecking Assets/SteamVR/SteamVR_Settings.autoEnableVR)");
             }
 
             switch (updateState)
@@ -195,7 +199,8 @@ namespace Valve.VR
                     }
                     else if (listRequest.IsCompleted)
                     {
-                        if (listRequest.Error != null || listRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
+                        if (listRequest.Error != null ||
+                            listRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
                         {
                             updateState = PackageStates.Failed;
                             break;
@@ -222,12 +227,14 @@ namespace Valve.VR
                             updateState = PackageStates.Installed; //already installed
                         }
                     }
+
                     break;
 
                 case PackageStates.WaitingForAdd:
                     if (addRequest.IsCompleted)
                     {
-                        if (addRequest.Error != null || addRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
+                        if (addRequest.Error != null ||
+                            addRequest.Status == UnityEditor.PackageManager.StatusCode.Failure)
                         {
                             updateState = PackageStates.Failed;
                             break;
@@ -255,18 +262,21 @@ namespace Valve.VR
                         else
                             dialogText = "Retrying OpenVR install from Unity Package Manager...";
 
-                        bool cancel = UnityEditor.EditorUtility.DisplayCancelableProgressBar("SteamVR", dialogText, (float)addingPackageTimeTotal.Elapsed.TotalSeconds / estimatedTimeToInstall);
+                        bool cancel = UnityEditor.EditorUtility.DisplayCancelableProgressBar("SteamVR", dialogText,
+                            (float) addingPackageTimeTotal.Elapsed.TotalSeconds / estimatedTimeToInstall);
                         if (cancel)
                             updateState = PackageStates.Failed;
 
                         if (addingPackageTime.Elapsed.TotalSeconds > 10)
                         {
-                            Debug.Log("<b>[SteamVR Setup]</b> Waiting for package manager to install OpenVR package...");
+                            Debug.Log(
+                                "<b>[SteamVR Setup]</b> Waiting for package manager to install OpenVR package...");
                             addingPackageTime.Stop();
                             addingPackageTime.Reset();
                             addingPackageTime.Start();
                         }
                     }
+
                     break;
 
                 case PackageStates.WaitingForAddConfirm:
@@ -277,6 +287,7 @@ namespace Valve.VR
                             updateState = PackageStates.Failed;
                             break;
                         }
+
                         string packageName = unityOpenVRPackageString;
 
                         bool hasPackage = listRequest.Result.Any(package => package.name == packageName);
@@ -303,10 +314,12 @@ namespace Valve.VR
                             Debug.Log("<b>[SteamVR Setup]</b> Successfully installed OpenVR Desktop package.");
                         }
                     }
+
                     break;
 
                 case PackageStates.Installed:
-                    UnityEditor.BuildTargetGroup currentTarget = UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup;
+                    UnityEditor.BuildTargetGroup currentTarget =
+                        UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup;
 
                     string[] devices = UnityEditorInternal.VR.VREditor.GetVREnabledDevicesOnTargetGroup(currentTarget);
 
@@ -315,7 +328,9 @@ namespace Valve.VR
 
                     if (devices.Length != 0)
                     {
-                        int index = Array.FindIndex(devices, device => string.Equals(device, openVRString, System.StringComparison.CurrentCultureIgnoreCase));
+                        int index = Array.FindIndex(devices,
+                            device => string.Equals(device, openVRString,
+                                System.StringComparison.CurrentCultureIgnoreCase));
                         hasOpenVR = index != -1;
                         isFirst = index == 0;
                     }
@@ -340,7 +355,8 @@ namespace Valve.VR
                 case PackageStates.Failed:
                     End();
 
-                    string failtext = "The Unity Package Manager failed to automatically install the OpenVR Desktop package. Please open the Package Manager Window and try to install it manually.";
+                    string failtext =
+                        "The Unity Package Manager failed to automatically install the OpenVR Desktop package. Please open the Package Manager Window and try to install it manually.";
                     UnityEditor.EditorUtility.DisplayDialog("SteamVR", failtext, "Ok");
                     Debug.Log("<b>[SteamVR Setup]</b> " + failtext);
                     break;

@@ -51,7 +51,9 @@ namespace UnityEditor.PostProcessing
             var foldoutRect = new Rect(rect.x + 4f, rect.y + 2f, 13f, 13f);
             var e = Event.current;
 
-            var popupRect = new Rect(rect.x + rect.width - FxStyles.paneOptionsIcon.width - 5f, rect.y + FxStyles.paneOptionsIcon.height / 2f + 1f, FxStyles.paneOptionsIcon.width, FxStyles.paneOptionsIcon.height);
+            var popupRect = new Rect(rect.x + rect.width - FxStyles.paneOptionsIcon.width - 5f,
+                rect.y + FxStyles.paneOptionsIcon.height / 2f + 1f, FxStyles.paneOptionsIcon.width,
+                FxStyles.paneOptionsIcon.height);
             GUI.DrawTexture(popupRect, FxStyles.paneOptionsIcon);
 
             if (e.type == EventType.Repaint)
@@ -87,16 +89,19 @@ namespace UnityEditor.PostProcessing
             return display;
         }
 
-        public static bool Header(string title, SerializedProperty group, SerializedProperty enabledField, Action resetAction)
+        public static bool Header(string title, SerializedProperty group, SerializedProperty enabledField,
+            Action resetAction)
         {
-            var field = ReflectionUtils.GetFieldInfoFromPath(enabledField.serializedObject.targetObject, enabledField.propertyPath);
+            var field = ReflectionUtils.GetFieldInfoFromPath(enabledField.serializedObject.targetObject,
+                enabledField.propertyPath);
             object parent = null;
             PropertyInfo prop = null;
 
             if (field != null && field.IsDefined(typeof(GetSetAttribute), false))
             {
-                var attr = (GetSetAttribute)field.GetCustomAttributes(typeof(GetSetAttribute), false)[0];
-                parent = ReflectionUtils.GetParentObject(enabledField.propertyPath, enabledField.serializedObject.targetObject);
+                var attr = (GetSetAttribute) field.GetCustomAttributes(typeof(GetSetAttribute), false)[0];
+                parent = ReflectionUtils.GetParentObject(enabledField.propertyPath,
+                    enabledField.serializedObject.targetObject);
                 prop = parent.GetType().GetProperty(attr.name);
             }
 
@@ -109,7 +114,9 @@ namespace UnityEditor.PostProcessing
             var toggleRect = new Rect(rect.x + 4f, rect.y + 4f, 13f, 13f);
             var e = Event.current;
 
-            var popupRect = new Rect(rect.x + rect.width - FxStyles.paneOptionsIcon.width - 5f, rect.y + FxStyles.paneOptionsIcon.height / 2f + 1f, FxStyles.paneOptionsIcon.width, FxStyles.paneOptionsIcon.height);
+            var popupRect = new Rect(rect.x + rect.width - FxStyles.paneOptionsIcon.width - 5f,
+                rect.y + FxStyles.paneOptionsIcon.height / 2f + 1f, FxStyles.paneOptionsIcon.width,
+                FxStyles.paneOptionsIcon.height);
             GUI.DrawTexture(popupRect, FxStyles.paneOptionsIcon);
 
             if (e.type == EventType.Repaint)
@@ -160,7 +167,8 @@ namespace UnityEditor.PostProcessing
         static void CopySettings(SerializedProperty settings)
         {
             var t = typeof(PostProcessingProfile);
-            var settingsStruct = ReflectionUtils.GetFieldValueFromPath(settings.serializedObject.targetObject, ref t, settings.propertyPath);
+            var settingsStruct = ReflectionUtils.GetFieldValueFromPath(settings.serializedObject.targetObject, ref t,
+                settings.propertyPath);
             var serializedString = t.ToString() + '|' + JsonUtility.ToJson(settingsStruct);
             EditorGUIUtility.systemCopyBuffer = serializedString;
         }
@@ -177,18 +185,21 @@ namespace UnityEditor.PostProcessing
             if (string.IsNullOrEmpty(parts[0]))
                 return false;
 
-            var field = ReflectionUtils.GetFieldInfoFromPath(settings.serializedObject.targetObject, settings.propertyPath);
+            var field = ReflectionUtils.GetFieldInfoFromPath(settings.serializedObject.targetObject,
+                settings.propertyPath);
             return parts[0] == field.FieldType.ToString();
         }
 
         static void PasteSettings(SerializedProperty settings)
         {
             Undo.RecordObject(settings.serializedObject.targetObject, "Paste effect settings");
-            var field = ReflectionUtils.GetFieldInfoFromPath(settings.serializedObject.targetObject, settings.propertyPath);
+            var field = ReflectionUtils.GetFieldInfoFromPath(settings.serializedObject.targetObject,
+                settings.propertyPath);
             var json = EditorGUIUtility.systemCopyBuffer.Substring(field.FieldType.ToString().Length + 1);
             var obj = JsonUtility.FromJson(json, field.FieldType);
             var parent = ReflectionUtils.GetParentObject(settings.propertyPath, settings.serializedObject.targetObject);
-            field.SetValue(parent, obj, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, CultureInfo.CurrentCulture);
+            field.SetValue(parent, obj, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
+                CultureInfo.CurrentCulture);
         }
     }
 }

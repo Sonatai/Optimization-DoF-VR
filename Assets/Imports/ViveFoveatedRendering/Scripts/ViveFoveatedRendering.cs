@@ -12,9 +12,13 @@ namespace HTC.UnityPlugin.FoveatedRendering
         public static T Clamp<T>(this T input, T min, T max) where T : IComparable
         {
             if (min.CompareTo(input) > 0)
-            { return min; }
+            {
+                return min;
+            }
             else if (max.CompareTo(input) < 0)
-            { return max; }
+            {
+                return max;
+            }
 
             return input;
         }
@@ -30,28 +34,19 @@ namespace HTC.UnityPlugin.FoveatedRendering
         bool foveatedRenderingActivated = false;
         RenderMode renderMode = RenderMode.RENDER_MODE_MONO;
 
-        [SerializeField]
-        bool manualAdjustment = false;
+        [SerializeField] bool manualAdjustment = false;
 
-        [SerializeField]
-        ShadingRatePreset shadingRatePreset = ShadingRatePreset.SHADING_RATE_HIGHEST_PERFORMANCE;
-        [SerializeField]
-        ShadingPatternPreset patternPreset = ShadingPatternPreset.SHADING_PATTERN_NARROW;
+        [SerializeField] ShadingRatePreset shadingRatePreset = ShadingRatePreset.SHADING_RATE_HIGHEST_PERFORMANCE;
+        [SerializeField] ShadingPatternPreset patternPreset = ShadingPatternPreset.SHADING_PATTERN_NARROW;
 
-        [SerializeField]
-        Vector2 innerRegionRadii = new Vector2(0.25f, 0.25f);
-        [SerializeField]
-        Vector2 middleRegionRadii = new Vector2(0.33f, 0.33f);
-        [SerializeField]
-        Vector2 peripheralRegionRadii = new Vector2(1.0f, 1.0f);
+        [SerializeField] Vector2 innerRegionRadii = new Vector2(0.25f, 0.25f);
+        [SerializeField] Vector2 middleRegionRadii = new Vector2(0.33f, 0.33f);
+        [SerializeField] Vector2 peripheralRegionRadii = new Vector2(1.0f, 1.0f);
 
-        [SerializeField]
-        ShadingRate innerShadingRate = ShadingRate.X1_PER_PIXEL;
-        [SerializeField]
-        ShadingRate middleShadingRate = ShadingRate.X1_PER_2X2_PIXELS;
-        [SerializeField]
-        ShadingRate peripheralShadingRate = ShadingRate.X1_PER_4X4_PIXELS;
-        
+        [SerializeField] ShadingRate innerShadingRate = ShadingRate.X1_PER_PIXEL;
+        [SerializeField] ShadingRate middleShadingRate = ShadingRate.X1_PER_2X2_PIXELS;
+        [SerializeField] ShadingRate peripheralShadingRate = ShadingRate.X1_PER_4X4_PIXELS;
+
         public void EnableFoveatedRendering(bool activate)
         {
             if (foveatedRenderingInited && activate != foveatedRenderingActivated)
@@ -72,7 +67,8 @@ namespace HTC.UnityPlugin.FoveatedRendering
         {
             if (foveatedRenderingInited)
             {
-                shadingRatePreset = inputPreset.Clamp(ShadingRatePreset.SHADING_RATE_HIGHEST_PERFORMANCE, ShadingRatePreset.SHADING_RATE_MAX);
+                shadingRatePreset = inputPreset.Clamp(ShadingRatePreset.SHADING_RATE_HIGHEST_PERFORMANCE,
+                    ShadingRatePreset.SHADING_RATE_MAX);
                 ViveFoveatedRenderingAPI.SetFoveatedRenderingShadingRatePreset(shadingRatePreset);
 
                 if (shadingRatePreset == ShadingRatePreset.SHADING_RATE_CUSTOM)
@@ -82,7 +78,7 @@ namespace HTC.UnityPlugin.FoveatedRendering
                     SetShadingRate(TargetArea.PERIPHERAL, peripheralShadingRate);
                 }
 
-                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.UPDATE_GAZE);
+                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int) EventID.UPDATE_GAZE);
             }
         }
 
@@ -95,7 +91,8 @@ namespace HTC.UnityPlugin.FoveatedRendering
         {
             if (foveatedRenderingInited)
             {
-                patternPreset = inputPreset.Clamp(ShadingPatternPreset.SHADING_PATTERN_WIDE, ShadingPatternPreset.SHADING_PATTERN_MAX);
+                patternPreset = inputPreset.Clamp(ShadingPatternPreset.SHADING_PATTERN_WIDE,
+                    ShadingPatternPreset.SHADING_PATTERN_MAX);
                 ViveFoveatedRenderingAPI.SetFoveatedRenderingPatternPreset(patternPreset);
 
                 if (patternPreset == ShadingPatternPreset.SHADING_PATTERN_CUSTOM)
@@ -105,7 +102,7 @@ namespace HTC.UnityPlugin.FoveatedRendering
                     SetRegionRadii(TargetArea.PERIPHERAL, peripheralRegionRadii);
                 }
 
-                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.UPDATE_GAZE);
+                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int) EventID.UPDATE_GAZE);
             }
         }
 
@@ -133,7 +130,7 @@ namespace HTC.UnityPlugin.FoveatedRendering
                 }
 
                 ViveFoveatedRenderingAPI.SetShadingRate(targetArea, clampedRate);
-                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.UPDATE_GAZE);
+                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int) EventID.UPDATE_GAZE);
             }
         }
 
@@ -171,7 +168,7 @@ namespace HTC.UnityPlugin.FoveatedRendering
                 }
 
                 ViveFoveatedRenderingAPI.SetRegionRadii(targetArea, clampedRadii);
-                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.UPDATE_GAZE);
+                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int) EventID.UPDATE_GAZE);
             }
         }
 
@@ -192,38 +189,45 @@ namespace HTC.UnityPlugin.FoveatedRendering
 
         void OnEnable()
         {
-			ViveFoveatedRenderingAPI.InitializeNativeLogger(str => Debug.Log(str));
+            ViveFoveatedRenderingAPI.InitializeNativeLogger(str => Debug.Log(str));
 
             thisCamera = GetComponent<Camera>();
-            foveatedRenderingInited = ViveFoveatedRenderingAPI.InitializeFoveatedRendering(thisCamera.fieldOfView, thisCamera.aspect);
+            foveatedRenderingInited =
+                ViveFoveatedRenderingAPI.InitializeFoveatedRendering(thisCamera.fieldOfView, thisCamera.aspect);
             if (foveatedRenderingInited)
             {
                 var currentRenderingPath = thisCamera.actualRenderingPath;
                 if (currentRenderingPath == RenderingPath.Forward)
                 {
                     commandBufferMgr.AppendCommands("Enable Foveated Rendering", CameraEvent.BeforeForwardOpaque,
-                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.ENABLE_FOVEATED_RENDERING),
+                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(),
+                            (int) EventID.ENABLE_FOVEATED_RENDERING),
                         buf => buf.ClearRenderTarget(false, true, Color.black));
 
                     commandBufferMgr.AppendCommands("Disable Foveated Rendering", CameraEvent.AfterForwardAlpha,
-                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.DISABLE_FOVEATED_RENDERING));
+                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(),
+                            (int) EventID.DISABLE_FOVEATED_RENDERING));
                 }
                 else if (currentRenderingPath == RenderingPath.DeferredShading)
                 {
                     commandBufferMgr.AppendCommands("Enable Foveated Rendering - GBuffer", CameraEvent.BeforeGBuffer,
-                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.ENABLE_FOVEATED_RENDERING),
+                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(),
+                            (int) EventID.ENABLE_FOVEATED_RENDERING),
                         buf => buf.ClearRenderTarget(false, true, Color.black));
 
                     commandBufferMgr.AppendCommands("Disable Foveated Rendering - GBuffer", CameraEvent.AfterGBuffer,
-                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.DISABLE_FOVEATED_RENDERING));
+                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(),
+                            (int) EventID.DISABLE_FOVEATED_RENDERING));
 
                     commandBufferMgr.AppendCommands("Enable Foveated Rendering - Alpha", CameraEvent.BeforeForwardAlpha,
-                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.ENABLE_FOVEATED_RENDERING));
+                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(),
+                            (int) EventID.ENABLE_FOVEATED_RENDERING));
 
                     commandBufferMgr.AppendCommands("Disable Foveated Rendering - Alpha", CameraEvent.AfterForwardAlpha,
-                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.DISABLE_FOVEATED_RENDERING));
+                        buf => buf.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(),
+                            (int) EventID.DISABLE_FOVEATED_RENDERING));
                 }
-                
+
                 EnableFoveatedRendering(true);
                 bool isEyeTracked = ViveFoveatedGazeUpdater.AttachGazeUpdater(gameObject);
                 if (manualAdjustment || (!ViveFoveatedInitParam.SetParamByHMD(this, isEyeTracked)))
@@ -232,8 +236,9 @@ namespace HTC.UnityPlugin.FoveatedRendering
                     SetPatternPreset(patternPreset);
                 }
 
-                ViveFoveatedRenderingAPI.SetNormalizedGazeDirection(new Vector3(0.0f, 0.0f, 1.0f), new Vector3(0.0f, 0.0f, 1.0f));
-                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int)EventID.UPDATE_GAZE);
+                ViveFoveatedRenderingAPI.SetNormalizedGazeDirection(new Vector3(0.0f, 0.0f, 1.0f),
+                    new Vector3(0.0f, 0.0f, 1.0f));
+                GL.IssuePluginEvent(ViveFoveatedRenderingAPI.GetRenderEventFunc(), (int) EventID.UPDATE_GAZE);
             }
         }
 
@@ -241,8 +246,8 @@ namespace HTC.UnityPlugin.FoveatedRendering
         {
             EnableFoveatedRendering(false);
             commandBufferMgr.ClearCommands();
-			
-			ViveFoveatedRenderingAPI.ReleaseFoveatedRendering();
+
+            ViveFoveatedRenderingAPI.ReleaseFoveatedRendering();
             ViveFoveatedRenderingAPI.ReleaseNativeLogger();
 
             foveatedRenderingInited = false;
@@ -261,8 +266,9 @@ namespace HTC.UnityPlugin.FoveatedRendering
                 switch (XRSettings.stereoRenderingMode)
                 {
                     case XRSettings.StereoRenderingMode.MultiPass:
-                        renderMode = thisCamera.stereoActiveEye == Camera.MonoOrStereoscopicEye.Left ?
-                        RenderMode.RENDER_MODE_LEFT_EYE : RenderMode.RENDER_MODE_RIGHT_EYE;
+                        renderMode = thisCamera.stereoActiveEye == Camera.MonoOrStereoscopicEye.Left
+                            ? RenderMode.RENDER_MODE_LEFT_EYE
+                            : RenderMode.RENDER_MODE_RIGHT_EYE;
                         break;
                     case XRSettings.StereoRenderingMode.SinglePass:
                         renderMode = RenderMode.RENDER_MODE_STEREO;

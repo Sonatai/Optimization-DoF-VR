@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
-public class TestPosition: MonoBehaviour
+public class TestPosition : MonoBehaviour
 {
-    [SerializeField] private  Transform userPosition;
-    [SerializeField] private  Transform focusPoint1;
-    [SerializeField] private  Transform focusPoint2;
+    [SerializeField] private Transform userPosition;
+    [SerializeField] private Transform focusPoint1;
+    [SerializeField] private Transform focusPoint2;
 
     public Transform UserPosition
     {
@@ -20,5 +20,4 @@ public class TestPosition: MonoBehaviour
     {
         get => focusPoint2;
     }
-
 }

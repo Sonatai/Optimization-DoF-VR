@@ -21,9 +21,13 @@ namespace HTC.UnityPlugin.FoveatedRendering
         SerializedProperty peripheralShadingRateProp;
 
         GUIContent renderModeLabel = new GUIContent();
+
         void OnEnable()
         {
-            if (target == null || serializedObject == null) { return; }
+            if (target == null || serializedObject == null)
+            {
+                return;
+            }
 
             scriptProp = serializedObject.FindProperty("m_Script");
             manualAdjustmentProp = serializedObject.FindProperty("manualAdjustment");
@@ -41,40 +45,52 @@ namespace HTC.UnityPlugin.FoveatedRendering
 
         public override void OnInspectorGUI()
         {
-            if (target == null || serializedObject == null) { return; }
-            
+            if (target == null || serializedObject == null)
+            {
+                return;
+            }
+
             serializedObject.Update();
-            
+
             GUI.enabled = false;
 
             EditorGUILayout.PropertyField(scriptProp);
-            
+
             GUI.enabled = true;
 
             EditorGUILayout.PropertyField(manualAdjustmentProp);
 
-            if (manualAdjustmentProp.boolValue) {
-                var targetObject = (ViveFoveatedRendering)target;
-                PropertyEnumChange<ShadingPatternPreset>(shadingPatternPresetProp, propVal => targetObject.SetPatternPreset(propVal));
+            if (manualAdjustmentProp.boolValue)
+            {
+                var targetObject = (ViveFoveatedRendering) target;
+                PropertyEnumChange<ShadingPatternPreset>(shadingPatternPresetProp,
+                    propVal => targetObject.SetPatternPreset(propVal));
                 if (targetObject.GetPatternPreset() == ShadingPatternPreset.SHADING_PATTERN_CUSTOM)
                 {
                     EditorGUI.indentLevel = 1;
 
-                    PropertyChange(innerRadiiProp, propVal => targetObject.SetRegionRadii(TargetArea.INNER, propVal.vector2Value));
-                    PropertyChange(middleRadiiProp, propVal => targetObject.SetRegionRadii(TargetArea.MIDDLE, propVal.vector2Value));
-                    PropertyChange(peripheralRadiiProp, propVal => targetObject.SetRegionRadii(TargetArea.PERIPHERAL, propVal.vector2Value));
+                    PropertyChange(innerRadiiProp,
+                        propVal => targetObject.SetRegionRadii(TargetArea.INNER, propVal.vector2Value));
+                    PropertyChange(middleRadiiProp,
+                        propVal => targetObject.SetRegionRadii(TargetArea.MIDDLE, propVal.vector2Value));
+                    PropertyChange(peripheralRadiiProp,
+                        propVal => targetObject.SetRegionRadii(TargetArea.PERIPHERAL, propVal.vector2Value));
 
                     EditorGUI.indentLevel = 0;
                 }
-                
-                PropertyEnumChange<ShadingRatePreset>(shadingRatePresetProp, propVal => targetObject.SetShadingRatePreset(propVal));
+
+                PropertyEnumChange<ShadingRatePreset>(shadingRatePresetProp,
+                    propVal => targetObject.SetShadingRatePreset(propVal));
                 if (targetObject.GetShadingRatePreset() == ShadingRatePreset.SHADING_RATE_CUSTOM)
                 {
                     EditorGUI.indentLevel = 1;
 
-                    PropertyEnumChange<ShadingRate>(innerShadingRateProp, propVal => targetObject.SetShadingRate(TargetArea.INNER, propVal));
-                    PropertyEnumChange<ShadingRate>(middleShadingRateProp, propVal => targetObject.SetShadingRate(TargetArea.MIDDLE, propVal));
-                    PropertyEnumChange<ShadingRate>(peripheralShadingRateProp, propVal => targetObject.SetShadingRate(TargetArea.PERIPHERAL, propVal));
+                    PropertyEnumChange<ShadingRate>(innerShadingRateProp,
+                        propVal => targetObject.SetShadingRate(TargetArea.INNER, propVal));
+                    PropertyEnumChange<ShadingRate>(middleShadingRateProp,
+                        propVal => targetObject.SetShadingRate(TargetArea.MIDDLE, propVal));
+                    PropertyEnumChange<ShadingRate>(peripheralShadingRateProp,
+                        propVal => targetObject.SetShadingRate(TargetArea.PERIPHERAL, propVal));
 
                     EditorGUI.indentLevel = 0;
                 }
@@ -84,14 +100,17 @@ namespace HTC.UnityPlugin.FoveatedRendering
         }
 
         delegate void OnPropertyChange<T>(T propVal);
-        void PropertyEnumChange<T>(SerializedProperty prop, OnPropertyChange<T> onEnumChange) {
-            PropertyChange(prop, p => 
+
+        void PropertyEnumChange<T>(SerializedProperty prop, OnPropertyChange<T> onEnumChange)
+        {
+            PropertyChange(prop, p =>
             {
                 var enumStr = p.enumNames[p.enumValueIndex];
-                var enumVal = (T)Enum.Parse(typeof(T), enumStr);
+                var enumVal = (T) Enum.Parse(typeof(T), enumStr);
                 onEnumChange(enumVal);
             });
         }
+
         void PropertyChange(SerializedProperty prop, OnPropertyChange<SerializedProperty> onPropChange)
         {
             EditorGUI.BeginChangeCheck();

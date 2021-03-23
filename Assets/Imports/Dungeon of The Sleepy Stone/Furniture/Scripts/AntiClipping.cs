@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections;
- 
+
 public class AntiClipping : MonoBehaviour
 {
-    public bool sendTriggerMessage = true; 	
+    public bool sendTriggerMessage = true;
 
     public LayerMask searchMask = -1; //make sure we aren't in this layer
     private Collider _collider;
@@ -20,7 +20,7 @@ public class AntiClipping : MonoBehaviour
         //ckecks if linecast between current position and predicted next frame position collides with Object
         RaycastHit rayHit;
         var nextFramepositionPrediciton = transform.position + _rigidbody.velocity * 0.02f;
-        
+
         if (Physics.Linecast(transform.position, nextFramepositionPrediciton, out rayHit, layerMask: searchMask))
         {
             transform.position = transform.position;

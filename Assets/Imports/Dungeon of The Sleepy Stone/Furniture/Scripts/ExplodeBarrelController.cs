@@ -24,7 +24,7 @@ public class ExplodeBarrelController : Grabable
         if (isExploded)
         {
             despawnTimer -= Time.deltaTime;
-            
+
             if (despawnTimer < 0f)
             {
                 DestroyImmediate(barrel);
@@ -38,13 +38,13 @@ public class ExplodeBarrelController : Grabable
         {
             _meshRenderer.enabled = false;
             _rigidbody.isKinematic = true;
-        
+
             isExploded = true;
-        
+
             //explodEffect.SetActive(true);
             explode.enabled = true;
         }
-        
+
         if (attachedHand)
         {
             ReleaseFromHand();

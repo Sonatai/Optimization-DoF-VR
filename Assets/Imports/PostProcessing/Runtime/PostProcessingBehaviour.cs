@@ -104,7 +104,7 @@ namespace UnityEngine.PostProcessing
             //  - Depth of Field
             //  - Motion blur
             m_RenderingInSceneView = UnityEditor.SceneView.currentDrawingSceneView != null
-                && UnityEditor.SceneView.currentDrawingSceneView.camera == m_Camera;
+                                     && UnityEditor.SceneView.currentDrawingSceneView.camera == m_Camera;
 #endif
 
             // Prepare context
@@ -230,7 +230,8 @@ namespace UnityEngine.PostProcessing
             if (dofActive)
             {
                 uberActive = true;
-                m_DepthOfField.Prepare(src, uberMaterial, taaActive, m_Taa.jitterVector, m_Taa.model.settings.taaSettings.motionBlending);
+                m_DepthOfField.Prepare(src, uberMaterial, taaActive, m_Taa.jitterVector,
+                    m_Taa.model.settings.taaSettings.motionBlending);
             }
 
             if (m_Bloom.active)
@@ -390,12 +391,13 @@ namespace UnityEngine.PostProcessing
         #endregion
 
         #region Command buffer handling & rendering helpers
+
         // Placeholders before the upcoming Scriptable Render Loop as command buffers will be
         // executed on the go so we won't need of all that stuff
         CommandBuffer AddCommandBuffer<T>(CameraEvent evt, string name)
             where T : PostProcessingModel
         {
-            var cb = new CommandBuffer { name = name };
+            var cb = new CommandBuffer {name = name};
             var kvp = new KeyValuePair<CameraEvent, CommandBuffer>(evt, cb);
             m_CommandBuffers.Add(typeof(T), kvp);
             m_Camera.AddCommandBuffer(evt, kvp.Value);

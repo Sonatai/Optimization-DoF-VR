@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-
 #if UNITY_2017_2_OR_NEWER
-    using UnityEngine.XR;
+using UnityEngine.XR;
+
 #else
 using XRSettings = UnityEngine.VR.VRSettings;
 using XRDevice = UnityEngine.VR.VRDevice;
@@ -20,6 +20,7 @@ namespace Valve.VR
         public static bool forcingInitialization = false;
 
         private static SteamVR_Behaviour _instance;
+
         public static SteamVR_Behaviour instance
         {
             get
@@ -37,12 +38,12 @@ namespace Valve.VR
 
         public bool doNotDestroy = true;
 
-        [HideInInspector]
-        public SteamVR_Render steamvr_render;
+        [HideInInspector] public SteamVR_Render steamvr_render;
 
         internal static bool isPlaying = false;
 
         private static bool initializing = false;
+
         public static void Initialize(bool forceUnityVRToOpenVR = false)
         {
             if (_instance == null && initializing == false)
@@ -124,6 +125,7 @@ namespace Valve.VR
 
 #if UNITY_2018_3_OR_NEWER
         private bool loadedOpenVRDeviceSuccess = false;
+
         private IEnumerator DoInitializeSteamVR(bool forceUnityVRToOpenVR = false)
         {
             XRDevice.deviceLoaded += XRDevice_deviceLoaded;
@@ -132,6 +134,7 @@ namespace Valve.VR
             {
                 yield return null;
             }
+
             XRDevice.deviceLoaded -= XRDevice_deviceLoaded;
             EnableOpenVR();
         }
@@ -144,7 +147,8 @@ namespace Valve.VR
             }
             else
             {
-                Debug.LogError("<b>[SteamVR]</b> Tried to async load: " + openVRDeviceName + ". Loaded: " + deviceName, this);
+                Debug.LogError("<b>[SteamVR]</b> Tried to async load: " + openVRDeviceName + ". Loaded: " + deviceName,
+                    this);
                 loadedOpenVRDeviceSuccess = true; //try anyway
             }
         }
@@ -176,15 +180,17 @@ namespace Valve.VR
 #if UNITY_2017_1_OR_NEWER
         protected void OnEnable()
         {
-		    Application.onBeforeRender += OnBeforeRender;
+            Application.onBeforeRender += OnBeforeRender;
             SteamVR_Events.System(EVREventType.VREvent_Quit).Listen(OnQuit);
         }
+
         protected void OnDisable()
         {
-		    Application.onBeforeRender -= OnBeforeRender;
+            Application.onBeforeRender -= OnBeforeRender;
             SteamVR_Events.System(EVREventType.VREvent_Quit).Remove(OnQuit);
         }
-	    protected void OnBeforeRender()
+
+        protected void OnBeforeRender()
         {
             PreCull();
         }
@@ -209,6 +215,7 @@ namespace Valve.VR
 #endif
 
         protected static int lastFrameCount = -1;
+
         protected void PreCull()
         {
             if (OpenVR.Input != null)

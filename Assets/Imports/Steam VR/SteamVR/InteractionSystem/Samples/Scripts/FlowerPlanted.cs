@@ -44,12 +44,12 @@ namespace Valve.VR.InteractionSystem.Sample
             newColor.a = 0.75f;
             planting.GetComponentInChildren<MeshRenderer>().material.SetColor("_BaseColor", newColor);
 #else
-            planting.GetComponentInChildren<MeshRenderer>().material.SetColor("_TintColor", Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f));
+            planting.GetComponentInChildren<MeshRenderer>().material
+                .SetColor("_TintColor", Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f));
 #endif
             Rigidbody rigidbody = planting.GetComponent<Rigidbody>();
             if (rigidbody != null)
                 rigidbody.isKinematic = true;
-
 
 
             Vector3 initialScale = Vector3.one * 0.01f;
@@ -61,7 +61,8 @@ namespace Valve.VR.InteractionSystem.Sample
 
             while (Time.time < endTime)
             {
-                planting.transform.localScale = Vector3.Slerp(initialScale, targetScale, (Time.time - startTime) / overTime);
+                planting.transform.localScale =
+                    Vector3.Slerp(initialScale, targetScale, (Time.time - startTime) / overTime);
                 yield return null;
             }
 

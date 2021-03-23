@@ -8,16 +8,16 @@ namespace UnityEngine.PostProcessing
     {
         static class Uniforms
         {
-            internal static readonly int _Intensity         = Shader.PropertyToID("_Intensity");
-            internal static readonly int _Radius            = Shader.PropertyToID("_Radius");
-            internal static readonly int _FogParams         = Shader.PropertyToID("_FogParams");
-            internal static readonly int _Downsample        = Shader.PropertyToID("_Downsample");
-            internal static readonly int _SampleCount       = Shader.PropertyToID("_SampleCount");
+            internal static readonly int _Intensity = Shader.PropertyToID("_Intensity");
+            internal static readonly int _Radius = Shader.PropertyToID("_Radius");
+            internal static readonly int _FogParams = Shader.PropertyToID("_FogParams");
+            internal static readonly int _Downsample = Shader.PropertyToID("_Downsample");
+            internal static readonly int _SampleCount = Shader.PropertyToID("_SampleCount");
             internal static readonly int _OcclusionTexture1 = Shader.PropertyToID("_OcclusionTexture1");
             internal static readonly int _OcclusionTexture2 = Shader.PropertyToID("_OcclusionTexture2");
-            internal static readonly int _OcclusionTexture  = Shader.PropertyToID("_OcclusionTexture");
-            internal static readonly int _MainTex           = Shader.PropertyToID("_MainTex");
-            internal static readonly int _TempRT            = Shader.PropertyToID("_TempRT");
+            internal static readonly int _OcclusionTexture = Shader.PropertyToID("_OcclusionTexture");
+            internal static readonly int _MainTex = Shader.PropertyToID("_MainTex");
+            internal static readonly int _TempRT = Shader.PropertyToID("_TempRT");
         }
 
         const string k_BlitShaderString = "Hidden/Post FX/Blit";
@@ -43,7 +43,8 @@ namespace UnityEngine.PostProcessing
                 if (context.isGBufferAvailable && !model.settings.forceForwardCompatibility)
                     return OcclusionSource.GBuffer;
 
-                if (model.settings.highPrecision && (!context.isGBufferAvailable || model.settings.forceForwardCompatibility))
+                if (model.settings.highPrecision &&
+                    (!context.isGBufferAvailable || model.settings.forceForwardCompatibility))
                     return OcclusionSource.DepthTexture;
 
                 return OcclusionSource.DepthNormalsTexture;
@@ -52,7 +53,11 @@ namespace UnityEngine.PostProcessing
 
         bool ambientOnlySupported
         {
-            get { return context.isHdr && model.settings.ambientOnly && context.isGBufferAvailable && !model.settings.forceForwardCompatibility; }
+            get
+            {
+                return context.isHdr && model.settings.ambientOnly && context.isGBufferAvailable &&
+                       !model.settings.forceForwardCompatibility;
+            }
         }
 
         public override bool active
@@ -86,8 +91,8 @@ namespace UnityEngine.PostProcessing
         public override CameraEvent GetCameraEvent()
         {
             return ambientOnlySupported && !context.profile.debugViews.IsModeActive(DebugMode.AmbientOcclusion)
-                   ? CameraEvent.BeforeReflections
-                   : CameraEvent.BeforeImageEffectsOpaque;
+                ? CameraEvent.BeforeReflections
+                : CameraEvent.BeforeImageEffectsOpaque;
         }
 
         public override void PopulateCommandBuffer(CommandBuffer cb)
@@ -102,11 +107,13 @@ namespace UnityEngine.PostProcessing
             material.SetFloat(Uniforms._Intensity, settings.intensity);
             material.SetFloat(Uniforms._Radius, settings.radius);
             material.SetFloat(Uniforms._Downsample, settings.downsampling ? 0.5f : 1f);
-            material.SetInt(Uniforms._SampleCount, (int)settings.sampleCount);
+            material.SetInt(Uniforms._SampleCount, (int) settings.sampleCount);
 
             if (!context.isGBufferAvailable && RenderSettings.fog)
             {
-                material.SetVector(Uniforms._FogParams, new Vector3(RenderSettings.fogDensity, RenderSettings.fogStartDistance, RenderSettings.fogEndDistance));
+                material.SetVector(Uniforms._FogParams,
+                    new Vector3(RenderSettings.fogDensity, RenderSettings.fogStartDistance,
+                        RenderSettings.fogEndDistance));
 
                 switch (RenderSettings.fogMode)
                 {
@@ -138,7 +145,7 @@ namespace UnityEngine.PostProcessing
             cb.GetTemporaryRT(rtMask, tw / ts, th / ts, 0, kFilter, kFormat, kRWMode);
 
             // AO estimation
-            cb.Blit((Texture)null, rtMask, material, (int)occlusionSource);
+            cb.Blit((Texture) null, rtMask, material, (int) occlusionSource);
 
             // Blur buffer
             var rtBlur = Uniforms._OcclusionTexture2;

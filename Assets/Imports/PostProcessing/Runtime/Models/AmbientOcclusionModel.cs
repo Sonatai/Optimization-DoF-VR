@@ -28,13 +28,16 @@ namespace UnityEngine.PostProcessing
             [Tooltip("Halves the resolution of the effect to increase performance at the cost of visual quality.")]
             public bool downsampling;
 
-            [Tooltip("Forces compatibility with Forward rendered objects when working with the Deferred rendering path.")]
+            [Tooltip(
+                "Forces compatibility with Forward rendered objects when working with the Deferred rendering path.")]
             public bool forceForwardCompatibility;
 
-            [Tooltip("Enables the ambient-only mode in that the effect only affects ambient lighting. This mode is only available with the Deferred rendering path and HDR rendering.")]
+            [Tooltip(
+                "Enables the ambient-only mode in that the effect only affects ambient lighting. This mode is only available with the Deferred rendering path and HDR rendering.")]
             public bool ambientOnly;
 
-            [Tooltip("Toggles the use of a higher precision depth texture with the forward rendering path (may impact performances). Has no effect with the deferred rendering path.")]
+            [Tooltip(
+                "Toggles the use of a higher precision depth texture with the forward rendering path (may impact performances). Has no effect with the deferred rendering path.")]
             public bool highPrecision;
 
             public static Settings defaultSettings
@@ -55,8 +58,8 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        [SerializeField] Settings m_Settings = Settings.defaultSettings;
+
         public Settings settings
         {
             get { return m_Settings; }

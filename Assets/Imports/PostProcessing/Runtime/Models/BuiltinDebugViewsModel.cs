@@ -32,7 +32,9 @@ namespace UnityEngine.PostProcessing
             [Range(0f, 1f), Tooltip("Opacity of the per-pixel motion vector colors.")]
             public float motionImageOpacity;
 
-            [Min(0f), Tooltip("Because motion vectors are mainly very small vectors, you can use this setting to make them more visible.")]
+            [Min(0f),
+             Tooltip(
+                 "Because motion vectors are mainly very small vectors, you can use this setting to make them more visible.")]
             public float motionImageAmplitude;
 
             [Range(0f, 1f), Tooltip("Opacity for the motion vector arrows.")]
@@ -100,8 +102,8 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        [SerializeField] Settings m_Settings = Settings.defaultSettings;
+
         public Settings settings
         {
             get { return m_Settings; }

@@ -14,14 +14,13 @@ namespace Valve.VR.InteractionSystem
     {
         [Tooltip("Hand collider prefab to instantiate")]
         public HandCollider handColliderPrefab;
-        [HideInInspector]
-        public HandCollider handCollider;
+
+        [HideInInspector] public HandCollider handCollider;
 
         [Tooltip("Layers to consider when checking if an area is clear")]
         public LayerMask clearanceCheckMask;
 
-        [HideInInspector]
-        public Hand hand;
+        [HideInInspector] public Hand hand;
 
         // distance at which hand will teleport back to controller
         const float handResetDistance = 0.6f;
@@ -37,8 +36,8 @@ namespace Valve.VR.InteractionSystem
         {
             hand = GetComponent<Hand>();
             //spawn hand collider and link it to us
-            
-            handCollider = ((GameObject)Instantiate(handColliderPrefab.gameObject)).GetComponent<HandCollider>();
+
+            handCollider = ((GameObject) Instantiate(handColliderPrefab.gameObject)).GetComponent<HandCollider>();
             Vector3 localPosition = handCollider.transform.localPosition;
             Quaternion localRotation = handCollider.transform.localRotation;
 
@@ -79,7 +78,8 @@ namespace Valve.VR.InteractionSystem
 
         private void UpdateCenterPoint()
         {
-            Vector3 offset = hand.skeleton.GetBonePosition(SteamVR_Skeleton_JointIndexes.middleProximal) - hand.skeleton.GetBonePosition(SteamVR_Skeleton_JointIndexes.root);
+            Vector3 offset = hand.skeleton.GetBonePosition(SteamVR_Skeleton_JointIndexes.middleProximal) -
+                             hand.skeleton.GetBonePosition(SteamVR_Skeleton_JointIndexes.root);
             if (hand.HasSkeleton())
             {
                 handCollider.SetCenterPoint(hand.skeleton.transform.position + offset);
@@ -101,7 +101,8 @@ namespace Valve.VR.InteractionSystem
                 if (!collisionsEnabled)
                 {
                     clearanceBuffer[0] = null;
-                    Physics.OverlapSphereNonAlloc(hand.objectAttachmentPoint.position, collisionReenableClearanceRadius, clearanceBuffer);
+                    Physics.OverlapSphereNonAlloc(hand.objectAttachmentPoint.position, collisionReenableClearanceRadius,
+                        clearanceBuffer);
                     // if we don't find anything in the vicinity, reenable collisions!
                     if (clearanceBuffer[0] == null)
                     {
@@ -154,17 +155,19 @@ namespace Valve.VR.InteractionSystem
 
             // set finger tip positions in wrist space
 
-            for(int finger = 0; finger < 5; finger++)
+            for (int finger = 0; finger < 5; finger++)
             {
                 int tip = SteamVR_Skeleton_JointIndexes.GetBoneForFingerTip(finger);
                 int bone = tip;
-                for(int i = 0; i < handCollider.fingerColliders[finger].Length; i++)
+                for (int i = 0; i < handCollider.fingerColliders[finger].Length; i++)
                 {
                     bone = tip - 1 - i; // start at distal and go down
                     if (handCollider.fingerColliders[finger][i] != null)
-                        handCollider.fingerColliders[finger][i].localPosition = wrist.InverseTransformPoint(hand.skeleton.GetBone(bone).position);
+                        handCollider.fingerColliders[finger][i].localPosition =
+                            wrist.InverseTransformPoint(hand.skeleton.GetBone(bone).position);
                 }
             }
+
             /*
             if(handCollider.tip_thumb != null)
                 handCollider.tip_thumb.localPosition = wrist.InverseTransformPoint(hand.skeleton.GetBone(thumbBone).position);
@@ -195,7 +198,8 @@ namespace Valve.VR.InteractionSystem
 
             hand.mainRenderModel.transform.rotation = offsetRotation;
 
-            Vector3 offsetPosition = handCollider.transform.TransformPoint(wristToArmature.inverse.MultiplyPoint3x4(Vector3.zero));
+            Vector3 offsetPosition =
+                handCollider.transform.TransformPoint(wristToArmature.inverse.MultiplyPoint3x4(Vector3.zero));
 
             hand.mainRenderModel.transform.position = offsetPosition;
 
@@ -214,7 +218,7 @@ namespace Valve.VR.InteractionSystem
 
         Vector3 ProcessPos(int boneIndex, Vector3 pos)
         {
-            if(hand.skeleton.mirroring != SteamVR_Behaviour_Skeleton.MirrorType.None)
+            if (hand.skeleton.mirroring != SteamVR_Behaviour_Skeleton.MirrorType.None)
             {
                 return SteamVR_Behaviour_Skeleton.MirrorPosition(boneIndex, pos);
             }
@@ -231,7 +235,5 @@ namespace Valve.VR.InteractionSystem
 
             return rot;
         }
-
-
     }
 }

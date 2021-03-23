@@ -20,6 +20,7 @@ namespace Valve.VR.InteractionSystem.Sample
         public bool drawTape = false;
 
         private float lastDistance;
+
         private void Update()
         {
             if (Camera.main != null)

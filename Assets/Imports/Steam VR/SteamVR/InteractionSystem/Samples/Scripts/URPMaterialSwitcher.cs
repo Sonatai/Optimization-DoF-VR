@@ -9,10 +9,9 @@ using UnityEditor;
 [ExecuteInEditMode]
 public class URPMaterialSwitcher : MonoBehaviour
 {
-	public bool children = false;
+    public bool children = false;
 
 #if UNITY_EDITOR && UNITY_URP
-
 	private const string searchTemplate = "URP{0} t:material";
 	void Start()
 	{
@@ -25,7 +24,8 @@ public class URPMaterialSwitcher : MonoBehaviour
 
 		if (renderer.sharedMaterial.name.StartsWith("URP") == false)
 		{
-			string[] mats = UnityEditor.AssetDatabase.FindAssets(string.Format(searchTemplate, renderer.sharedMaterial.name));
+			string[] mats =
+ UnityEditor.AssetDatabase.FindAssets(string.Format(searchTemplate, renderer.sharedMaterial.name));
 			if (mats.Length > 0)
 			{
 				string path = UnityEditor.AssetDatabase.GUIDToAssetPath(mats[0]);
@@ -67,7 +67,8 @@ public class URPMaterialSwitcher : MonoBehaviour
 	{ 
 		if (renderer != null && renderer.sharedMaterial.name.StartsWith("URP") == false)
 		{
-			string[] foundMaterials = UnityEditor.AssetDatabase.FindAssets(string.Format(searchTemplate, renderer.sharedMaterial.name));
+			string[] foundMaterials =
+ UnityEditor.AssetDatabase.FindAssets(string.Format(searchTemplate, renderer.sharedMaterial.name));
 			if (foundMaterials.Length > 0)
 			{
 				string urpMaterialPath = UnityEditor.AssetDatabase.GUIDToAssetPath(foundMaterials[0]);

@@ -29,7 +29,7 @@ namespace Valve.VR.InteractionSystem.Sample
                     if (colorSpawnedObject)
                     {
                         Renderer renderer = collision.gameObject.GetComponent<Renderer>();
-                        Texture2D tex = (Texture2D)renderer.material.mainTexture;
+                        Texture2D tex = (Texture2D) renderer.material.mainTexture;
                         Color color = tex.GetPixelBilinear(hit.textureCoord.x, hit.textureCoord.y);
 
                         if (color.r > 0.7f && color.g > 0.7f && color.b < 0.7f)
@@ -59,6 +59,7 @@ namespace Valve.VR.InteractionSystem.Sample
                         }
                     }
                 }
+
                 Debug.DrawRay(ray.origin, ray.direction, Color.cyan, 5, true);
 
                 if (destroyOnTargetCollision)

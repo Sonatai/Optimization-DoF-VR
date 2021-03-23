@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using UnityEngine;
 
 namespace Valve.VR.InteractionSystem.Sample
@@ -41,7 +40,8 @@ namespace Valve.VR.InteractionSystem.Sample
                         //Debug.LogFormat("{0:0.00}, {1:0.00}, {2:0.00}, {3:0.00}, {4:0.00}", skeleton.thumbCurl, skeleton.indexCurl, skeleton.middleCurl, skeleton.ringCurl, skeleton.pinkyCurl);
 
                         if ((skeleton.indexCurl <= openFingerAmount && skeleton.middleCurl <= openFingerAmount) &&
-                            (skeleton.thumbCurl >= closedThumbAmount && skeleton.ringCurl >= closedFingerAmount && skeleton.pinkyCurl >= closedFingerAmount))
+                            (skeleton.thumbCurl >= closedThumbAmount && skeleton.ringCurl >= closedFingerAmount &&
+                             skeleton.pinkyCurl >= closedFingerAmount))
                         {
                             PeaceSignRecognized(true);
                         }
@@ -55,6 +55,7 @@ namespace Valve.VR.InteractionSystem.Sample
         }
 
         private bool lastPeaceSignState = false;
+
         private void PeaceSignRecognized(bool currentPeaceSignState)
         {
             if (lastPeaceSignState == false && currentPeaceSignState == true)

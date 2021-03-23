@@ -4,7 +4,6 @@ using UnityEngine.SceneManagement;
 
 public class FadingScript : MonoBehaviour
 {
-    
     private bool _enteredNextLevel = false;
     public Animator animator;
     private int LevelToLoad;
@@ -34,7 +33,7 @@ public class FadingScript : MonoBehaviour
                 animator.SetTrigger("EscapeTrigger");
             }
         }
-    }    
+    }
 
     //initiates fade out and restarts the current scene
     public void Death()
@@ -45,18 +44,17 @@ public class FadingScript : MonoBehaviour
 
     private void LoadNewLevel()
     {
-        
         if (SceneManager.sceneCountInBuildSettings > LevelToLoad)
         {
             SceneManager.LoadScene(LevelToLoad);
         }
         else
         {
-            #if UNITY_EDITOR
-                        UnityEditor.EditorApplication.isPlaying = false;
-            #else
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
                         Application.Quit();
-            #endif
+#endif
         }
     }
 }

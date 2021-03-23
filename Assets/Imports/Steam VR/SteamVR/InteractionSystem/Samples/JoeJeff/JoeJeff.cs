@@ -10,20 +10,16 @@ namespace Valve.VR.InteractionSystem.Sample
 
         public float jumpVelocity;
 
-        [SerializeField]
-        private float m_MovingTurnSpeed = 360;
-        [SerializeField]
-        private float m_StationaryTurnSpeed = 180;
+        [SerializeField] private float m_MovingTurnSpeed = 360;
+        [SerializeField] private float m_StationaryTurnSpeed = 180;
 
         public float airControl;
 
         [Tooltip("The time it takes after landing a jump to slow down")]
         public float frictionTime = 0.2f;
 
-        [SerializeField]
-        private float footHeight = 0.1f;
-        [SerializeField]
-        private float footRadius = 0.03f;
+        [SerializeField] private float footHeight = 0.1f;
+        [SerializeField] private float footRadius = 0.03f;
 
         private RaycastHit footHit;
 
@@ -75,7 +71,8 @@ namespace Valve.VR.InteractionSystem.Sample
             eulers.z = 0;
             Quaternion targetRotation = Quaternion.Euler(eulers);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * (isGrounded ? 20 : 3));
+            transform.rotation =
+                Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * (isGrounded ? 20 : 3));
         }
 
 
@@ -101,7 +98,7 @@ namespace Valve.VR.InteractionSystem.Sample
                     }
 
                     // adding a little downward force to keep him on the floor
-                    animationDelta.y += -0.2f;// rb.velocity.y;
+                    animationDelta.y += -0.2f; // rb.velocity.y;
                     rigidbody.velocity = animationDelta;
                 }
                 else
@@ -163,8 +160,10 @@ namespace Valve.VR.InteractionSystem.Sample
             isGrounded = false;
             if (jumpTimer < 0 & !held) // make sure we didn't just jump
             {
-                isGrounded = (Physics.SphereCast(new Ray(transform.position + Vector3.up * footHeight, Vector3.down), footRadius, out footHit, footHeight - footRadius));
-                if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(footHit.point.x, footHit.point.z)) > footRadius / 2)
+                isGrounded = (Physics.SphereCast(new Ray(transform.position + Vector3.up * footHeight, Vector3.down),
+                    footRadius, out footHit, footHeight - footRadius));
+                if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z),
+                    new Vector2(footHit.point.x, footHit.point.z)) > footRadius / 2)
                 {
                     isGrounded = false;
                     //on slope, hit point is on edge of sphere cast
@@ -187,7 +186,6 @@ namespace Valve.VR.InteractionSystem.Sample
         }
 
 
-
         private void HandleGroundedMovement(bool jump)
         {
             // check whether conditions are right to allow a jump:
@@ -198,6 +196,7 @@ namespace Valve.VR.InteractionSystem.Sample
         }
 
         private float jumpTimer;
+
         public void Jump()
         {
             isGrounded = false;

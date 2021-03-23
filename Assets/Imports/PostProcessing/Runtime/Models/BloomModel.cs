@@ -20,7 +20,8 @@ namespace UnityEngine.PostProcessing
                 get { return Mathf.GammaToLinearSpace(threshold); }
             }
 
-            [Range(0f, 1f), Tooltip("Makes transition between under/over-threshold gradual (0 = hard threshold, 1 = soft threshold).")]
+            [Range(0f, 1f),
+             Tooltip("Makes transition between under/over-threshold gradual (0 = hard threshold, 1 = soft threshold).")]
             public float softKnee;
 
             [Range(1f, 7f), Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
@@ -86,8 +87,8 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        [SerializeField] Settings m_Settings = Settings.defaultSettings;
+
         public Settings settings
         {
             get { return m_Settings; }

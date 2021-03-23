@@ -2,9 +2,8 @@ using UnityEngine;
 
 public class SpawnsObjectOnDestroy : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject prefab;
-    
+    [SerializeField] private GameObject prefab;
+
     void OnDestroy()
     {
         if (prefab)

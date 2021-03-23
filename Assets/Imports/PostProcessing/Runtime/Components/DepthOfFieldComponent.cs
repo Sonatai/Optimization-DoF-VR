@@ -8,16 +8,16 @@ namespace UnityEngine.PostProcessing
     {
         static class Uniforms
         {
-            internal static readonly int _DepthOfFieldTex    = Shader.PropertyToID("_DepthOfFieldTex");
+            internal static readonly int _DepthOfFieldTex = Shader.PropertyToID("_DepthOfFieldTex");
             internal static readonly int _DepthOfFieldCoCTex = Shader.PropertyToID("_DepthOfFieldCoCTex");
-            internal static readonly int _Distance           = Shader.PropertyToID("_Distance");
-            internal static readonly int _LensCoeff          = Shader.PropertyToID("_LensCoeff");
-            internal static readonly int _MaxCoC             = Shader.PropertyToID("_MaxCoC");
-            internal static readonly int _RcpMaxCoC          = Shader.PropertyToID("_RcpMaxCoC");
-            internal static readonly int _RcpAspect          = Shader.PropertyToID("_RcpAspect");
-            internal static readonly int _MainTex            = Shader.PropertyToID("_MainTex");
-            internal static readonly int _CoCTex             = Shader.PropertyToID("_CoCTex");
-            internal static readonly int _TaaParams          = Shader.PropertyToID("_TaaParams");
+            internal static readonly int _Distance = Shader.PropertyToID("_Distance");
+            internal static readonly int _LensCoeff = Shader.PropertyToID("_LensCoeff");
+            internal static readonly int _MaxCoC = Shader.PropertyToID("_MaxCoC");
+            internal static readonly int _RcpMaxCoC = Shader.PropertyToID("_RcpMaxCoC");
+            internal static readonly int _RcpAspect = Shader.PropertyToID("_RcpAspect");
+            internal static readonly int _MainTex = Shader.PropertyToID("_MainTex");
+            internal static readonly int _CoCTex = Shader.PropertyToID("_CoCTex");
+            internal static readonly int _TaaParams = Shader.PropertyToID("_TaaParams");
             internal static readonly int _DepthOfFieldParams = Shader.PropertyToID("_DepthOfFieldParams");
         }
 
@@ -57,7 +57,7 @@ namespace UnityEngine.PostProcessing
         {
             // Estimate the allowable maximum radius of CoC from the kernel
             // size (the equation below was empirically derived).
-            float radiusInPixels = (float)model.settings.kernelSize * 4f + 6f;
+            float radiusInPixels = (float) model.settings.kernelSize * 4f + 6f;
 
             // Applying a 5% limit to the CoC radius to keep the size of
             // TileMax/NeighborMax small enough.
@@ -67,7 +67,7 @@ namespace UnityEngine.PostProcessing
         bool CheckHistory(int width, int height)
         {
             return m_CoCHistory != null && m_CoCHistory.IsCreated() &&
-                m_CoCHistory.width == width && m_CoCHistory.height == height;
+                   m_CoCHistory.width == width && m_CoCHistory.height == height;
         }
 
         RenderTextureFormat SelectFormat(RenderTextureFormat primary, RenderTextureFormat secondary)
@@ -77,22 +77,23 @@ namespace UnityEngine.PostProcessing
             return RenderTextureFormat.Default;
         }
 
-        public void Prepare(RenderTexture source, Material uberMaterial, bool antialiasCoC, Vector2 taaJitter, float taaBlending)
+        public void Prepare(RenderTexture source, Material uberMaterial, bool antialiasCoC, Vector2 taaJitter,
+            float taaBlending)
         {
             var settings = model.settings;
             var colorFormat = RenderTextureFormat.DefaultHDR;
             var cocFormat = SelectFormat(RenderTextureFormat.R8, RenderTextureFormat.RHalf);
 
             // Avoid using R8 on OSX with Metal. #896121, https://goo.gl/MgKqu6
-            #if (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX) && !UNITY_2017_1_OR_NEWER
+#if (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX) && !UNITY_2017_1_OR_NEWER
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Metal)
                 cocFormat = SelectFormat(RenderTextureFormat.RHalf, RenderTextureFormat.Default);
-            #endif
+#endif
 
             // Material setup
             var f = CalculateFocalLength();
             var s1 = Mathf.Max(settings.focusDistance, f);
-            var aspect = (float)source.width / source.height;
+            var aspect = (float) source.width / source.height;
             var coeff = f * f / (settings.aperture * (s1 - f) * k_FilmHeight * 2);
             var maxCoC = CalculateMaxCoCRadius(source.height);
 
@@ -104,7 +105,8 @@ namespace UnityEngine.PostProcessing
             material.SetFloat(Uniforms._RcpAspect, 1f / aspect);
 
             // CoC calculation pass
-            var rtCoC = context.renderTextureFactory.Get(context.width, context.height, 0, cocFormat, RenderTextureReadWrite.Linear);
+            var rtCoC = context.renderTextureFactory.Get(context.width, context.height, 0, cocFormat,
+                RenderTextureReadWrite.Linear);
             Graphics.Blit(null, rtCoC, material, 0);
 
             if (antialiasCoC)
@@ -131,7 +133,7 @@ namespace UnityEngine.PostProcessing
 
             // Bokeh simulation pass
             var rt2 = context.renderTextureFactory.Get(context.width / 2, context.height / 2, 0, colorFormat);
-            Graphics.Blit(rt1, rt2, material, 3 + (int)settings.kernelSize);
+            Graphics.Blit(rt1, rt2, material, 3 + (int) settings.kernelSize);
 
             // Postfilter pass
             Graphics.Blit(rt2, rt1, material, 7);

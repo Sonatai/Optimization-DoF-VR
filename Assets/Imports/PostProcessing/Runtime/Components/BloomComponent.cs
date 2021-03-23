@@ -4,15 +4,15 @@ namespace UnityEngine.PostProcessing
     {
         static class Uniforms
         {
-            internal static readonly int _AutoExposure        = Shader.PropertyToID("_AutoExposure");
-            internal static readonly int _Threshold           = Shader.PropertyToID("_Threshold");
-            internal static readonly int _Curve               = Shader.PropertyToID("_Curve");
-            internal static readonly int _PrefilterOffs       = Shader.PropertyToID("_PrefilterOffs");
-            internal static readonly int _SampleScale         = Shader.PropertyToID("_SampleScale");
-            internal static readonly int _BaseTex             = Shader.PropertyToID("_BaseTex");
-            internal static readonly int _BloomTex            = Shader.PropertyToID("_BloomTex");
-            internal static readonly int _Bloom_Settings      = Shader.PropertyToID("_Bloom_Settings");
-            internal static readonly int _Bloom_DirtTex       = Shader.PropertyToID("_Bloom_DirtTex");
+            internal static readonly int _AutoExposure = Shader.PropertyToID("_AutoExposure");
+            internal static readonly int _Threshold = Shader.PropertyToID("_Threshold");
+            internal static readonly int _Curve = Shader.PropertyToID("_Curve");
+            internal static readonly int _PrefilterOffs = Shader.PropertyToID("_PrefilterOffs");
+            internal static readonly int _SampleScale = Shader.PropertyToID("_SampleScale");
+            internal static readonly int _BaseTex = Shader.PropertyToID("_BaseTex");
+            internal static readonly int _BloomTex = Shader.PropertyToID("_BloomTex");
+            internal static readonly int _Bloom_Settings = Shader.PropertyToID("_Bloom_Settings");
+            internal static readonly int _Bloom_DirtTex = Shader.PropertyToID("_Bloom_DirtTex");
             internal static readonly int _Bloom_DirtIntensity = Shader.PropertyToID("_Bloom_DirtIntensity");
         }
 
@@ -54,7 +54,7 @@ namespace UnityEngine.PostProcessing
 
             // Determine the iteration count
             float logh = Mathf.Log(th, 2f) + bloom.radius - 8f;
-            int logh_i = (int)logh;
+            int logh_i = (int) logh;
             int iterations = Mathf.Clamp(logh_i, 1, k_MaxPyramidBlurLevel);
 
             // Uupdate the shader properties
@@ -84,8 +84,8 @@ namespace UnityEngine.PostProcessing
             for (int level = 0; level < iterations; level++)
             {
                 m_BlurBuffer1[level] = context.renderTextureFactory.Get(
-                        last.width / 2, last.height / 2, 0, rtFormat
-                        );
+                    last.width / 2, last.height / 2, 0, rtFormat
+                );
 
                 int pass = (level == 0) ? 1 : 2;
                 Graphics.Blit(last, m_BlurBuffer1[level], material, pass);
@@ -100,8 +100,8 @@ namespace UnityEngine.PostProcessing
                 material.SetTexture(Uniforms._BaseTex, baseTex);
 
                 m_BlurBuffer2[level] = context.renderTextureFactory.Get(
-                        baseTex.width, baseTex.height, 0, rtFormat
-                        );
+                    baseTex.width, baseTex.height, 0, rtFormat
+                );
 
                 Graphics.Blit(last, m_BlurBuffer2[level], material, 3);
                 last = m_BlurBuffer2[level];

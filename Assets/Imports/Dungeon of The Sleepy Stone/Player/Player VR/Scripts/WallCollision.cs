@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
- 
+
 public class WallCollision : MonoBehaviour
 {
     public LayerMask searchMask = -1; //make sure we aren't in this layer 
@@ -39,7 +39,7 @@ public class WallCollision : MonoBehaviour
         else
         {
             UpdatePreviousPosition();
-            
+
             if (!inRoom)
             {
                 fadeInIfFadedOut();
@@ -69,7 +69,7 @@ public class WallCollision : MonoBehaviour
     private void setInRoomStatus(bool newStatus)
     {
         inRoom = newStatus;
-        
+
         //Debug.Log((newStatus ? "In Room" : "In Wall") + " Position: " + transform.position);
 
         leftHandController.inputsEnabled = newStatus;

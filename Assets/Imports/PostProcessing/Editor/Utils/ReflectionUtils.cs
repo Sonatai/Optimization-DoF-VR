@@ -8,7 +8,8 @@ namespace UnityEditor.PostProcessing
 {
     public static class ReflectionUtils
     {
-        static Dictionary<KeyValuePair<object, string>, FieldInfo> s_FieldInfoFromPaths = new Dictionary<KeyValuePair<object, string>, FieldInfo>();
+        static Dictionary<KeyValuePair<object, string>, FieldInfo> s_FieldInfoFromPaths =
+            new Dictionary<KeyValuePair<object, string>, FieldInfo>();
 
         public static FieldInfo GetFieldInfoFromPath(object source, string path)
         {
@@ -91,7 +92,8 @@ namespace UnityEditor.PostProcessing
 
             foreach (var t in splittedPath)
             {
-                var fieldInfo = baseType.GetField(t, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                var fieldInfo = baseType.GetField(t,
+                    BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
                 if (fieldInfo == null)
                 {
@@ -104,8 +106,8 @@ namespace UnityEditor.PostProcessing
             }
 
             return baseType == null
-                   ? null
-                   : srcObject;
+                ? null
+                : srcObject;
         }
 
         public static object GetParentObject(string path, object obj)
@@ -115,7 +117,8 @@ namespace UnityEditor.PostProcessing
             if (fields.Length == 1)
                 return obj;
 
-            var info = obj.GetType().GetField(fields[0], BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var info = obj.GetType().GetField(fields[0],
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             obj = info.GetValue(obj);
 
             return GetParentObject(string.Join(".", fields, 1, fields.Length - 1), obj);

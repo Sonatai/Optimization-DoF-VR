@@ -37,7 +37,7 @@ namespace UnityEditor.PostProcessing
             EditorGUILayout.PropertyField(m_Mode);
             EditorGUILayout.PropertyField(m_Color);
 
-            if (m_Mode.intValue < (int)VignetteMode.Masked)
+            if (m_Mode.intValue < (int) VignetteMode.Masked)
             {
                 EditorGUILayout.PropertyField(m_Center);
                 EditorGUILayout.PropertyField(m_Intensity);
@@ -58,11 +58,11 @@ namespace UnityEditor.PostProcessing
                     {
 #if UNITY_5_5_OR_NEWER
                         bool valid = importer.anisoLevel == 0
-                            && importer.mipmapEnabled == false
-                            //&& importer.alphaUsage == TextureImporterAlphaUsage.FromGrayScale
-                            && importer.alphaSource == TextureImporterAlphaSource.FromGrayScale
-                            && importer.textureCompression == TextureImporterCompression.Uncompressed
-                            && importer.wrapMode == TextureWrapMode.Clamp;
+                                     && importer.mipmapEnabled == false
+                                     //&& importer.alphaUsage == TextureImporterAlphaUsage.FromGrayScale
+                                     && importer.alphaSource == TextureImporterAlphaSource.FromGrayScale
+                                     && importer.textureCompression == TextureImporterCompression.Uncompressed
+                                     && importer.wrapMode == TextureWrapMode.Clamp;
 #else
                         bool valid = importer.anisoLevel == 0
                             && importer.mipmapEnabled == false
@@ -84,8 +84,10 @@ namespace UnityEditor.PostProcessing
                                     SetMaskImportSettings(importer);
                                     AssetDatabase.Refresh();
                                 }
+
                                 GUILayout.Space(8);
                             }
+
                             GUILayout.Space(11);
                         }
                     }

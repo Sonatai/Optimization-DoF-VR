@@ -16,7 +16,7 @@ namespace Player
 
         public void UpdateHp(float health)
         {
-            int x = (int)(health * 0.2);
+            int x = (int) (health * 0.2);
             if (current != x && x > 0)
             {
                 if (x >= 10)
@@ -29,6 +29,7 @@ namespace Player
                     source.loop = true;
                     source.Play();
                 }
+
                 current = x;
             }
         }

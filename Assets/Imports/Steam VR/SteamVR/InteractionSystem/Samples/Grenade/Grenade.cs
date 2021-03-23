@@ -26,8 +26,10 @@ namespace Valve.VR.InteractionSystem.Sample
             {
                 for (int explodeIndex = 0; explodeIndex < explodeCount; explodeIndex++)
                 {
-                    GameObject explodePart = (GameObject)GameObject.Instantiate(explodePartPrefab, this.transform.position, this.transform.rotation);
-                    explodePart.GetComponentInChildren<MeshRenderer>().material.SetColor("_TintColor", Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f));
+                    GameObject explodePart = (GameObject) GameObject.Instantiate(explodePartPrefab,
+                        this.transform.position, this.transform.rotation);
+                    explodePart.GetComponentInChildren<MeshRenderer>().material
+                        .SetColor("_TintColor", Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f));
                 }
 
                 Destroy(this.gameObject);

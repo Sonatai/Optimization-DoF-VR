@@ -23,27 +23,22 @@ namespace UnityEngine.PostProcessing
         [Serializable]
         public struct TonemappingSettings
         {
-            [Tooltip("Tonemapping algorithm to use at the end of the color grading process. Use \"Neutral\" if you need a customizable tonemapper or \"Filmic\" to give a standard filmic look to your scenes.")]
+            [Tooltip(
+                "Tonemapping algorithm to use at the end of the color grading process. Use \"Neutral\" if you need a customizable tonemapper or \"Filmic\" to give a standard filmic look to your scenes.")]
             public Tonemapper tonemapper;
 
             // Neutral settings
-            [Range(-0.1f, 0.1f)]
-            public float neutralBlackIn;
+            [Range(-0.1f, 0.1f)] public float neutralBlackIn;
 
-            [Range(1f, 20f)]
-            public float neutralWhiteIn;
+            [Range(1f, 20f)] public float neutralWhiteIn;
 
-            [Range(-0.09f, 0.1f)]
-            public float neutralBlackOut;
+            [Range(-0.09f, 0.1f)] public float neutralBlackOut;
 
-            [Range(1f, 19f)]
-            public float neutralWhiteOut;
+            [Range(1f, 19f)] public float neutralWhiteOut;
 
-            [Range(0.1f, 20f)]
-            public float neutralWhiteLevel;
+            [Range(0.1f, 20f)] public float neutralWhiteLevel;
 
-            [Range(1f, 10f)]
-            public float neutralWhiteClip;
+            [Range(1f, 10f)] public float neutralWhiteClip;
 
             public static TonemappingSettings defaultSettings
             {
@@ -67,7 +62,8 @@ namespace UnityEngine.PostProcessing
         [Serializable]
         public struct BasicSettings
         {
-            [Tooltip("Adjusts the overall exposure of the scene in EV units. This is applied after HDR effect and right before tonemapping so it won't affect previous effects in the chain.")]
+            [Tooltip(
+                "Adjusts the overall exposure of the scene in EV units. This is applied after HDR effect and right before tonemapping so it won't affect previous effects in the chain.")]
             public float postExposure;
 
             [Range(-100f, 100f), Tooltip("Sets the white balance to a custom color temperature.")]
@@ -111,8 +107,7 @@ namespace UnityEngine.PostProcessing
             public Vector3 green;
             public Vector3 blue;
 
-            [HideInInspector]
-            public int currentEditingChannel; // Used only in the editor
+            [HideInInspector] public int currentEditingChannel; // Used only in the editor
 
             public static ChannelMixerSettings defaultSettings
             {
@@ -132,14 +127,11 @@ namespace UnityEngine.PostProcessing
         [Serializable]
         public struct LogWheelsSettings
         {
-            [Trackball("GetSlopeValue")]
-            public Color slope;
+            [Trackball("GetSlopeValue")] public Color slope;
 
-            [Trackball("GetPowerValue")]
-            public Color power;
+            [Trackball("GetPowerValue")] public Color power;
 
-            [Trackball("GetOffsetValue")]
-            public Color offset;
+            [Trackball("GetOffsetValue")] public Color offset;
 
             public static LogWheelsSettings defaultSettings
             {
@@ -158,14 +150,11 @@ namespace UnityEngine.PostProcessing
         [Serializable]
         public struct LinearWheelsSettings
         {
-            [Trackball("GetLiftValue")]
-            public Color lift;
+            [Trackball("GetLiftValue")] public Color lift;
 
-            [Trackball("GetGammaValue")]
-            public Color gamma;
+            [Trackball("GetGammaValue")] public Color gamma;
 
-            [Trackball("GetGainValue")]
-            public Color gain;
+            [Trackball("GetGainValue")] public Color gain;
 
             public static LinearWheelsSettings defaultSettings
             {
@@ -181,22 +170,20 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-	    public enum ColorWheelMode
-	    {
-		    Linear,
-			Log
-	    }
+        public enum ColorWheelMode
+        {
+            Linear,
+            Log
+        }
 
         [Serializable]
         public struct ColorWheelsSettings
         {
-	        public ColorWheelMode mode;
+            public ColorWheelMode mode;
 
-            [TrackballGroup]
-            public LogWheelsSettings log;
+            [TrackballGroup] public LogWheelsSettings log;
 
-            [TrackballGroup]
-            public LinearWheelsSettings linear;
+            [TrackballGroup] public LinearWheelsSettings linear;
 
             public static ColorWheelsSettings defaultSettings
             {
@@ -204,7 +191,7 @@ namespace UnityEngine.PostProcessing
                 {
                     return new ColorWheelsSettings
                     {
-						mode = ColorWheelMode.Log,
+                        mode = ColorWheelMode.Log,
                         log = LogWheelsSettings.defaultSettings,
                         linear = LinearWheelsSettings.defaultSettings
                     };
@@ -237,13 +224,21 @@ namespace UnityEngine.PostProcessing
                 {
                     return new CurvesSettings
                     {
-                        master = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
-                        red    = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
-                        green  = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
-                        blue   = new ColorGradingCurve(new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false, new Vector2(0f, 1f)),
+                        master = new ColorGradingCurve(
+                            new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false,
+                            new Vector2(0f, 1f)),
+                        red = new ColorGradingCurve(
+                            new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false,
+                            new Vector2(0f, 1f)),
+                        green = new ColorGradingCurve(
+                            new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false,
+                            new Vector2(0f, 1f)),
+                        blue = new ColorGradingCurve(
+                            new AnimationCurve(new Keyframe(0f, 0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0f, false,
+                            new Vector2(0f, 1f)),
 
-                        hueVShue = new ColorGradingCurve(new AnimationCurve(), 0.5f, true,  new Vector2(0f, 1f)),
-                        hueVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, true,  new Vector2(0f, 1f)),
+                        hueVShue = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0f, 1f)),
+                        hueVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0f, 1f)),
                         satVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0f, 1f)),
                         lumVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0f, 1f)),
 
@@ -282,8 +277,8 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        [SerializeField] Settings m_Settings = Settings.defaultSettings;
+
         public Settings settings
         {
             get { return m_Settings; }

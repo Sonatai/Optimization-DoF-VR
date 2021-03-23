@@ -7,8 +7,7 @@ namespace Valve.VR.InteractionSystem
     public class HandCollider : MonoBehaviour
     {
         private new Rigidbody rigidbody;
-        [HideInInspector]
-        public HandPhysics hand;
+        [HideInInspector] public HandPhysics hand;
 
         public LayerMask collisionMask;
 
@@ -22,12 +21,16 @@ namespace Valve.VR.InteractionSystem
         {
             [Tooltip("Starting at tip and going down. Max 2.")]
             public Transform[] thumbColliders = new Transform[1];
+
             [Tooltip("Starting at tip and going down. Max 3.")]
             public Transform[] indexColliders = new Transform[2];
+
             [Tooltip("Starting at tip and going down. Max 3.")]
             public Transform[] middleColliders = new Transform[2];
+
             [Tooltip("Starting at tip and going down. Max 3.")]
             public Transform[] ringColliders = new Transform[2];
+
             [Tooltip("Starting at tip and going down. Max 3.")]
             public Transform[] pinkyColliders = new Transform[2];
 
@@ -56,19 +59,23 @@ namespace Valve.VR.InteractionSystem
                     switch (finger)
                     {
                         case 0:
-                            thumbColliders = value; break;
+                            thumbColliders = value;
+                            break;
                         case 1:
-                            indexColliders = value; break;
+                            indexColliders = value;
+                            break;
                         case 2:
-                            middleColliders = value; break;
+                            middleColliders = value;
+                            break;
                         case 3:
-                            ringColliders = value; break;
+                            ringColliders = value;
+                            break;
                         case 4:
-                            pinkyColliders = value; break;
+                            pinkyColliders = value;
+                            break;
                     }
                 }
             }
-
         }
 
         private static PhysicMaterial physicMaterial_lowfriction;
@@ -173,6 +180,7 @@ namespace Valve.VR.InteractionSystem
         protected const float MaxAngularVelocityChange = 20f;
 
         public bool collidersInRadius;
+
         protected void ExecuteFixedUpdate()
         {
             collidersInRadius = Physics.CheckSphere(center, 0.2f, collisionMask);
@@ -201,11 +209,11 @@ namespace Valve.VR.InteractionSystem
                     float maxVelocityChange = MaxVelocityChange * scale;
 
                     rigidbody.velocity = Vector3.MoveTowards(rigidbody.velocity, velocityTarget, maxVelocityChange);
-                    rigidbody.angularVelocity = Vector3.MoveTowards(rigidbody.angularVelocity, angularTarget, maxAngularVelocityChange);
+                    rigidbody.angularVelocity = Vector3.MoveTowards(rigidbody.angularVelocity, angularTarget,
+                        maxAngularVelocityChange);
                 }
             }
         }
-
 
 
         protected bool GetTargetVelocities(out Vector3 velocityTarget, out Vector3 angularTarget)
@@ -254,6 +262,7 @@ namespace Valve.VR.InteractionSystem
 
         const float minCollisionHapticsTime = 0.2f;
         private float lastCollisionHapticsTime;
+
         private void OnCollisionEnter(Collision collision)
         {
             bool touchingDynamic = false;
@@ -266,10 +275,9 @@ namespace Valve.VR.InteractionSystem
             SetPhysicMaterial(touchingDynamic ? physicMaterial_highfriction : physicMaterial_lowfriction);
 
 
-
             float energy = collision.relativeVelocity.magnitude;
 
-            if(energy > minCollisionEnergy && Time.time - lastCollisionHapticsTime > minCollisionHapticsTime)
+            if (energy > minCollisionEnergy && Time.time - lastCollisionHapticsTime > minCollisionHapticsTime)
             {
                 lastCollisionHapticsTime = Time.time;
 
@@ -279,6 +287,5 @@ namespace Valve.VR.InteractionSystem
                 hand.hand.TriggerHapticPulse(length, 100, intensity);
             }
         }
-
     }
 }

@@ -18,9 +18,7 @@ namespace Valve.VR.InteractionSystem
         protected string animatorParameterStateName = "AnimationState";
         protected int handAnimatorStateId = -1;
 
-        [Space]
-
-        public GameObject controllerPrefab;
+        [Space] public GameObject controllerPrefab;
         protected GameObject controllerInstance;
         protected Renderer[] controllerRenderers;
         protected SteamVR_RenderModel controllerRenderModel;
@@ -64,8 +62,9 @@ namespace Valve.VR.InteractionSystem
 
                 if (handSkeleton.skeletonAction.activeBinding == false && handSkeleton.fallbackPoser == null)
                 {
-                    Debug.LogWarning("Skeleton action: " + handSkeleton.skeletonAction.GetPath() + " is not bound. Your controller may not support SteamVR Skeleton Input. " +
-                        "Please add a fallback skeleton poser to your skeleton if you want hands to be visible");
+                    Debug.LogWarning("Skeleton action: " + handSkeleton.skeletonAction.GetPath() +
+                                     " is not bound. Your controller may not support SteamVR Skeleton Input. " +
+                                     "Please add a fallback skeleton poser to your skeleton if you want hands to be visible");
                     DestroyHand();
                 }
             }
@@ -366,11 +365,13 @@ namespace Valve.VR.InteractionSystem
             }
         }
 
-        public void SetTemporarySkeletonRangeOfMotion(SkeletalMotionRangeChange temporaryRangeOfMotionChange, float blendOverSeconds = 0.1f)
+        public void SetTemporarySkeletonRangeOfMotion(SkeletalMotionRangeChange temporaryRangeOfMotionChange,
+            float blendOverSeconds = 0.1f)
         {
             if (handSkeleton != null)
             {
-                handSkeleton.SetTemporaryRangeOfMotion((EVRSkeletalMotionRange)temporaryRangeOfMotionChange, blendOverSeconds);
+                handSkeleton.SetTemporaryRangeOfMotion((EVRSkeletalMotionRange) temporaryRangeOfMotionChange,
+                    blendOverSeconds);
             }
         }
 
@@ -415,7 +416,8 @@ namespace Valve.VR.InteractionSystem
                     AnimatorControllerParameter[] parameters = handAnimator.parameters;
                     for (int parameterIndex = 0; parameterIndex < parameters.Length; parameterIndex++)
                     {
-                        if (string.Equals(parameters[parameterIndex].name, animatorParameterStateName, StringComparison.CurrentCultureIgnoreCase))
+                        if (string.Equals(parameters[parameterIndex].name, animatorParameterStateName,
+                            StringComparison.CurrentCultureIgnoreCase))
                             handAnimatorStateId = parameters[parameterIndex].nameHash;
                     }
                 }
@@ -423,7 +425,5 @@ namespace Valve.VR.InteractionSystem
 
             return handAnimatorStateId != -1 && handAnimator != null && handAnimator.isInitialized;
         }
-
-
     }
 }

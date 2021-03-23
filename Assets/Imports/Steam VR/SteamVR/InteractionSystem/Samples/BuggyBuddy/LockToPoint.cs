@@ -52,7 +52,8 @@ namespace Valve.VR.InteractionSystem.Sample
                         body.AddForce(-Physics.gravity);
 
                     transform.position = Vector3.Lerp(transform.position, snapTo.position, Time.fixedDeltaTime * t * 3);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, snapTo.rotation, Time.fixedDeltaTime * t * 2);
+                    transform.rotation =
+                        Quaternion.Slerp(transform.rotation, snapTo.rotation, Time.fixedDeltaTime * t * 2);
                 }
             }
         }

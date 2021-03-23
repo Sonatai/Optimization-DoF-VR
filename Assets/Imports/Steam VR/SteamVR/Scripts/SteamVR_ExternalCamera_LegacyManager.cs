@@ -11,7 +11,10 @@ namespace Valve.VR
 {
     public class SteamVR_ExternalCamera_LegacyManager
     {
-        public static bool hasCamera { get { return cameraIndex != -1; } }
+        public static bool hasCamera
+        {
+            get { return cameraIndex != -1; }
+        }
 
         public static int cameraIndex = -1;
 
@@ -35,8 +38,9 @@ namespace Valve.VR
             {
                 if (poses[index].bDeviceIsConnected)
                 {
-                    ETrackedDeviceClass deviceClass = OpenVR.System.GetTrackedDeviceClass((uint)index);
-                    if (deviceClass == ETrackedDeviceClass.Controller || deviceClass == ETrackedDeviceClass.GenericTracker)
+                    ETrackedDeviceClass deviceClass = OpenVR.System.GetTrackedDeviceClass((uint) index);
+                    if (deviceClass == ETrackedDeviceClass.Controller ||
+                        deviceClass == ETrackedDeviceClass.GenericTracker)
                     {
                         controllercount++;
                         if (controllercount >= 3)

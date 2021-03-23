@@ -17,13 +17,15 @@ namespace Valve.VR.InteractionSystem.Sample
             {
                 look = -look;
             }
+
             if (speed == 0)
             {
                 transform.rotation = Quaternion.LookRotation(look);
             }
             else
             {
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(look), speed * Time.deltaTime);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(look),
+                    speed * Time.deltaTime);
             }
         }
     }

@@ -5,10 +5,8 @@ using UnityEngine.AI;
 
 public class Door : Triggerable
 {
-
     public Animator doorAnimator;
-    [SerializeField]
-    private NavMeshObstacle navCollider;
+    [SerializeField] private NavMeshObstacle navCollider;
 
     private void Start()
     {
@@ -18,7 +16,7 @@ public class Door : Triggerable
     public override void Trigger(HandController hand)
     {
         //Debug.Log("Door Trigger");
-        
+
         if (doorAnimator.GetBool("Open") == false)
         {
             doorAnimator.SetBool("Open", true);
@@ -28,8 +26,6 @@ public class Door : Triggerable
         {
             doorAnimator.SetBool("Open", false);
             navCollider.enabled = true;
-
         }
-        
     }
 }

@@ -24,16 +24,19 @@ public abstract class AbstractPathAgent : MonoBehaviour
         public bool isRelativePosition = false;
         public bool requiresTrigger = false;
         public Func<bool> test = null;
-        public bool StartTest()// If a lambda test is present it will be executed when agent reaches this PathPoint!
+
+        public bool StartTest() // If a lambda test is present it will be executed when agent reaches this PathPoint!
         {
             bool testResult = test.Invoke();
             test = null;
-            return testResult;// Test result is returned and will be evaluated!
+            return testResult; // Test result is returned and will be evaluated!
         }
+
         public bool HasTest()
         {
-            return test!=null;
+            return test != null;
         }
+
         public void SetAbsolutePosition(Vector3 currentPosition)
         {
             if (isRelativePosition)
@@ -45,13 +48,14 @@ public abstract class AbstractPathAgent : MonoBehaviour
             }
         }
     }
+
     protected PathPoint[] path;
     private int _pathStops;
     private int _currentPathIndex;
     private bool _requiresTrigger;
 
     protected abstract void SetupTest();
-    
+
     void Start()
     {
         _currentPathIndex = 0;
@@ -99,12 +103,11 @@ public abstract class AbstractPathAgent : MonoBehaviour
                     position.y + vY,
                     position.z + vZ
                 );
-                
+
                 slave.transform.position = newPosition;
             }
             else
             {
-
                 slave.transform.position = path[_currentPathIndex].position;
                 //Agent has reached next path way point:
                 if (path[_currentPathIndex].HasTest()) //Checks if current PathPoint contains a lambda test:
@@ -151,11 +154,9 @@ public abstract class AbstractPathAgent : MonoBehaviour
 
     private static float VectorLength(float vX, float vY, float vZ)
     {
-        return Mathf.Pow(// Length of vector (between agent and current path point)
-            Mathf.Pow(vX,2) + Mathf.Pow(vY,2) + Mathf.Pow(vZ,2)
+        return Mathf.Pow( // Length of vector (between agent and current path point)
+            Mathf.Pow(vX, 2) + Mathf.Pow(vY, 2) + Mathf.Pow(vZ, 2)
             , 0.5f
         );
     }
-    
-    
 }

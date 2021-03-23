@@ -31,7 +31,8 @@ namespace UnityEditor.PostProcessing
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (s_Material == null)
-                s_Material = new Material(Shader.Find("Hidden/Post FX/UI/Trackball")) { hideFlags = HideFlags.HideAndDontSave };
+                s_Material = new Material(Shader.Find("Hidden/Post FX/UI/Trackball"))
+                    {hideFlags = HideFlags.HideAndDontSave};
 
             position = new Rect(position.x, position.y, position.width / 3f, position.height);
             int size = m_Size;
@@ -79,7 +80,8 @@ namespace UnityEditor.PostProcessing
 
                 // Wheel texture
                 var oldRT = RenderTexture.active;
-                var rt = RenderTexture.GetTemporary((int)(size * scale), (int)(size * scale), 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+                var rt = RenderTexture.GetTemporary((int) (size * scale), (int) (size * scale), 0,
+                    RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
                 s_Material.SetFloat("_Offset", offset);
                 s_Material.SetFloat("_DisabledState", GUI.enabled ? 1f : 0.5f);
                 s_Material.SetVector("_Resolution", new Vector2(size * scale, size * scale / 2f));
@@ -98,7 +100,10 @@ namespace UnityEditor.PostProcessing
                 thumbPos *= len;
                 var thumbSize = FxStyles.wheelThumbSize;
                 var thumbSizeH = thumbSize / 2f;
-                FxStyles.wheelThumb.Draw(new Rect(wheelDrawArea.x + hsize + thumbPos.x - thumbSizeH.x, wheelDrawArea.y + hsize + thumbPos.y - thumbSizeH.y, thumbSize.x, thumbSize.y), false, false, false, false);
+                FxStyles.wheelThumb.Draw(
+                    new Rect(wheelDrawArea.x + hsize + thumbPos.x - thumbSizeH.x,
+                        wheelDrawArea.y + hsize + thumbPos.y - thumbSizeH.y, thumbSize.x, thumbSize.y), false, false,
+                    false, false);
             }
 
             var bounds = wheelDrawArea;
@@ -161,13 +166,15 @@ namespace UnityEditor.PostProcessing
 
             if (!m_TrackballMethods.TryGetValue(property.name, out method))
             {
-                var field = ReflectionUtils.GetFieldInfoFromPath(property.serializedObject.targetObject, property.propertyPath);
+                var field = ReflectionUtils.GetFieldInfoFromPath(property.serializedObject.targetObject,
+                    property.propertyPath);
 
                 if (!field.IsDefined(typeof(TrackballAttribute), false))
                     return false;
 
-                var attr = (TrackballAttribute)field.GetCustomAttributes(typeof(TrackballAttribute), false)[0];
-                const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+                var attr = (TrackballAttribute) field.GetCustomAttributes(typeof(TrackballAttribute), false)[0];
+                const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
+                                           BindingFlags.Static;
                 method = typeof(ColorGradingComponent).GetMethod(attr.method, flags);
                 m_TrackballMethods.Add(property.name, method);
             }
@@ -175,7 +182,7 @@ namespace UnityEditor.PostProcessing
             if (method == null)
                 return false;
 
-            output = (Vector3)method.Invoke(property.serializedObject.targetObject, new object[] { color });
+            output = (Vector3) method.Invoke(property.serializedObject.targetObject, new object[] {color});
             return true;
         }
 

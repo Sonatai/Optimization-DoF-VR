@@ -1,11 +1,11 @@
-
 /*
  * Path Agent that can be configured from Unity Inspector
  */
+
 public class ConfigurablePathAgent : AbstractPathAgent
 {
     public PathPoint[] positions = new PathPoint[1];
-    
+
     protected override void SetupTest()
     {
         path = positions;

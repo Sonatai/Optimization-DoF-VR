@@ -7,34 +7,37 @@ namespace Valve.VR.InteractionSystem.Sample
 {
     public class BuggyBuddy : MonoBehaviour
     {
-
         public Transform turret;
         float turretRot;
 
 
         [Tooltip("Maximum steering angle of the wheels")]
         public float maxAngle = 30f;
-        [Tooltip("Maximum Turning torque")]
-        public float maxTurnTorque = 30f;
+
+        [Tooltip("Maximum Turning torque")] public float maxTurnTorque = 30f;
+
         [Tooltip("Maximum torque applied to the driving wheels")]
         public float maxTorque = 300f;
+
         [Tooltip("Maximum brake torque applied to the driving wheels")]
         public float brakeTorque = 30000f;
+
         [Tooltip("If you need the visual wheels to be attached automatically, drag the wheel shape here.")]
         public GameObject[] wheelRenders;
 
         [Tooltip("The vehicle's speed when the physics engine can use different amount of sub-steps (in m/s).")]
         public float criticalSpeed = 5f;
+
         [Tooltip("Simulation sub-steps when the speed is above critical.")]
         public int stepsBelow = 5;
+
         [Tooltip("Simulation sub-steps when the speed is below critical.")]
         public int stepsAbove = 1;
 
         private WheelCollider[] m_Wheels;
 
         public AudioSource au_motor;
-        [HideInInspector]
-        public float mvol;
+        [HideInInspector] public float mvol;
 
         public AudioSource au_skid;
         float svol;
@@ -44,27 +47,20 @@ namespace Valve.VR.InteractionSystem.Sample
 
         public Vector3 localGravity;
 
-        [HideInInspector]
-        public Rigidbody body;
+        [HideInInspector] public Rigidbody body;
 
         public float rapidfireTime = 0;
 
 
-
         private float shootTimer;
 
-        [HideInInspector]
-        public Vector2 steer;
-        [HideInInspector]
-        public float throttle;
-        [HideInInspector]
-        public float handBrake;
-        [HideInInspector]
-        public Transform controllerReference;
+        [HideInInspector] public Vector2 steer;
+        [HideInInspector] public float throttle;
+        [HideInInspector] public float handBrake;
+        [HideInInspector] public Transform controllerReference;
 
 
-        [HideInInspector]
-        public float speed;
+        [HideInInspector] public float speed;
 
         public Transform centerOfMass;
 
@@ -74,7 +70,8 @@ namespace Valve.VR.InteractionSystem.Sample
             body = GetComponent<Rigidbody>();
             m_Wheels = GetComponentsInChildren<WheelCollider>();
 
-            body.centerOfMass = body.transform.InverseTransformPoint(centerOfMass.position) * body.transform.lossyScale.x;
+            body.centerOfMass = body.transform.InverseTransformPoint(centerOfMass.position) *
+                                body.transform.lossyScale.x;
         }
 
         /*
@@ -141,7 +138,9 @@ namespace Valve.VR.InteractionSystem.Sample
             //float forward = maxTorque * throttle; not fun lawrence steering
 
             float fVol = Mathf.Abs(forward);
-            mvol = Mathf.Lerp(mvol, Mathf.Pow((fVol / maxTorque), 0.8f) * Mathf.Lerp(0.4f, 1.0f, (Mathf.Abs(m_Wheels[2].rpm) / 200)) * Mathf.Lerp(1.0f, 0.5f, handBrake), Time.deltaTime * 9);
+            mvol = Mathf.Lerp(mvol,
+                Mathf.Pow((fVol / maxTorque), 0.8f) * Mathf.Lerp(0.4f, 1.0f, (Mathf.Abs(m_Wheels[2].rpm) / 200)) *
+                Mathf.Lerp(1.0f, 0.5f, handBrake), Time.deltaTime * 9);
 
             au_motor.volume = Mathf.Clamp01(mvol);
             float motorPitch = Mathf.Lerp(0.8f, 1.0f, mvol);
@@ -154,12 +153,9 @@ namespace Valve.VR.InteractionSystem.Sample
             au_skid.pitch = Mathf.Clamp01(skidPitch);
 
 
-
-
             //float forward = maxTorque * Input.GetAxis("Vertical");
 
             //bool stopped = Mathf.Abs(transform.InverseTransformDirection(GetComponent<Rigidbody>().velocity).z) < 1.0f;
-
 
 
             for (int i = 0; i < wheelRenders.Length; i++)
@@ -178,7 +174,6 @@ namespace Valve.VR.InteractionSystem.Sample
 
                 if (wheel.transform.localPosition.z < 0) // back wheels
                 {
-
                 }
 
                 // wheel.brakeTorque = Mathf.Lerp(Mathf.Abs(forward) < 0.1f ? 1 : 0, brakeTorque, handBrake);
@@ -187,13 +182,11 @@ namespace Valve.VR.InteractionSystem.Sample
 
                 if (wheel.transform.localPosition.x < 0) // left wheels
                 {
-
                 }
 
                 if (wheel.transform.localPosition.x >= 0) // right wheels
                 {
                 }
-
 
 
                 // Update visual wheels if they exist, and the colliders are enabled
@@ -212,7 +205,6 @@ namespace Valve.VR.InteractionSystem.Sample
 
 
             steer = Vector2.Lerp(steer, Vector2.zero, Time.deltaTime * 4);
-
         }
 
         private void FixedUpdate()

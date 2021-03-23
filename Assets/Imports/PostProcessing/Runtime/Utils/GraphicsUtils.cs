@@ -19,6 +19,7 @@ namespace UnityEngine.PostProcessing
         }
 
         static Texture2D s_WhiteTexture;
+
         public static Texture2D whiteTexture
         {
             get
@@ -35,6 +36,7 @@ namespace UnityEngine.PostProcessing
         }
 
         static Mesh s_Quad;
+
         public static Mesh quad
         {
             get
@@ -45,9 +47,9 @@ namespace UnityEngine.PostProcessing
                 var vertices = new[]
                 {
                     new Vector3(-1f, -1f, 0f),
-                    new Vector3( 1f,  1f, 0f),
-                    new Vector3( 1f, -1f, 0f),
-                    new Vector3(-1f,  1f, 0f)
+                    new Vector3(1f, 1f, 0f),
+                    new Vector3(1f, -1f, 0f),
+                    new Vector3(-1f, 1f, 0f)
                 };
 
                 var uvs = new[]
@@ -58,7 +60,7 @@ namespace UnityEngine.PostProcessing
                     new Vector2(0f, 1f)
                 };
 
-                var indices = new[] { 0, 1, 2, 1, 0, 3 };
+                var indices = new[] {0, 1, 2, 1, 0, 3};
 
                 s_Quad = new Mesh
                 {
@@ -84,17 +86,22 @@ namespace UnityEngine.PostProcessing
 
                 GL.Begin(GL.TRIANGLE_STRIP);
                 {
-                    GL.TexCoord2(0f, 0f); GL.Vertex3(0f, 0f, 0.1f);
-                    GL.TexCoord2(1f, 0f); GL.Vertex3(1f, 0f, 0.1f);
-                    GL.TexCoord2(0f, 1f); GL.Vertex3(0f, 1f, 0.1f);
-                    GL.TexCoord2(1f, 1f); GL.Vertex3(1f, 1f, 0.1f);
+                    GL.TexCoord2(0f, 0f);
+                    GL.Vertex3(0f, 0f, 0.1f);
+                    GL.TexCoord2(1f, 0f);
+                    GL.Vertex3(1f, 0f, 0.1f);
+                    GL.TexCoord2(0f, 1f);
+                    GL.Vertex3(0f, 1f, 0.1f);
+                    GL.TexCoord2(1f, 1f);
+                    GL.Vertex3(1f, 1f, 0.1f);
                 }
                 GL.End();
             }
             GL.PopMatrix();
         }
 
-        public static void ClearAndBlit(Texture source, RenderTexture destination, Material material, int pass, bool clearColor = true, bool clearDepth = false)
+        public static void ClearAndBlit(Texture source, RenderTexture destination, Material material, int pass,
+            bool clearColor = true, bool clearDepth = false)
         {
             var oldRT = RenderTexture.active;
             RenderTexture.active = destination;
@@ -109,10 +116,14 @@ namespace UnityEngine.PostProcessing
 
                 GL.Begin(GL.TRIANGLE_STRIP);
                 {
-                    GL.TexCoord2(0f, 0f); GL.Vertex3(0f, 0f, 0.1f);
-                    GL.TexCoord2(1f, 0f); GL.Vertex3(1f, 0f, 0.1f);
-                    GL.TexCoord2(0f, 1f); GL.Vertex3(0f, 1f, 0.1f);
-                    GL.TexCoord2(1f, 1f); GL.Vertex3(1f, 1f, 0.1f);
+                    GL.TexCoord2(0f, 0f);
+                    GL.Vertex3(0f, 0f, 0.1f);
+                    GL.TexCoord2(1f, 0f);
+                    GL.Vertex3(1f, 0f, 0.1f);
+                    GL.TexCoord2(0f, 1f);
+                    GL.Vertex3(0f, 1f, 0.1f);
+                    GL.TexCoord2(1f, 1f);
+                    GL.Vertex3(1f, 1f, 0.1f);
                 }
                 GL.End();
             }

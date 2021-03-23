@@ -23,6 +23,7 @@ public class TeleportationPointer : MonoBehaviour
     private GameObject _playerBody;
     private Transform _teleportReticleTransform;
     private bool _shouldTeleport;
+
     private bool _allowTeleportOnce;
     //public Collider playerFloor;
 
@@ -37,43 +38,45 @@ public class TeleportationPointer : MonoBehaviour
         _teleportReticleTransform = _reticle.transform;
         _playerBody = GameObject.Find("PlayerBody");
     }
-    
+
     public void AllowTeleportOnce()
     {
         _allowTeleportOnce = true;
 
         this.enabled = true;
-        
     }
-    
+
     private void FixedUpdate()
     {
         if (teleportAction.GetState(handType) || _allowTeleportOnce)
         {
             RaycastHit hit;
-            if (Physics.Raycast(controllerPose.transform.position, transform.forward, out hit, layerMask: teleportMask, maxDistance: 100))
+            if (Physics.Raycast(controllerPose.transform.position, transform.forward, out hit, layerMask: teleportMask,
+                maxDistance: 100))
             {
                 _hitPoint = hit.point;
-                
+
                 //... functional code
-                Vector3 controllerPointOnBodyHeight = new Vector3 (
-                    controllerPose.transform.position.x, 
-                    _playerBody.transform.position.y, 
+                Vector3 controllerPointOnBodyHeight = new Vector3(
+                    controllerPose.transform.position.x,
+                    _playerBody.transform.position.y,
                     controllerPose.transform.position.z
                 );
 
-                bool bodyToControllerOnBodyHeightIsFree = PathIsClear(_playerBody.transform.position, controllerPointOnBodyHeight);
+                bool bodyToControllerOnBodyHeightIsFree =
+                    PathIsClear(_playerBody.transform.position, controllerPointOnBodyHeight);
                 bool controllerToTargetOnBodyHeightIsFree = PathIsClear(controllerPointOnBodyHeight, _hitPoint);
                 bool controllerToTargetIsFree = PathIsClear(controllerPose.transform.position, _hitPoint);
-                
-                if (bodyToControllerOnBodyHeightIsFree && controllerToTargetIsFree && controllerToTargetOnBodyHeightIsFree && hit.distance <= 20)
+
+                if (bodyToControllerOnBodyHeightIsFree && controllerToTargetIsFree &&
+                    controllerToTargetOnBodyHeightIsFree && hit.distance <= 20)
                 {
                     ActivateTeleportLaser(hit);
                 }
                 else
                 {
                     DeactivateTeleportLaser(hit);
-                }                  
+                }
             }
             else
             {
@@ -123,12 +126,13 @@ public class TeleportationPointer : MonoBehaviour
     private bool PathIsClear(Vector3 source, Vector3 target)
     {
         Vector3 forward = target - source;
-        RaycastHit[] hits = Physics.RaycastAll(source, forward, forward.magnitude-0.25f, teleportBarrierMask);
+        RaycastHit[] hits = Physics.RaycastAll(source, forward, forward.magnitude - 0.25f, teleportBarrierMask);
         Debug.DrawLine(source, target, Color.blue);
-        if (hits!=null && hits.Length>0)
+        if (hits != null && hits.Length > 0)
         {
             return false;
         }
+
         return true;
     }
 
@@ -137,7 +141,8 @@ public class TeleportationPointer : MonoBehaviour
         _laser.SetActive(true);
         _laserTransform.position = Vector3.Lerp(controllerPose.transform.position, _hitPoint, .5f);
         _laserTransform.LookAt(_hitPoint);
-        _laserTransform.localScale = new Vector3(_laserTransform.localScale.x, _laserTransform.localScale.y, hit.distance);
+        _laserTransform.localScale =
+            new Vector3(_laserTransform.localScale.x, _laserTransform.localScale.y, hit.distance);
     }
 
     private void Teleport()

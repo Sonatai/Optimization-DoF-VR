@@ -3,6 +3,7 @@
 using UnityEngine;
 using UnityEngine.XR;
 using HTC.UnityPlugin.FoveatedRendering;
+
 #if USE_SRANIPAL
 using ViveSR.anipal.Eye;
 #endif
@@ -45,7 +46,8 @@ public class ViveFoveatedVisualizer : MonoBehaviour
                 SingleEyeData targetEyeData;
                 if (XRSettings.stereoRenderingMode == XRSettings.StereoRenderingMode.MultiPass)
                 {
-                    targetEyeData = thisCamera.stereoActiveEye == Camera.MonoOrStereoscopicEye.Left ? data.left : data.right;
+                    targetEyeData =
+ thisCamera.stereoActiveEye == Camera.MonoOrStereoscopicEye.Left ? data.left : data.right;
                 }
                 else
                 {
@@ -72,7 +74,7 @@ public class ViveFoveatedVisualizer : MonoBehaviour
             var innerRadii = viveFoveatedRendering.GetRegionRadii(TargetArea.INNER) * 0.5f;
             var middleRadii = viveFoveatedRendering.GetRegionRadii(TargetArea.MIDDLE) * 0.5f;
             var peripheralRadii = viveFoveatedRendering.GetRegionRadii(TargetArea.PERIPHERAL) * 0.5f;
-                        
+
             //  To keep the shape of given region, invert the aspect ratio.
             //  Align short side.
             if (eyeResolution.x > eyeResolution.y)

@@ -23,7 +23,7 @@ namespace HTC.UnityPlugin.FoveatedRendering
 
                 buffer = new CommandBuffer();
                 buffer.name = name;
-                
+
                 foreach (var cmd in commands)
                 {
                     cmd(buffer);

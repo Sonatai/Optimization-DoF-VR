@@ -5,7 +5,6 @@
 //=============================================================================
 
 #if (UNITY_5_4_OR_NEWER && !UNITY_2018_1_OR_NEWER)
-
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -44,7 +43,8 @@ namespace Valve.VR
             int shouldInstall = -1;
             if (UnityEditor.PlayerSettings.virtualRealitySupported == false)
             {
-                shouldInstall = UnityEditor.EditorUtility.DisplayDialogComplex("SteamVR", "Would you like to enable Virtual Reality mode?\n\nThis will enable Virtual Reality in Player Settings and add OpenVR as a target.", "Yes", "No, and don't ask again", "No");
+                shouldInstall =
+ UnityEditor.EditorUtility.DisplayDialogComplex("SteamVR", "Would you like to enable Virtual Reality mode?\n\nThis will enable Virtual Reality in Player Settings and add OpenVR as a target.", "Yes", "No, and don't ask again", "No");
 
                 switch (shouldInstall)
                 {
@@ -70,7 +70,8 @@ namespace Valve.VR
             string[] devices = UnityEditorInternal.VR.VREditor.GetVREnabledDevices(currentTarget);
 #endif
 
-            bool hasOpenVR = devices.Any(device => string.Equals(device, openVRString, System.StringComparison.CurrentCultureIgnoreCase));
+            bool hasOpenVR =
+ devices.Any(device => string.Equals(device, openVRString, System.StringComparison.CurrentCultureIgnoreCase));
 
             if (hasOpenVR == false || enabledVR)
             {
@@ -81,7 +82,8 @@ namespace Valve.VR
                 }
                 else
                 {
-                    List<string> devicesList = new List<string>(devices); //list openvr as the first option if it wasn't in the list.
+                    List<string> devicesList =
+ new List<string>(devices); //list openvr as the first option if it wasn't in the list.
                     if (hasOpenVR)
                         devicesList.Remove(openVRString);
 
@@ -93,7 +95,8 @@ namespace Valve.VR
                 if (shouldInstall == 0)
                     shouldEnable = 0;
                 else
-                    shouldEnable = UnityEditor.EditorUtility.DisplayDialogComplex("SteamVR", "Would you like to enable OpenVR as a VR target?", "Yes", "No, and don't ask again", "No");
+                    shouldEnable =
+ UnityEditor.EditorUtility.DisplayDialogComplex("SteamVR", "Would you like to enable OpenVR as a VR target?", "Yes", "No, and don't ask again", "No");
 
                 switch (shouldEnable)
                 {

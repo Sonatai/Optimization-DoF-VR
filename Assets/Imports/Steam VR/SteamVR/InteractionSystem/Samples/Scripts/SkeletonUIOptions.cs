@@ -8,7 +8,6 @@ namespace Valve.VR.InteractionSystem.Sample
 {
     public class SkeletonUIOptions : MonoBehaviour
     {
-
         public void AnimateHandWithController()
         {
             for (int handIndex = 0; handIndex < Player.instance.hands.Length; handIndex++)

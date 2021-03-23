@@ -6,7 +6,8 @@ namespace Valve.VR
 {
     public class SteamVR_TrackingReferenceManager : MonoBehaviour
     {
-        private Dictionary<uint, TrackingReferenceObject> trackingReferences = new Dictionary<uint, TrackingReferenceObject>();
+        private Dictionary<uint, TrackingReferenceObject> trackingReferences =
+            new Dictionary<uint, TrackingReferenceObject>();
 
         private void OnEnable()
         {
@@ -35,18 +36,22 @@ namespace Valve.VR
                         trackingReference.trackedDeviceClass = deviceClass;
                         trackingReference.gameObject = new GameObject("Tracking Reference " + deviceIndex.ToString());
                         trackingReference.gameObject.transform.parent = this.transform;
-                        trackingReference.trackedObject = trackingReference.gameObject.AddComponent<SteamVR_TrackedObject>();
-                        trackingReference.renderModel = trackingReference.gameObject.AddComponent<SteamVR_RenderModel>();
+                        trackingReference.trackedObject =
+                            trackingReference.gameObject.AddComponent<SteamVR_TrackedObject>();
+                        trackingReference.renderModel =
+                            trackingReference.gameObject.AddComponent<SteamVR_RenderModel>();
                         trackingReference.renderModel.createComponents = false;
                         trackingReference.renderModel.updateDynamically = false;
 
                         trackingReferences.Add(deviceIndex, trackingReference);
 
-                        trackingReference.gameObject.SendMessage("SetDeviceIndex", (int)deviceIndex, SendMessageOptions.DontRequireReceiver);
+                        trackingReference.gameObject.SendMessage("SetDeviceIndex", (int) deviceIndex,
+                            SendMessageOptions.DontRequireReceiver);
                     }
                     else
                     {
-                        trackingReferences.Add(deviceIndex, new TrackingReferenceObject() { trackedDeviceClass = deviceClass });
+                        trackingReferences.Add(deviceIndex,
+                            new TrackingReferenceObject() {trackedDeviceClass = deviceClass});
                     }
                 }
             }

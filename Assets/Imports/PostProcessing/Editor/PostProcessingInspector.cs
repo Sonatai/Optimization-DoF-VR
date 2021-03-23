@@ -26,7 +26,9 @@ namespace UnityEditor.PostProcessing
 
         List<PostProcessingMonitor> m_Monitors;
         GUIContent[] m_MonitorNames;
-        Dictionary<PostProcessingModelEditor, PostProcessingModel> m_CustomEditors = new Dictionary<PostProcessingModelEditor, PostProcessingModel>();
+
+        Dictionary<PostProcessingModelEditor, PostProcessingModel> m_CustomEditors =
+            new Dictionary<PostProcessingModelEditor, PostProcessingModel>();
 
         public bool IsInteractivePreviewOpened { get; private set; }
 
@@ -44,11 +46,12 @@ namespace UnityEditor.PostProcessing
             var customEditors = new Dictionary<Type, PostProcessingModelEditor>();
             foreach (var editor in editorTypes)
             {
-                var attr = (PostProcessingModelEditorAttribute)editor.GetCustomAttributes(typeof(PostProcessingModelEditorAttribute), false)[0];
+                var attr = (PostProcessingModelEditorAttribute) editor.GetCustomAttributes(
+                    typeof(PostProcessingModelEditorAttribute), false)[0];
                 var effectType = attr.type;
                 var alwaysEnabled = attr.alwaysEnabled;
 
-                var editorInst = (PostProcessingModelEditor)Activator.CreateInstance(editor);
+                var editorInst = (PostProcessingModelEditor) Activator.CreateInstance(editor);
                 editorInst.alwaysEnabled = alwaysEnabled;
                 editorInst.profile = target as PostProcessingProfile;
                 editorInst.inspector = this;
@@ -65,7 +68,9 @@ namespace UnityEditor.PostProcessing
                     continue;
 
                 var type = baseType;
-                var srcObject = ReflectionUtils.GetFieldValueFromPath(serializedObject.targetObject, ref type, property.propertyPath);
+                var srcObject =
+                    ReflectionUtils.GetFieldValueFromPath(serializedObject.targetObject, ref type,
+                        property.propertyPath);
 
                 if (srcObject == null)
                     continue;
@@ -73,7 +78,7 @@ namespace UnityEditor.PostProcessing
                 PostProcessingModelEditor editor;
                 if (customEditors.TryGetValue(type, out editor))
                 {
-                    var effect = (PostProcessingModel)srcObject;
+                    var effect = (PostProcessingModel) srcObject;
 
                     if (editor.alwaysEnabled)
                         effect.enabled = editor.alwaysEnabled;
@@ -160,7 +165,9 @@ namespace UnityEditor.PostProcessing
             }
 
             if (!m_ConcreteTarget.debugViews.IsModeActive(BuiltinDebugViewsModel.Mode.None))
-                EditorGUILayout.HelpBox("A debug view is currently enabled. Changes done to an effect might not be visible.", MessageType.Info);
+                EditorGUILayout.HelpBox(
+                    "A debug view is currently enabled. Changes done to an effect might not be visible.",
+                    MessageType.Info);
 
             foreach (var editor in m_CustomEditors)
             {
@@ -193,7 +200,8 @@ namespace UnityEditor.PostProcessing
                     m_Monitors[m_CurrentMonitorID].OnMonitorSettings();
 
                 GUILayout.Space(5);
-                m_CurrentMonitorID = EditorGUILayout.Popup(m_CurrentMonitorID, m_MonitorNames, FxStyles.preDropdown, GUILayout.MaxWidth(100f));
+                m_CurrentMonitorID = EditorGUILayout.Popup(m_CurrentMonitorID, m_MonitorNames, FxStyles.preDropdown,
+                    GUILayout.MaxWidth(100f));
             }
         }
 

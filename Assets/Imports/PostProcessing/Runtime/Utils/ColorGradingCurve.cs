@@ -9,14 +9,11 @@ namespace UnityEngine.PostProcessing
     {
         public AnimationCurve curve;
 
-        [SerializeField]
-        bool m_Loop;
+        [SerializeField] bool m_Loop;
 
-        [SerializeField]
-        float m_ZeroValue;
+        [SerializeField] float m_ZeroValue;
 
-        [SerializeField]
-        float m_Range;
+        [SerializeField] float m_Range;
 
         AnimationCurve m_InternalLoopingCurve;
 

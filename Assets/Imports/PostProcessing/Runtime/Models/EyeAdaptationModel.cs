@@ -14,10 +14,14 @@ namespace UnityEngine.PostProcessing
         [Serializable]
         public struct Settings
         {
-            [Range(1f, 99f), Tooltip("Filters the dark part of the histogram when computing the average luminance to avoid very dark pixels from contributing to the auto exposure. Unit is in percent.")]
+            [Range(1f, 99f),
+             Tooltip(
+                 "Filters the dark part of the histogram when computing the average luminance to avoid very dark pixels from contributing to the auto exposure. Unit is in percent.")]
             public float lowPercent;
 
-            [Range(1f, 99f), Tooltip("Filters the bright part of the histogram when computing the average luminance to avoid very dark pixels from contributing to the auto exposure. Unit is in percent.")]
+            [Range(1f, 99f),
+             Tooltip(
+                 "Filters the bright part of the histogram when computing the average luminance to avoid very dark pixels from contributing to the auto exposure. Unit is in percent.")]
             public float highPercent;
 
             [Tooltip("Minimum average luminance to consider for auto exposure (in EV).")]
@@ -41,10 +45,14 @@ namespace UnityEngine.PostProcessing
             [Min(0f), Tooltip("Adaptation speed from a light to a dark environment.")]
             public float speedDown;
 
-            [Range(-16, -1), Tooltip("Lower bound for the brightness range of the generated histogram (in EV). The bigger the spread between min & max, the lower the precision will be.")]
+            [Range(-16, -1),
+             Tooltip(
+                 "Lower bound for the brightness range of the generated histogram (in EV). The bigger the spread between min & max, the lower the precision will be.")]
             public int logMin;
 
-            [Range(1, 16), Tooltip("Upper bound for the brightness range of the generated histogram (in EV). The bigger the spread between min & max, the lower the precision will be.")]
+            [Range(1, 16),
+             Tooltip(
+                 "Upper bound for the brightness range of the generated histogram (in EV). The bigger the spread between min & max, the lower the precision will be.")]
             public int logMax;
 
             public static Settings defaultSettings
@@ -72,8 +80,8 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
+        [SerializeField] Settings m_Settings = Settings.defaultSettings;
+
         public Settings settings
         {
             get { return m_Settings; }

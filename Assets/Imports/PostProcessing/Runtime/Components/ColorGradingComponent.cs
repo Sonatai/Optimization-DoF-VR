@@ -6,26 +6,26 @@ namespace UnityEngine.PostProcessing
     {
         static class Uniforms
         {
-            internal static readonly int _LutParams                = Shader.PropertyToID("_LutParams");
+            internal static readonly int _LutParams = Shader.PropertyToID("_LutParams");
             internal static readonly int _NeutralTonemapperParams1 = Shader.PropertyToID("_NeutralTonemapperParams1");
             internal static readonly int _NeutralTonemapperParams2 = Shader.PropertyToID("_NeutralTonemapperParams2");
-            internal static readonly int _HueShift                 = Shader.PropertyToID("_HueShift");
-            internal static readonly int _Saturation               = Shader.PropertyToID("_Saturation");
-            internal static readonly int _Contrast                 = Shader.PropertyToID("_Contrast");
-            internal static readonly int _Balance                  = Shader.PropertyToID("_Balance");
-            internal static readonly int _Lift                     = Shader.PropertyToID("_Lift");
-            internal static readonly int _InvGamma                 = Shader.PropertyToID("_InvGamma");
-            internal static readonly int _Gain                     = Shader.PropertyToID("_Gain");
-            internal static readonly int _Slope                    = Shader.PropertyToID("_Slope");
-            internal static readonly int _Power                    = Shader.PropertyToID("_Power");
-            internal static readonly int _Offset                   = Shader.PropertyToID("_Offset");
-            internal static readonly int _ChannelMixerRed          = Shader.PropertyToID("_ChannelMixerRed");
-            internal static readonly int _ChannelMixerGreen        = Shader.PropertyToID("_ChannelMixerGreen");
-            internal static readonly int _ChannelMixerBlue         = Shader.PropertyToID("_ChannelMixerBlue");
-            internal static readonly int _Curves                   = Shader.PropertyToID("_Curves");
-            internal static readonly int _LogLut                   = Shader.PropertyToID("_LogLut");
-            internal static readonly int _LogLut_Params            = Shader.PropertyToID("_LogLut_Params");
-            internal static readonly int _ExposureEV               = Shader.PropertyToID("_ExposureEV");
+            internal static readonly int _HueShift = Shader.PropertyToID("_HueShift");
+            internal static readonly int _Saturation = Shader.PropertyToID("_Saturation");
+            internal static readonly int _Contrast = Shader.PropertyToID("_Contrast");
+            internal static readonly int _Balance = Shader.PropertyToID("_Balance");
+            internal static readonly int _Lift = Shader.PropertyToID("_Lift");
+            internal static readonly int _InvGamma = Shader.PropertyToID("_InvGamma");
+            internal static readonly int _Gain = Shader.PropertyToID("_Gain");
+            internal static readonly int _Slope = Shader.PropertyToID("_Slope");
+            internal static readonly int _Power = Shader.PropertyToID("_Power");
+            internal static readonly int _Offset = Shader.PropertyToID("_Offset");
+            internal static readonly int _ChannelMixerRed = Shader.PropertyToID("_ChannelMixerRed");
+            internal static readonly int _ChannelMixerGreen = Shader.PropertyToID("_ChannelMixerGreen");
+            internal static readonly int _ChannelMixerBlue = Shader.PropertyToID("_ChannelMixerBlue");
+            internal static readonly int _Curves = Shader.PropertyToID("_Curves");
+            internal static readonly int _LogLut = Shader.PropertyToID("_LogLut");
+            internal static readonly int _LogLut_Params = Shader.PropertyToID("_LogLut_Params");
+            internal static readonly int _ExposureEV = Shader.PropertyToID("_ExposureEV");
         }
 
         const int k_InternalLogLutSize = 32;
@@ -60,9 +60,9 @@ namespace UnityEngine.PostProcessing
             float X = Y * x / y;
             float Z = Y * (1f - x - y) / y;
 
-            float L =  0.7328f * X + 0.4296f * Y - 0.1624f * Z;
+            float L = 0.7328f * X + 0.4296f * Y - 0.1624f * Z;
             float M = -0.7036f * X + 1.6975f * Y + 0.0061f * Z;
-            float S =  0.0030f * X + 0.0136f * Y + 0.9834f * Z;
+            float S = 0.0030f * X + 0.0136f * Y + 0.9834f * Z;
 
             return new Vector3(L, M, S);
         }
@@ -92,12 +92,12 @@ namespace UnityEngine.PostProcessing
                 return new Color(1f, 1f, 1f, c.a);
 
             return new Color
-                   {
-                       r = c.r / sum,
-                       g = c.g / sum,
-                       b = c.b / sum,
-                       a = c.a
-                   };
+            {
+                r = c.r / sum,
+                g = c.g / sum,
+                b = c.b / sum,
+                a = c.a
+            };
         }
 
         static Vector3 ClampVector(Vector3 v, float min, float max)
@@ -106,7 +106,7 @@ namespace UnityEngine.PostProcessing
                 Mathf.Clamp(v.x, min, max),
                 Mathf.Clamp(v.y, min, max),
                 Mathf.Clamp(v.z, min, max)
-                );
+            );
         }
 
         public static Vector3 GetLiftValue(Color lift)
@@ -159,7 +159,8 @@ namespace UnityEngine.PostProcessing
             return ClampVector(new Vector3(gainR, gainG, gainB), 0f, 4f);
         }
 
-        public static void CalculateLiftGammaGain(Color lift, Color gamma, Color gain, out Vector3 outLift, out Vector3 outGamma, out Vector3 outGain)
+        public static void CalculateLiftGammaGain(Color lift, Color gamma, Color gain, out Vector3 outLift,
+            out Vector3 outGamma, out Vector3 outGain)
         {
             outLift = GetLiftValue(lift);
             outGamma = GetGammaValue(gamma);
@@ -216,7 +217,8 @@ namespace UnityEngine.PostProcessing
             return ClampVector(new Vector3(offsetR, offsetG, offsetB), -0.8f, 0.8f);
         }
 
-        public static void CalculateSlopePowerOffset(Color slope, Color power, Color offset, out Vector3 outSlope, out Vector3 outPower, out Vector3 outOffset)
+        public static void CalculateSlopePowerOffset(Color slope, Color power, Color offset, out Vector3 outSlope,
+            out Vector3 outPower, out Vector3 outOffset)
         {
             outSlope = GetSlopeValue(slope);
             outPower = GetPowerValue(power);
@@ -295,7 +297,8 @@ namespace UnityEngine.PostProcessing
             {
                 GraphicsUtils.Destroy(model.bakedLut);
 
-                model.bakedLut = new RenderTexture(k_InternalLogLutSize * k_InternalLogLutSize, k_InternalLogLutSize, 0, GetLutFormat())
+                model.bakedLut = new RenderTexture(k_InternalLogLutSize * k_InternalLogLutSize, k_InternalLogLutSize, 0,
+                    GetLutFormat())
                 {
                     name = "Color Grading Log LUT",
                     hideFlags = HideFlags.DontSave,
@@ -307,11 +310,11 @@ namespace UnityEngine.PostProcessing
 
             var lutMaterial = context.materialFactory.Get("Hidden/Post FX/Lut Generator");
             lutMaterial.SetVector(Uniforms._LutParams, new Vector4(
-                    k_InternalLogLutSize,
-                    0.5f / (k_InternalLogLutSize * k_InternalLogLutSize),
-                    0.5f / k_InternalLogLutSize,
-                    k_InternalLogLutSize / (k_InternalLogLutSize - 1f))
-                );
+                k_InternalLogLutSize,
+                0.5f / (k_InternalLogLutSize * k_InternalLogLutSize),
+                0.5f / k_InternalLogLutSize,
+                k_InternalLogLutSize / (k_InternalLogLutSize - 1f))
+            );
 
             // Tonemapping
             lutMaterial.shaderKeywords = null;
@@ -341,7 +344,9 @@ namespace UnityEngine.PostProcessing
                     const float f = 0.30f;
 
                     lutMaterial.SetVector(Uniforms._NeutralTonemapperParams1, new Vector4(a, b, c, d));
-                    lutMaterial.SetVector(Uniforms._NeutralTonemapperParams2, new Vector4(e, f, tonemapping.neutralWhiteLevel, tonemapping.neutralWhiteClip / scaleFactorHalf));
+                    lutMaterial.SetVector(Uniforms._NeutralTonemapperParams2,
+                        new Vector4(e, f, tonemapping.neutralWhiteLevel,
+                            tonemapping.neutralWhiteClip / scaleFactorHalf));
                     break;
                 }
 
@@ -356,7 +361,8 @@ namespace UnityEngine.PostProcessing
             lutMaterial.SetFloat(Uniforms._HueShift, settings.basic.hueShift / 360f);
             lutMaterial.SetFloat(Uniforms._Saturation, settings.basic.saturation);
             lutMaterial.SetFloat(Uniforms._Contrast, settings.basic.contrast);
-            lutMaterial.SetVector(Uniforms._Balance, CalculateColorBalance(settings.basic.temperature, settings.basic.tint));
+            lutMaterial.SetVector(Uniforms._Balance,
+                CalculateColorBalance(settings.basic.temperature, settings.basic.tint));
 
             // Lift / Gamma / Gain
             Vector3 lift, gamma, gain;
@@ -365,7 +371,7 @@ namespace UnityEngine.PostProcessing
                 settings.colorWheels.linear.gamma,
                 settings.colorWheels.linear.gain,
                 out lift, out gamma, out gain
-                );
+            );
 
             lutMaterial.SetVector(Uniforms._Lift, lift);
             lutMaterial.SetVector(Uniforms._InvGamma, gamma);
@@ -378,7 +384,7 @@ namespace UnityEngine.PostProcessing
                 settings.colorWheels.log.power,
                 settings.colorWheels.log.offset,
                 out slope, out power, out offset
-                );
+            );
 
             lutMaterial.SetVector(Uniforms._Slope, slope);
             lutMaterial.SetVector(Uniforms._Power, power);
@@ -406,13 +412,14 @@ namespace UnityEngine.PostProcessing
 
             uberMaterial.EnableKeyword(
                 context.profile.debugViews.IsModeActive(DebugMode.PreGradingLog)
-                ? "COLOR_GRADING_LOG_VIEW"
-                : "COLOR_GRADING"
-                );
+                    ? "COLOR_GRADING_LOG_VIEW"
+                    : "COLOR_GRADING"
+            );
 
             var bakedLut = model.bakedLut;
             uberMaterial.SetTexture(Uniforms._LogLut, bakedLut);
-            uberMaterial.SetVector(Uniforms._LogLut_Params, new Vector3(1f / bakedLut.width, 1f / bakedLut.height, bakedLut.height - 1f));
+            uberMaterial.SetVector(Uniforms._LogLut_Params,
+                new Vector3(1f / bakedLut.width, 1f / bakedLut.height, bakedLut.height - 1f));
 
             float ev = Mathf.Exp(model.settings.basic.postExposure * 0.69314718055994530941723212145818f);
             uberMaterial.SetFloat(Uniforms._ExposureEV, ev);
