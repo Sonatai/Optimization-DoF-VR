@@ -12,13 +12,11 @@ public class TestModeManager : MonoBehaviour
 
     [Header("General")] [SerializeField] private DofAdaptiveRecursiveFiltering dofScript;
     [SerializeField] private ViveFoveatedRendering fovScript;
-    [SerializeField] private TestAblaufManager testAblaufManager;
 
     private void Start()
     {
         dofScript.enabled = false;
         fovScript.enabled = false;
-        testAblaufManager.enabled = false;
     }
 
     private void FixedUpdate()
@@ -33,25 +31,21 @@ public class TestModeManager : MonoBehaviour
             case TestMode.Baseline:
                 dofScript.enabled = false;
                 fovScript.enabled = false;
-                testAblaufManager.enabled = false;
                 break;
             case TestMode.Fall1:
                 dofScript.enabled = true;
                 dofScript.IsOptimized = false;
                 fovScript.enabled = false;
-                testAblaufManager.enabled = true;
                 break;
             case TestMode.Fall2:
                 dofScript.enabled = true;
                 dofScript.IsOptimized = false;
                 fovScript.enabled = true;
-                testAblaufManager.enabled = true;
                 break;
             case TestMode.Optimierung:
                 dofScript.enabled = true;
                 dofScript.IsOptimized = true;
                 fovScript.enabled = true;
-                testAblaufManager.enabled = true;
                 break;
             default:
                 Debug.Log("Something is terrible wrong 🤢🤢🤢🤢");

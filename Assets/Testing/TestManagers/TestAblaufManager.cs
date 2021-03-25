@@ -22,6 +22,13 @@ public class TestAblaufManager : MonoBehaviour
     [SerializeField] private TestPosition testPosition2;
     [SerializeField] private TestPosition testPosition3;
 
+    private void Start()
+    {
+        _currentTestPosition = testPosition1;
+        _oldPosition = userPosition;
+        vrUser.transform.position = _currentTestPosition.UserPosition.position;
+    }
+
     private void FixedUpdate()
     {
         if (userPosition != _oldPosition)
@@ -48,6 +55,8 @@ public class TestAblaufManager : MonoBehaviour
 
         switch (testPhase)
         {
+            case Phases.None:
+                break;
             case Phases.phase1:
                 Focus(_currentTestPosition.FocusPoint1);
                 break;
@@ -71,6 +80,7 @@ public class TestAblaufManager : MonoBehaviour
 
 enum Phases
 {
+    None,
     phase1,
     phase2
 }
