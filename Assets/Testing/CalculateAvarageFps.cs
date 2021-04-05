@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CalculateAvarageFps : MonoBehaviour
 {
@@ -8,6 +6,9 @@ public class CalculateAvarageFps : MonoBehaviour
     public float tenSec = 10;
     bool timerRunning = false;
     public bool reset = false;
+    public string nameSpace;
+    public string positon;
+    public string focuspunkt;
     
     // https://answers.unity.com/questions/1040630/do-something-for-10-sec.html
     void Update()
@@ -15,6 +16,7 @@ public class CalculateAvarageFps : MonoBehaviour
         if (reset)
         { 
             tenSec = 10;
+            avg    = 0f;
             timerRunning = true;
             reset = false;
         }
@@ -24,6 +26,7 @@ public class CalculateAvarageFps : MonoBehaviour
             if(tenSec >= 0){  
                 avg += ((Time.deltaTime / Time.timeScale) - avg) * 0.03f;
             }else{
+                Debug.Log($"{nameSpace} - position {positon} - focuspoint {focuspunkt}");
                 Debug.Log(1f / avg);
                 timerRunning = false;
             }
