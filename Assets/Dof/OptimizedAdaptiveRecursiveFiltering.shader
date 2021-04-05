@@ -302,13 +302,14 @@
             }
             
             fixed4  FragmentProgram (Interpolators i) : SV_Target {
+                fixed4 currentColor = tex2D(_MainTex, i.uv);
+
                 if(!InsideInInner(i)){
                     return currentColor;
                 }
                 
                 const static int width = 10;
                 
-                fixed4 currentColor = tex2D(_MainTex, i.uv);
                 fixed4 colors[width];
                 int colorsTotalLength = 0;
                 float2  uvCoordinates = i.uv;
