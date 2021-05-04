@@ -1,0 +1,5 @@
+/* Copyright (C) Jenny Gebauer, Oliver Schweigler, Alexander Hofbauer & Daniel Nepp - All Rights Reserved
+ * Unauthorized copying of this folder, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Jenny Gebauer, Mai 2021
+ */
