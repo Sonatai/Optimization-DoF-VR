@@ -1,6 +1,7 @@
 ﻿using System;
 using HTC.UnityPlugin.FoveatedRendering;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.XR;
 
 public class DofAdaptiveRecursiveFiltering : MonoBehaviour
@@ -13,18 +14,17 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
 
     [SerializeField] private float scalingFactor = 1f;
     [Range(0, 65)] [SerializeField] private float focalLength = 36f;
-
-    public float FocalLength
-    {
-        set => focalLength = value;
-    }
-
-    [SerializeField] private float cocMinTreshold = 0.03f;
+    [SerializeField] private float cocMinThreshold = 0.03f;
 
     [SerializeField] private Camera camera;
 
     [SerializeField] private bool isOptimized;
 
+    public float FocalLength
+    {
+        set => focalLength = value;
+    }
+    
     public bool IsOptimized
     {
         set => isOptimized = value;
@@ -98,9 +98,9 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
         }
 
         //Far Plain Distance as max value for both
-        minimumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor + cocMinTreshold),
+        minimumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor + cocMinThreshold),
             camera.farClipPlane);
-        maximumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor - cocMinTreshold),
+        maximumFocalLength = Math.Min((scalingFactor * focalLength) / (scalingFactor - cocMinThreshold),
             camera.farClipPlane);
 
         var coc = RenderTexture.GetTemporary(
@@ -129,7 +129,7 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             optimizedDofMaterial.SetFloat("_MinimumFocalLength", minimumFocalLength);
             optimizedDofMaterial.SetFloat("_MaximumFocalLength", maximumFocalLength);
             optimizedDofMaterial.SetFloat("_ScalingFactor", scalingFactor);
-            optimizedDofMaterial.SetFloat("_CocTreshhold", cocMinTreshold);
+            optimizedDofMaterial.SetFloat("_CocTreshhold", cocMinThreshold);
 
             optimizedDofMaterial.SetTexture("_CoCTex", coc);
             optimizedDofMaterial.SetTexture("_RegionTex", region);
@@ -222,7 +222,7 @@ public class DofAdaptiveRecursiveFiltering : MonoBehaviour
             dofMaterial.SetFloat("_MinimumFocalLength", minimumFocalLength);
             dofMaterial.SetFloat("_MaximumFocalLength", maximumFocalLength);
             dofMaterial.SetFloat("_ScalingFactor", scalingFactor);
-            dofMaterial.SetFloat("_CocTreshhold", cocMinTreshold);
+            dofMaterial.SetFloat("_CocTreshhold", cocMinThreshold);
 
             dofMaterial.SetTexture("_CoCTex", coc);
             dofMaterial.SetTexture("_RegionTex", region);
